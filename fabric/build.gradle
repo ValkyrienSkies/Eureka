@@ -24,6 +24,7 @@ dependencies {
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
     // Remove the next line if you don't want to depend on the API
     modApi "me.shedaniel:architectury-fabric:${rootProject.architectury_version}"
+    modApi "org.valkyrienskies:valkyrienskies-116-fabric:1.+"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
