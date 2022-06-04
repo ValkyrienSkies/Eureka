@@ -1,6 +1,3 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "minecraft:block/azure_bluet"
-  }
+  "parent": "vs_eureka:block/ship_helm"
 }

@@ -13,6 +13,9 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
     modApi "org.valkyrienskies:valkyrienskies-116-common:1.+"
+
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10"
+    api "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
 }
 
 publishing {

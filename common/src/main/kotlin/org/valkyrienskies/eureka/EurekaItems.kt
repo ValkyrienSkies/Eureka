@@ -5,7 +5,9 @@ import me.shedaniel.architectury.registry.DeferredRegister
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.block.Block
 
 @Suppress("unused")
 object EurekaItems {
@@ -16,4 +18,6 @@ object EurekaItems {
         EurekaBlocks.registerItems(ITEMS)
         ITEMS.register()
     }
+
+    private infix fun Item.byName(name: String) = ITEMS.register(name) { this }
 }
