@@ -1,27 +1,29 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "vs_eureka",
   "version": "${version}",
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "VS Eureka Mod",
+  "description": "Basically Archimedes Ships, but with VS2 as the backend!",
   "authors": [
-    "Me!"
+    "ewoudje",
+    "Tri0de"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://valkyrienskies.org/",
+    "sources": "https://github.com/ValkyrienSkies/Eureka"
   },
-  "license": "Insert License Here",
-  "icon": "assets/examplemod/icon.png",
+  "license": "Apache-2.0",
+  "icon": "assets/eureka/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.examplemod.fabric.ExampleModFabric"
+      "org.valkyrienskies.eureka.fabric.EurekaModFabric"
     ]
   },
   "depends": {
     "fabric": "*",
     "minecraft": ">=1.16.5",
-    "architectury": ">=1.31.61"
+    "architectury": ">=1.31.61",
+    "valkyrienskies": ">=1.0.0"
   }
 }

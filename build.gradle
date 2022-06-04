@@ -33,11 +33,26 @@ allprojects {
     group = rootProject.maven_group
 
     repositories {
-        // Add repositories to retrieve artifacts from in here.
-        // You should only use this when depending on other mods because
-        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-        // for more information about repositories.
+        maven {
+            name = "Valkyrien Skies Internal"
+            url = project.vs_maven_url
+            content {
+                // this repository *only* contains artifacts with group "org.valkyrienskies"
+                includeGroup("org.valkyrienskies")
+            }
+        }
+
+        // maven { Needs authentication wich is no good
+        //    name = "Valkyrien Skies Github"
+        //    url = uri("https://maven.pkg.github.com/ValkyrienSkies/Valkyrien-Skies-2")
+        //    credentials {
+        //        username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+        //        password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+        //    }
+        // }
+
+        // as a temporary solution:
+        mavenLocal()
     }
 
     tasks.withType(JavaCompile) {

@@ -1,33 +1,47 @@
 modLoader = "javafml"
 loaderVersion = "[36,)"
-#issueTrackerURL = ""
-license = "Insert License Here"
+issueTrackerURL = "https://github.com/ValkyrienSkies/Valkyrien-Skies-2/issues"
+license = "Apache-2.0"
 
 [[mods]]
-modId = "examplemod"
+modId = "eureka"
 version = "${version}"
-displayName = "Example Mod"
-authors = "Me!"
+displayName = "VS Eureka Mod"
+authors = ["Tri0de", "ewoudje"]
 description = '''
-This is an example description! Tell everyone what your mod is about!
+Basically Archimedes Ships, but with VS2 as the backend!
 '''
-#logoFile = ""
+logoFile = "assets/eureka/icon.png"
 
-[[dependencies.examplemod]]
+[[dependencies.eureka]]
 modId = "forge"
 mandatory = true
 versionRange = "[36,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.examplemod]]
+[[dependencies.eureka]]
+modId = "valkyrienskies"
+mandatory = true
+versionRange = "[1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.eureka]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.16.5,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.examplemod]]
+[[dependencies.eureka]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.16.5,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.eureka]]
 modId = "architectury"
 mandatory = true
 versionRange = "[1.31.61,)"
