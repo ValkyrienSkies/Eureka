@@ -11,7 +11,7 @@ authors = ["Tri0de", "ewoudje"]
 description = '''
 Basically Archimedes Ships, but with VS2 as the backend!
 '''
-logoFile = "assets/eureka/icon.png"
+logoFile = "assets/vs_eureka/icon.png"
 
 [[dependencies.eureka]]
 modId = "forge"
