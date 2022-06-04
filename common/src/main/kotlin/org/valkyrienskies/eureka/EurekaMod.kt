@@ -14,6 +14,7 @@ object EurekaMod {
 
     @JvmStatic
     fun init() {
-        Items.register()
+        EurekaBlocks.register()
+        EurekaItems.register()
     }
 }
