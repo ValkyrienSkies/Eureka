@@ -17,13 +17,13 @@ import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
 
+private val FACING = HorizontalDirectionalBlock.FACING!!
+
 object ShipHelm: Block(Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD)) {
-    val FACING = HorizontalDirectionalBlock.FACING
+    val HELM_BASE = Shapes.box(1.0/16, 0.0/16, 1.0/16, 15.0/16, 1.0/16, 15.0/16)
+    val HELM_POLE = Shapes.box(4.0/16, 1.0/16, 7.0/16, 12.0/16, 12.0/16, 13.0/16)
 
-    val HELM_BASE = Shapes.box(0.0, 0.0, 0.0, 16.0, 1.0, 16.0)
-    val HELM_POLE = Shapes.box(4.0, 1.0, 7.0, 12.0, 8.0, 13.0)
-
-    val HELM_SHAPE = Shapes.or(HELM_BASE, HELM_POLE)
+    val HELM_SHAPE = Shapes.or(HELM_BASE, HELM_POLE).optimize()
 
 
     init {
