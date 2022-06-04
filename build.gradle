@@ -1,7 +1,15 @@
 plugins {
+    // Needed for Forge+Fabric
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "0.11.0-SNAPSHOT" apply false
+    // Kotlin
+    id "org.jetbrains.kotlin.jvm" version "1.6.10" apply false
+    // Kotlin linter
+    id "org.jlleitschuh.gradle.ktlint" version "10.3.0"
+    // Java linter
+    id "checkstyle"
 }
+
 
 architectury {
     minecraft = rootProject.minecraft_version
@@ -9,6 +17,10 @@ architectury {
 
 subprojects {
     apply plugin: "dev.architectury.loom"
+    // Apply checkstyle and ktlint to check the code style of every sub project
+    apply plugin: "org.jlleitschuh.gradle.ktlint"
+    apply plugin: "checkstyle"
+    apply plugin: "org.jetbrains.kotlin.jvm"
 
     loom {
         silentMojangMappingsLicense()
@@ -20,6 +32,34 @@ subprojects {
         mappings loom.officialMojangMappings()
         // The following line declares the yarn mappings you may select this one as well.
         // mappings "net.fabricmc:yarn:1.16.5+build.10:v2"
+    }
+
+    checkstyle {
+        // configure to use checkstyle v8.41
+        toolVersion "8.41"
+        // Gradle should fail builds on checkstyle errors (not warnings)
+        ignoreFailures = false
+        // Checkstyle config file is in .checkstyle/checkstyle.xml
+        configFile = file("${rootDir}/.checkstyle/checkstyle.xml")
+    }
+
+    // configure checkstyle, but different
+    // https://docs.gradle.org/current/userguide/checkstyle_plugin.html
+    tasks.withType(Checkstyle) {
+        reports {
+            // Do not output html reports
+            html.enabled = false
+            // Output xml reports
+            xml.enabled = true
+        }
+    }
+
+    // configure ktlint
+    ktlint {
+        reporters {
+            // configure to output in checkstyle XML format
+            reporter "checkstyle"
+        }
     }
 }
 
