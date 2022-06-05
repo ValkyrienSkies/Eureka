@@ -16,14 +16,16 @@ import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
+import org.valkyrienskies.eureka.util.DirectionalShape
+import org.valkyrienskies.eureka.util.RotShapes
 
 private val FACING = HorizontalDirectionalBlock.FACING!!
 
 object ShipHelm: Block(Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD)) {
-    val HELM_BASE = Shapes.box(1.0/16, 0.0/16, 1.0/16, 15.0/16, 1.0/16, 15.0/16)
-    val HELM_POLE = Shapes.box(4.0/16, 1.0/16, 7.0/16, 12.0/16, 12.0/16, 13.0/16)
+    val HELM_BASE = RotShapes.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0)
+    val HELM_POLE = RotShapes.box(4.0, 1.0, 7.0, 12.0, 12.0, 13.0)
 
-    val HELM_SHAPE = Shapes.or(HELM_BASE, HELM_POLE).optimize()
+    val HELM_SHAPE = DirectionalShape(RotShapes.or(HELM_BASE, HELM_POLE))
 
 
     init {
@@ -60,7 +62,7 @@ object ShipHelm: Block(Properties.of(Material.WOOD).strength(2.5F).sound(SoundTy
         blockPos: BlockPos,
         collisionContext: CollisionContext
     ): VoxelShape {
-        return HELM_SHAPE
+        return HELM_SHAPE[blockState.getValue(FACING)]
     }
 
     override fun useShapeForLightOcclusion(blockState: BlockState): Boolean {
