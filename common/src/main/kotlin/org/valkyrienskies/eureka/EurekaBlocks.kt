@@ -5,16 +5,15 @@ import net.minecraft.block.Block
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
 import net.minecraft.util.registry.Registry
-import org.valkyrienskies.eureka.block.Anchor
-import org.valkyrienskies.eureka.block.ShipHelm
-import kotlin.reflect.KProperty
+import org.valkyrienskies.eureka.block.AnchorBlock
+import org.valkyrienskies.eureka.block.ShipHelmBlock
 
 @Suppress("unused")
 object EurekaBlocks {
     private val BLOCKS = DeferredRegister.create(EurekaMod.MOD_ID, Registry.BLOCK_KEY)
 
-    val SHIP_HELM = ShipHelm byName "ship_helm"
-    val ANCHOR = Anchor byName "anchor"
+    val SHIP_HELM = ShipHelmBlock byName "ship_helm"
+    val ANCHOR = AnchorBlock byName "anchor"
 
 
     fun register() {
