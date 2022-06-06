@@ -1,81 +1,52 @@
 package org.valkyrienskies.eureka.block
 
-import net.minecraft.core.BlockPos
-import net.minecraft.core.Direction
-import net.minecraft.world.item.context.BlockPlaceContext
-import net.minecraft.world.level.BlockGetter
-import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.block.HorizontalDirectionalBlock
-import net.minecraft.world.level.block.RenderShape
-import net.minecraft.world.level.block.SoundType
-import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.block.state.StateDefinition
-import net.minecraft.world.level.material.Material
-import net.minecraft.world.level.pathfinder.PathComputationType
-import net.minecraft.world.phys.shapes.CollisionContext
-import net.minecraft.world.phys.shapes.Shapes
-import net.minecraft.world.phys.shapes.VoxelShape
+import net.minecraft.block.*
+import net.minecraft.entity.ai.pathing.NavigationType
+import net.minecraft.item.ItemPlacementContext
+import net.minecraft.sound.BlockSoundGroup
+import net.minecraft.state.StateManager
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Direction
+import net.minecraft.util.shape.VoxelShape
+import net.minecraft.world.BlockView
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
 
-private val FACING = HorizontalDirectionalBlock.FACING!!
-
-object ShipHelm: Block(Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD)) {
+object ShipHelm: HorizontalFacingBlock(Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)) {
     val HELM_BASE = RotShapes.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0)
     val HELM_POLE = RotShapes.box(4.0, 1.0, 7.0, 12.0, 12.0, 13.0)
 
-    val HELM_SHAPE = DirectionalShape(RotShapes.or(HELM_BASE, HELM_POLE))
+    val HELM_SHAPE = DirectionalShape(RotShapes.union(HELM_BASE, HELM_POLE))
 
 
     init {
-        registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH))
+        defaultState = this.stateManager.defaultState.with(FACING, Direction.NORTH)
     }
 
-    override fun onPlace(
-        blockState: BlockState,
-        level: Level,
-        blockPos: BlockPos,
-        blockState2: BlockState,
-        bl: Boolean
-    ) {
-        super.onPlace(blockState, level, blockPos, blockState2, bl)
-        println("Works!")
-    }
-
-    override fun getRenderShape(blockState: BlockState): RenderShape {
-        return RenderShape.MODEL
-    }
-
-    override fun getStateForPlacement(ctx: BlockPlaceContext): BlockState? {
-        return defaultBlockState()
-            .setValue(FACING, ctx.horizontalDirection.opposite)
-    }
-
-    override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
+    override fun appendProperties(builder: StateManager.Builder<Block, BlockState>) {
         builder.add(FACING)
     }
 
-    override fun getShape(
+    override fun getPlacementState(ctx: ItemPlacementContext): BlockState {
+        return defaultState.with(FACING, ctx.playerFacing.opposite)
+    }
+
+    override fun getOutlineShape(
         blockState: BlockState,
-        blockGetter: BlockGetter,
+        blockView: BlockView,
         blockPos: BlockPos,
-        collisionContext: CollisionContext
+        shapeContext: ShapeContext
     ): VoxelShape {
-        return HELM_SHAPE[blockState.getValue(FACING)]
+        return HELM_SHAPE[blockState[FACING]]
     }
 
-    override fun useShapeForLightOcclusion(blockState: BlockState): Boolean {
-        return true
-    }
-
-    override fun isPathfindable(
+    override fun canPathfindThrough(
         blockState: BlockState,
-        blockGetter: BlockGetter,
+        blockView: BlockView,
         blockPos: BlockPos,
-        pathComputationType: PathComputationType
+        navigationType: NavigationType
     ): Boolean {
-        return false;
+        return false
     }
 
 }
