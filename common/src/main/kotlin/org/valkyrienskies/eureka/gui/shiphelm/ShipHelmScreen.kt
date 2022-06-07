@@ -11,13 +11,14 @@ import net.minecraft.world.entity.player.Inventory
 import org.valkyrienskies.eureka.EurekaMod
 
 @Environment(EnvType.CLIENT) //Am i allowed to do this in forge?
-class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, text: Component):
-    AbstractContainerScreen<ShipHelmScreenMenu>(handler, playerInventory,  text) {
+class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, text: Component) :
+    AbstractContainerScreen<ShipHelmScreenMenu>(handler, playerInventory, text) {
 
     private val TEXTURE = ResourceLocation(EurekaMod.MOD_ID, "textures/gui/ship_helm.png")
 
     init {
         titleLabelX = 120
+        println("Screen made!")
     }
 
     override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {

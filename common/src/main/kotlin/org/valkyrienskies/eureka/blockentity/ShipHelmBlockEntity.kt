@@ -9,7 +9,8 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
 
-class ShipHelmBlockEntity: BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider {
+class ShipHelmBlockEntity :
+    BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider {
 
     companion object {
         val supplier = { ShipHelmBlockEntity() }

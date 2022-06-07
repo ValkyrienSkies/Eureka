@@ -15,12 +15,11 @@ object EurekaBlocks {
     val SHIP_HELM = ShipHelmBlock byName "ship_helm"
     val ANCHOR = AnchorBlock byName "anchor"
 
-
     fun register() {
         BLOCKS.register()
     }
 
-    //Blocks should also be registered as items, if you want them to be able to be held
+    // Blocks should also be registered as items, if you want them to be able to be held
     // aka all blocks
     fun registerItems(items: DeferredRegister<Item>) {
         BLOCKS.iterator().forEach {

@@ -8,10 +8,8 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.block.HorizontalDirectionalBlock
-import net.minecraft.world.level.block.RenderShape
-import net.minecraft.world.level.block.SoundType
+import net.minecraft.world.level.block.*
+import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.material.Material
@@ -19,15 +17,17 @@ import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
+import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
 
-object ShipHelmBlock: HorizontalDirectionalBlock(Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD)) {
+val FACING = HorizontalDirectionalBlock.FACING!!
+
+object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD)) {
     val HELM_BASE = RotShapes.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0)
     val HELM_POLE = RotShapes.box(4.0, 1.0, 7.0, 12.0, 12.0, 13.0)
 
     val HELM_SHAPE = DirectionalShape(RotShapes.or(HELM_BASE, HELM_POLE))
-
 
     override fun use(
         state: BlockState,
@@ -42,7 +42,7 @@ object ShipHelmBlock: HorizontalDirectionalBlock(Properties.of(Material.WOOD).st
                 val factory = state.getMenuProvider(level, pos)
                 if (factory != null) {
                     player.openMenu(factory)
-                }
+                } else println("Something unexpected happened!")
                 return InteractionResult.SUCCESS
             }
         }
@@ -66,6 +66,10 @@ object ShipHelmBlock: HorizontalDirectionalBlock(Properties.of(Material.WOOD).st
         builder.add(FACING)
     }
 
+    override fun newBlockEntity(blockGetter: BlockGetter): BlockEntity {
+        return ShipHelmBlockEntity()
+    }
+
     override fun getShape(
         blockState: BlockState,
         blockGetter: BlockGetter,
@@ -85,7 +89,6 @@ object ShipHelmBlock: HorizontalDirectionalBlock(Properties.of(Material.WOOD).st
         blockPos: BlockPos,
         pathComputationType: PathComputationType
     ): Boolean {
-        return false;
+        return false
     }
-
 }
