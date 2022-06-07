@@ -8,5 +8,11 @@ object EurekaMod {
         EurekaBlocks.register()
         EurekaBlockEntities.register()
         EurekaItems.register()
+        EurekaScreens.register()
+    }
+
+    @JvmStatic
+    fun initClient() {
+        EurekaScreens.registerClient()
     }
 }

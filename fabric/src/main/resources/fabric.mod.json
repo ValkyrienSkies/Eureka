@@ -18,6 +18,9 @@
   "entrypoints": {
     "main": [
       "org.valkyrienskies.eureka.fabric.EurekaModFabric"
+    ],
+    "client": [
+      "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}Client"
     ]
   },
   "depends": {

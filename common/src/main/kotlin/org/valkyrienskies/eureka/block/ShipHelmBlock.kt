@@ -3,13 +3,18 @@ package org.valkyrienskies.eureka.block
 import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.entity.ai.pathing.NavigationType
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemPlacementContext
 import net.minecraft.sound.BlockSoundGroup
 import net.minecraft.state.StateManager
+import net.minecraft.util.ActionResult
+import net.minecraft.util.Hand
+import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.BlockView
+import net.minecraft.world.World
 import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
@@ -23,6 +28,26 @@ object ShipHelmBlock: BlockWithEntity(Settings.of(Material.WOOD).strength(2.5F).
     val HELM_SHAPE = DirectionalShape(RotShapes.union(HELM_BASE, HELM_POLE))
 
     override fun createBlockEntity(blockView: BlockView): BlockEntity = ShipHelmBlockEntity.supplier()
+
+    override fun onUse(
+        state: BlockState,
+        world: World,
+        pos: BlockPos,
+        player: PlayerEntity,
+        hand: Hand,
+        blockHitResult: BlockHitResult
+    ): ActionResult {
+        if (!world.isClient) {
+            if (player.isSneaking) {
+                val factory = state.createScreenHandlerFactory(world, pos)
+                if (factory != null) {
+                    player.openHandledScreen(factory);
+                }
+                return ActionResult.SUCCESS;
+            }
+        }
+        return super.onUse(state, world, pos, player, hand, blockHitResult)
+    }
 
     init {
         defaultState = this.stateManager.defaultState.with(FACING, Direction.NORTH)
