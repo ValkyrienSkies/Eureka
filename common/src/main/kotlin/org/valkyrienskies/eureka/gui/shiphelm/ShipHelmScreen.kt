@@ -1,34 +1,36 @@
 package org.valkyrienskies.eureka.gui.shiphelm
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.PoseStack
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.client.gui.screen.ingame.HandledScreen
-import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.player.Inventory
 import org.valkyrienskies.eureka.EurekaMod
 
 @Environment(EnvType.CLIENT) //Am i allowed to do this in forge?
-class ShipHelmScreen(handler: ShipHelmScreenHandler, playerInventory: PlayerInventory, text: Text):
-    HandledScreen<ShipHelmScreenHandler>(handler, playerInventory,  text) {
+class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, text: Component):
+    AbstractContainerScreen<ShipHelmScreenMenu>(handler, playerInventory,  text) {
 
-    private val TEXTURE = Identifier(EurekaMod.MOD_ID, "textures/gui/ship_helm.png")
+    private val TEXTURE = ResourceLocation(EurekaMod.MOD_ID, "textures/gui/ship_helm.png")
 
     init {
-        titleX = 120
+        titleLabelX = 120
     }
 
-    override fun drawBackground(matrixStack: MatrixStack?, f: Float, i: Int, j: Int) {
+    override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f)
-        client!!.textureManager.bindTexture(TEXTURE)
-        drawTexture(matrixStack, x, y, 0, 0, backgroundWidth, backgroundHeight)
+        minecraft!!.textureManager.bind(TEXTURE)
+        val x = (width - imageWidth) / 2
+        val y = (height - imageHeight) / 2
+        blit(matrixStack, x, y, 0, 0, imageWidth, imageHeight)
     }
 
-    override fun drawForeground(matrixStack: MatrixStack?, i: Int, j: Int) {
-        textRenderer.draw(matrixStack, title, titleX.toFloat(), titleY.toFloat(), 0x404040)
+    override fun renderLabels(matrixStack: PoseStack, i: Int, j: Int) {
+        font.draw(matrixStack, title, titleLabelX.toFloat(), titleLabelY.toFloat(), 0x404040)
 
-        //TODO render stats and buttons
+        //TODO render stats
     }
 }

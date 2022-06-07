@@ -1,37 +1,56 @@
 package org.valkyrienskies.eureka.block
 
-import net.minecraft.block.*
-import net.minecraft.entity.ai.pathing.NavigationType
-import net.minecraft.item.ItemPlacementContext
-import net.minecraft.sound.BlockSoundGroup
-import net.minecraft.state.StateManager
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Direction
-import net.minecraft.util.shape.VoxelShape
-import net.minecraft.world.BlockView
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.context.BlockPlaceContext
+import net.minecraft.world.level.BlockGetter
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.HorizontalDirectionalBlock
+import net.minecraft.world.level.block.RenderShape
+import net.minecraft.world.level.block.SoundType
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.block.state.StateDefinition
+import net.minecraft.world.level.material.Material
+import net.minecraft.world.level.pathfinder.PathComputationType
+import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.shapes.CollisionContext
+import net.minecraft.world.phys.shapes.VoxelShape
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
 
-object ShipHelm: HorizontalDirectionalBlock(Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD)) {
+object ShipHelmBlock: HorizontalDirectionalBlock(Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD)) {
     val HELM_BASE = RotShapes.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0)
     val HELM_POLE = RotShapes.box(4.0, 1.0, 7.0, 12.0, 12.0, 13.0)
 
     val HELM_SHAPE = DirectionalShape(RotShapes.or(HELM_BASE, HELM_POLE))
 
 
-    init {
-        registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH))
+    override fun use(
+        state: BlockState,
+        level: Level,
+        pos: BlockPos,
+        player: Player,
+        hand: InteractionHand,
+        blockHitResult: BlockHitResult
+    ): InteractionResult {
+        if (!level.isClientSide) {
+            if (player.isCrouching) {
+                val factory = state.getMenuProvider(level, pos)
+                if (factory != null) {
+                    player.openMenu(factory)
+                }
+                return InteractionResult.SUCCESS
+            }
+        }
+        return super.use(state, level, pos, player, hand, blockHitResult)
     }
 
-    override fun onPlace(
-        blockState: BlockState,
-        level: Level,
-        blockPos: BlockPos,
-        blockState2: BlockState,
-        bl: Boolean
-    ) {
-        super.onPlace(blockState, level, blockPos, blockState2, bl)
-        println("Works!")
+    init {
+        registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH))
     }
 
     override fun getRenderShape(blockState: BlockState): RenderShape {

@@ -5,9 +5,8 @@ import net.minecraft.core.Registry
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
-import org.valkyrienskies.eureka.block.Anchor
-import org.valkyrienskies.eureka.block.ShipHelm
-import kotlin.reflect.KProperty
+import org.valkyrienskies.eureka.block.AnchorBlock
+import org.valkyrienskies.eureka.block.ShipHelmBlock
 
 @Suppress("unused")
 object EurekaBlocks {

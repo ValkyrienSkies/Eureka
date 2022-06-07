@@ -2,31 +2,31 @@ package org.valkyrienskies.eureka
 
 import me.shedaniel.architectury.registry.DeferredRegister
 import me.shedaniel.architectury.registry.RegistrySupplier
-import net.minecraft.client.gui.screen.ingame.HandledScreen
-import net.minecraft.client.gui.screen.ingame.HandledScreens
-import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.screen.ScreenHandler
-import net.minecraft.screen.ScreenHandlerType
-import net.minecraft.text.Text
-import net.minecraft.util.registry.Registry
-import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreen
-import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenHandler
-import kotlin.reflect.KClass
+import net.minecraft.client.gui.screens.MenuScreens
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.core.Registry
+import net.minecraft.network.chat.Component
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.MenuType
 
-private typealias HFactory<T> = (syncId: Int, playerInv: PlayerInventory) -> T
-private typealias SFactory<T> = (handler: T, playerInv: PlayerInventory, text: Text) -> HandledScreen<T>
-private data class ClientScreenRegistar<T: ScreenHandler>(
-    val type: RegistrySupplier<ScreenHandlerType<T>>,
+import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreen
+import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
+
+private typealias HFactory<T> = (syncId: Int, playerInv: Inventory) -> T
+private typealias SFactory<T> = (handler: T, playerInv: Inventory, text: Component) -> AbstractContainerScreen<T>
+private data class ClientScreenRegistar<T: AbstractContainerMenu>(
+    val type: RegistrySupplier<MenuType<T>>,
     val factory: SFactory<T>) {
-    fun register() = HandledScreens.register(type.get(), factory)
+    fun register() = MenuScreens.register(type.get(), factory)
 }
 
 @Suppress("unused")
 object EurekaScreens {
-    private val SCREENS = DeferredRegister.create(EurekaMod.MOD_ID, Registry.MENU_KEY)
+    private val SCREENS = DeferredRegister.create(EurekaMod.MOD_ID, Registry.MENU_REGISTRY)
     private val SCREENS_CLIENT = mutableListOf<ClientScreenRegistar<*>>()
 
-    val SHIP_HELM = ::ShipHelmScreenHandler withScreen ::ShipHelmScreen withName "ship_helm"
+    val SHIP_HELM = ::ShipHelmScreenMenu withScreen ::ShipHelmScreen withName "ship_helm"
 
     fun register() {
         SCREENS.register()
@@ -36,9 +36,9 @@ object EurekaScreens {
         SCREENS_CLIENT.forEach { it.register() }
     }
 
-    private infix fun <T: ScreenHandler> HFactory<T>.withScreen(screen: SFactory<T>) = Pair(this, screen)
-    private infix fun <T: ScreenHandler> Pair<HFactory<T>, SFactory<T>>.withName(name: String) =
-        SCREENS.register(name) { ScreenHandlerType(this.first) }.also {
+    private infix fun <T: AbstractContainerMenu> HFactory<T>.withScreen(screen: SFactory<T>) = Pair(this, screen)
+    private infix fun <T: AbstractContainerMenu> Pair<HFactory<T>, SFactory<T>>.withName(name: String) =
+        SCREENS.register(name) { MenuType(this.first) }.also {
             SCREENS_CLIENT.add(ClientScreenRegistar(it, this.second))
         }
 }
