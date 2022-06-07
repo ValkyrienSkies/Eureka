@@ -14,11 +14,17 @@ import org.valkyrienskies.eureka.EurekaMod
 class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, text: Component) :
     AbstractContainerScreen<ShipHelmScreenMenu>(handler, playerInventory, text) {
 
-    private val TEXTURE = ResourceLocation(EurekaMod.MOD_ID, "textures/gui/ship_helm.png")
-
     init {
         titleLabelX = 120
-        println("Screen made!")
+    }
+
+    override fun init() {
+        super.init()
+        val x = (width - imageWidth) / 2
+        val y = (height - imageHeight) / 2
+        addButton(ShipHelmButton(x + BUTTON_1_X, y + BUTTON_1_Y, Component.nullToEmpty("Assemble")) {})
+        addButton(ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, Component.nullToEmpty("Go Crazy")) {})
+        addButton(ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, Component.nullToEmpty("Align")) {})
     }
 
     override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
@@ -33,5 +39,16 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         font.draw(matrixStack, title, titleLabelX.toFloat(), titleLabelY.toFloat(), 0x404040)
 
         //TODO render stats
+    }
+
+    companion object { // TEXTURE DATA
+        internal val TEXTURE = ResourceLocation(EurekaMod.MOD_ID, "textures/gui/ship_helm.png")
+
+        private const val BUTTON_1_X = 10
+        private const val BUTTON_1_Y = 73
+        private const val BUTTON_2_X = 10
+        private const val BUTTON_2_Y = 103
+        private const val BUTTON_3_X = 10
+        private const val BUTTON_3_Y = 133
     }
 }
