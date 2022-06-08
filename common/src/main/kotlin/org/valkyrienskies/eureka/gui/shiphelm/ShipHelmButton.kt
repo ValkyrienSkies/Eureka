@@ -17,6 +17,8 @@ class ShipHelmButton(x: Int, y: Int, text: Component, onPress: OnPress) :
     }
 
     override fun renderButton(poseStack: PoseStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
+        if (!isHovered()) isPressed = false
+
         val minecraft = Minecraft.getInstance()
         val font = minecraft.font
         minecraft.textureManager.bind(ShipHelmScreen.TEXTURE)
@@ -46,15 +48,12 @@ class ShipHelmButton(x: Int, y: Int, text: Component, onPress: OnPress) :
 
     override fun onClick(mouseX: Double, mouseY: Double) {
         isPressed = true
+        super.onClick(mouseX, mouseY)
     }
 
-    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        super.mouseReleased(mouseX, mouseY, button)
+    override fun onRelease(mouseX: Double, mouseY: Double) {
         isPressed = false
-        if (isHovered())
-            onPress()
-
-        return true
+        onPress()
     }
 
     companion object {

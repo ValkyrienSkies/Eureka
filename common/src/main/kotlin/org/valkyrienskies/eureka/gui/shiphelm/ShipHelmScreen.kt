@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
+import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -39,6 +40,20 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         font.draw(matrixStack, title, titleLabelX.toFloat(), titleLabelY.toFloat(), 0x404040)
 
         //TODO render stats
+    }
+    
+    // mojank doesn't check mouse release for their widgets for some reason
+    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        isDragging = false
+        if (getChildAt(mouseX, mouseY).filter { guiEventListener: GuiEventListener ->
+                guiEventListener.mouseReleased(
+                    mouseX,
+                    mouseY,
+                    button
+                )
+            }.isPresent) return true
+
+        return super.mouseReleased(mouseX, mouseY, button)
     }
 
     companion object { // TEXTURE DATA

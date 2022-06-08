@@ -21,7 +21,7 @@ import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
 
-val FACING = HorizontalDirectionalBlock.FACING!!
+private val FACING = HorizontalDirectionalBlock.FACING!!
 
 object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD)) {
     val HELM_BASE = RotShapes.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0)

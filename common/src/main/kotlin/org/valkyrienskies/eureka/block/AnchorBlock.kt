@@ -20,6 +20,7 @@ object AnchorBlock :
 
     val ANCHOR_BOTTOM = RotShapes.box(2.0, 2.0, 14.0, 14.0, 4.0, 16.0)
     val ANCHOR_ROD = RotShapes.box(7.0, 2.0, 14.0, 9.0, 24.0, 16.0)
+
     val ANCHOR_SHAPE = DirectionalShape(RotShapes.or(ANCHOR_BOTTOM, ANCHOR_ROD))
 
     init {
