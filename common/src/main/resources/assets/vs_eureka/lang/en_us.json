@@ -1,4 +1,6 @@
 {
   "itemGroup.vs_eureka.eureka_tab": "VS Eureka",
-  "block.vs_eureka.ship_helm": "Ship Helm"
+  "block.vs_eureka.ship_helm": "Ship Helm",
+  "block.vs_eureka.anchor": "Anchor",
+  "block.vs_eureka.engine": "Ship Engine"
 }
