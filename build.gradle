@@ -100,7 +100,7 @@ allprojects {
         // }
 
         // as a temporary solution:
-        mavenLocal()
+        //mavenLocal()
     }
 
     tasks.withType(JavaCompile) {

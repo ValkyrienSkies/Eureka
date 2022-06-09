@@ -35,7 +35,10 @@ dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
     // Remove the next line if you don't want to depend on the API
     modApi "me.shedaniel:architectury-forge:${rootProject.architectury_version}"
-    //modApi "org.valkyrienskies:valkyrienskies-116-forge:1.+" TODO
+    //TODO froge wierd
+    //api("org.valkyrienskies:valkyrienskies-116-forge:${rootProject.vs2_version}") {
+    //    exclude group: 'org.valkyrienskies.core', module: 'vs-core'
+    //}
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
