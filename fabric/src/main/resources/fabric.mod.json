@@ -23,6 +23,9 @@
       "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}Client"
     ]
   },
+  "mixins": [
+    "vs_eureka-common.mixins.json"
+  ],
   "depends": {
     "fabric": "*",
     "minecraft": ">=1.16.5",

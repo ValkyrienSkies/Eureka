@@ -1,9 +1,9 @@
 package org.valkyrienskies.eureka.forge;
 
 import me.shedaniel.architectury.platform.forge.EventBuses;
-import org.valkyrienskies.eureka.EurekaMod;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.valkyrienskies.eureka.EurekaMod;
 
 @Mod(EurekaMod.MOD_ID)
 public class EurekaModForge {

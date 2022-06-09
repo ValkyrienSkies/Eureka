@@ -8,7 +8,11 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.*
+import net.minecraft.world.level.block.BaseEntityBlock
+import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.HorizontalDirectionalBlock
+import net.minecraft.world.level.block.RenderShape
+import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
@@ -37,16 +41,19 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
         hand: InteractionHand,
         blockHitResult: BlockHitResult
     ): InteractionResult {
-        if (!level.isClientSide) {
-            if (player.isCrouching) {
-                val factory = state.getMenuProvider(level, pos)
-                if (factory != null) {
-                    player.openMenu(factory)
-                } else println("Something unexpected happened!")
-                return InteractionResult.SUCCESS
+        val blockEntity = level.getBlockEntity(pos) as ShipHelmBlockEntity
+
+        return if (player.isCrouching) {
+            if (!level.isClientSide) {
+                player.openMenu(blockEntity)
             }
-        }
-        return super.use(state, level, pos, player, hand, blockHitResult)
+
+            InteractionResult.SUCCESS
+        } else if (player.vehicle == null) {
+            player.startRiding(blockEntity.seat, true)
+
+            InteractionResult.SUCCESS
+        } else super.use(state, level, pos, player, hand, blockHitResult)
     }
 
     init {

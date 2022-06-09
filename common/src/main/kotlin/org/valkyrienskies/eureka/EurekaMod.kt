@@ -18,6 +18,7 @@ object EurekaMod {
         EurekaBlockEntities.register()
         EurekaItems.register()
         EurekaScreens.register()
+        EurekaEntities.register()
     }
 
     @JvmStatic
