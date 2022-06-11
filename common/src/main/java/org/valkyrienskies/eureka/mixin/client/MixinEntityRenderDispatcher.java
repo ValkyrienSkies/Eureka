@@ -16,7 +16,7 @@ public class MixinEntityRenderDispatcher {
     void registerRenderers(final ItemRenderer itemRenderer,
                            final ReloadableResourceManager reloadableResourceManager,
                            final CallbackInfo ci) {
-        EurekaEntities.INSTANCE.registerRenderers$eureka((EntityRenderDispatcher) (Object) this, itemRenderer);
+        EurekaEntities.registerRenderers((EntityRenderDispatcher) (Object) this, itemRenderer);
     }
 
 }

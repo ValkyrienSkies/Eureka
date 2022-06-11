@@ -2,6 +2,7 @@ package org.valkyrienskies.eureka.block
 
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
@@ -41,19 +42,15 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
         hand: InteractionHand,
         blockHitResult: BlockHitResult
     ): InteractionResult {
+        if (level.isClientSide) return InteractionResult.SUCCESS
         val blockEntity = level.getBlockEntity(pos) as ShipHelmBlockEntity
 
         return if (player.isCrouching) {
-            if (!level.isClientSide) {
-                player.openMenu(blockEntity)
-            }
-
-            InteractionResult.SUCCESS
-        } else if (player.vehicle == null) {
-            player.startRiding(blockEntity.seat, true)
-
-            InteractionResult.SUCCESS
-        } else super.use(state, level, pos, player, hand, blockHitResult)
+            player.openMenu(blockEntity)
+            InteractionResult.CONSUME
+        } else if (player.startRiding(blockEntity.seat!!)) {
+            InteractionResult.CONSUME
+        } else InteractionResult.PASS
     }
 
     init {
@@ -75,6 +72,20 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
 
     override fun newBlockEntity(blockGetter: BlockGetter): BlockEntity {
         return ShipHelmBlockEntity()
+    }
+
+    override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
+        if (level.isClientSide) return
+
+        val be = level.getBlockEntity(pos) as ShipHelmBlockEntity
+        be.initSeat(pos, state, level as ServerLevel)
+    }
+
+    override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
+        if (level.isClientSide) return
+
+        val be = level.getBlockEntity(pos) as ShipHelmBlockEntity
+        be.seat?.remove()
     }
 
     override fun getShape(

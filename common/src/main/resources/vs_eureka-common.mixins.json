@@ -5,6 +5,7 @@
   "mixins": [
   ],
   "client": [
+    "client.MixinClientPacketListener",
     "client.MixinEntityRenderDispatcher"
   ],
   "injectors": {

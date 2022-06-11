@@ -8,6 +8,7 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 
 class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, level) {
+
     override fun defineSynchedData() {
         // TODO("Not yet implemented")
     }
@@ -20,11 +21,11 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
         // TODO("Not yet implemented")
     }
 
-    override fun getAddEntityPacket(): Packet<*> {
-        return ClientboundAddEntityPacket(this)
+    override fun getControllingPassenger(): Entity? {
+        return this.passengers.getOrNull(0)
     }
 
-    override fun save(compound: CompoundTag?): Boolean {
-        return super.save(compound)
+    override fun getAddEntityPacket(): Packet<*> {
+        return ClientboundAddEntityPacket(this)
     }
 }

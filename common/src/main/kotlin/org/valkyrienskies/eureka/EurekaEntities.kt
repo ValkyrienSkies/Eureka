@@ -30,7 +30,6 @@ object EurekaEntities {
 
     val SEAT = ::SeatEntity category MobCategory.MISC byName "seat" registerRenderer ::EmptyRenderer
 
-
     fun register() {
         ENTITIES.register()
     }
@@ -47,6 +46,7 @@ object EurekaEntities {
     private infix fun <T : Entity> EntityType.Builder<T>.byName(name: String) =
         ENTITIES.register(name) { this.build(name) }
 
-    internal fun registerRenderers(dispatcher: EntityRenderDispatcher, itemRenderer: ItemRenderer) =
+    @JvmStatic
+    fun registerRenderers(dispatcher: EntityRenderDispatcher, itemRenderer: ItemRenderer) =
         ENTITY_RENDERERS.forEach { it.register(dispatcher, itemRenderer) }
 }
