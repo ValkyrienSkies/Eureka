@@ -24,7 +24,7 @@ public class MixinClientPacketListener {
     private Minecraft minecraft;
 
     @Inject(method = "handleAddEntity",
-            at = @At("HEAD"), cancellable = true)
+            at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/util/thread/BlockableEventLoop;)V"), cancellable = true)
     void handleSeat(final ClientboundAddEntityPacket packet, final CallbackInfo ci) {
         if (packet.getType().equals(EurekaEntities.INSTANCE.getSEAT().get())) {
             ci.cancel();
