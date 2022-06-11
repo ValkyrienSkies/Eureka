@@ -4,14 +4,13 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import org.valkyrienskies.eureka.EurekaMod
 
-@Environment(EnvType.CLIENT) //Am i allowed to do this in forge?
+@Environment(EnvType.CLIENT) // Am i allowed to do this in forge?
 class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, text: Component) :
     AbstractContainerScreen<ShipHelmScreenMenu>(handler, playerInventory, text) {
 
@@ -23,9 +22,9 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         super.init()
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
-        addButton(ShipHelmButton(x + BUTTON_1_X, y + BUTTON_1_Y, Component.nullToEmpty("Assemble")) {})
-        addButton(ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, Component.nullToEmpty("Go Crazy")) {})
-        addButton(ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, Component.nullToEmpty("Align")) {})
+        addButton(ShipHelmButton(x + BUTTON_1_X, y + BUTTON_1_Y, Component.nullToEmpty("Assemble"), font) {})
+        addButton(ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, Component.nullToEmpty("Go Crazy"), font) {})
+        addButton(ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, Component.nullToEmpty("Align"), font) {})
     }
 
     override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
@@ -39,19 +38,13 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
     override fun renderLabels(matrixStack: PoseStack, i: Int, j: Int) {
         font.draw(matrixStack, title, titleLabelX.toFloat(), titleLabelY.toFloat(), 0x404040)
 
-        //TODO render stats
+        // TODO render stats
     }
-    
+
     // mojank doesn't check mouse release for their widgets for some reason
     override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
         isDragging = false
-        if (getChildAt(mouseX, mouseY).filter { guiEventListener: GuiEventListener ->
-                guiEventListener.mouseReleased(
-                    mouseX,
-                    mouseY,
-                    button
-                )
-            }.isPresent) return true
+        if (getChildAt(mouseX, mouseY).filter { it.mouseReleased(mouseX, mouseY, button) }.isPresent) return true
 
         return super.mouseReleased(mouseX, mouseY, button)
     }

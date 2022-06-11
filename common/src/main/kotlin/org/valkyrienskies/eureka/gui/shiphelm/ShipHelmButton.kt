@@ -3,11 +3,12 @@ package org.valkyrienskies.eureka.gui.shiphelm
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.components.Button
 import net.minecraft.network.chat.Component
-import net.minecraft.util.Mth
+import net.minecraft.util.FormattedCharSequence
 
-class ShipHelmButton(x: Int, y: Int, text: Component, onPress: OnPress) :
+class ShipHelmButton(x: Int, y: Int, text: Component, private val font: Font, onPress: OnPress) :
     Button(x, y, 156, 23, text, onPress) {
 
     var isPressed = false
@@ -20,7 +21,6 @@ class ShipHelmButton(x: Int, y: Int, text: Component, onPress: OnPress) :
         if (!isHovered()) isPressed = false
 
         val minecraft = Minecraft.getInstance()
-        val font = minecraft.font
         minecraft.textureManager.bind(ShipHelmScreen.TEXTURE)
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, alpha)
 
@@ -39,10 +39,14 @@ class ShipHelmButton(x: Int, y: Int, text: Component, onPress: OnPress) :
             }
         }
 
-        val j = if (active) 0xFFFFFF else 0xA0A0A0
-        drawCenteredString(
-            poseStack, font,
-            message, x + width / 2, y + (height - 8) / 2, j or Mth.ceil(alpha * 255.0f) shl 24
+        val color = 0x404040
+        val formattedCharSequence: FormattedCharSequence = message.visualOrderText
+        font.draw(
+            poseStack,
+            formattedCharSequence,
+            ((x + width / 2) - font.width(formattedCharSequence) / 2).toFloat(),
+            (y + (height - 8) / 2).toFloat(),
+            color
         )
     }
 
