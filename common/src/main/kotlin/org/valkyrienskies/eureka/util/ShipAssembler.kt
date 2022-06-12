@@ -12,6 +12,9 @@ import org.valkyrienskies.mod.common.util.toBlockPos
 object ShipAssembler {
     val AIR = Blocks.AIR.defaultBlockState()
 
+    // TODO use dense packed to send updates
+    // with a more optimized algorithm for bigger ships
+
     fun fillShip(level: ServerLevel, ship: ShipData, center: BlockPos) {
         val shipCenter = ship.chunkClaim.getCenterBlockCoordinates(Vector3i()).toBlockPos()
 
@@ -33,8 +36,8 @@ object ShipAssembler {
         var blockState = level.getBlockState(pos)
 
         while (!BLOCK_BLACKLIST.contains(Registry.BLOCK.getKey(blockState.block).toString())) {
-            level.setBlock(shipPos, blockState, 0)
             level.setBlock(pos, AIR, 0)
+            level.setBlock(shipPos, blockState, 0)
 
             Direction.values().filter { it != direction && it != direction.opposite }
                 .forEach { forwardAxis(level, shipPos.relative(it), pos.relative(it), it) }
