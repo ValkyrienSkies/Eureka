@@ -14,6 +14,10 @@ import net.minecraft.world.level.block.state.BlockState
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaEntities
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
+import org.valkyrienskies.eureka.util.ShipAssembler
+import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.shipObjectWorld
+import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.vs2api.SeatEntity
 import java.util.UUID
 
@@ -22,13 +26,14 @@ class ShipHelmBlockEntity :
 
     private var seatUuid: UUID? = null
     val seat by lazy { (level as ServerLevel).getEntity(seatUuid) as SeatEntity }
+    val assembled get() = level?.getShipManagingPos(blockPos) != null
 
     companion object {
         val supplier = { ShipHelmBlockEntity() }
     }
 
     override fun createMenu(id: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
-        return ShipHelmScreenMenu(id, playerInventory)
+        return ShipHelmScreenMenu(id, playerInventory, this)
     }
 
     override fun getDisplayName(): Component {
@@ -50,5 +55,11 @@ class ShipHelmBlockEntity :
         val entity = EurekaEntities.SEAT.get().create(level)!!.apply { moveTo(newPos, 0f, 0f) }
         level.addFreshEntityWithPassengers(entity)
         seatUuid = entity.uuid
+    }
+
+    fun onAssemble() {
+        val level = level as ServerLevel
+        val ship = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, 0)
+        ShipAssembler.fillShip(level, ship, blockPos)
     }
 }

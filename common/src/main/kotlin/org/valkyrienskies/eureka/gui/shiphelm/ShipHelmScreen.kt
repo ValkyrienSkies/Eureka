@@ -22,9 +22,21 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         super.init()
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
-        addButton(ShipHelmButton(x + BUTTON_1_X, y + BUTTON_1_Y, Component.nullToEmpty("Assemble"), font) {})
-        addButton(ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, Component.nullToEmpty("Go Crazy"), font) {})
-        addButton(ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, Component.nullToEmpty("Align"), font) {})
+        addButton(
+            ShipHelmButton(x + BUTTON_1_X, y + BUTTON_1_Y, Component.nullToEmpty("Assemble"), font) {
+                minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 0)
+            }
+        )
+        addButton(
+            ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, Component.nullToEmpty("Go Crazy"), font) {
+                minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 1)
+            }
+        )
+        addButton(
+            ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, Component.nullToEmpty("Align"), font) {
+                minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 2)
+            }
+        )
     }
 
     override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {

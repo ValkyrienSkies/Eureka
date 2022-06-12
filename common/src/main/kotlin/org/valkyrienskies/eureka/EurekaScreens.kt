@@ -27,7 +27,7 @@ object EurekaScreens {
     private val SCREENS = DeferredRegister.create(EurekaMod.MOD_ID, Registry.MENU_REGISTRY)
     private val SCREENS_CLIENT = mutableListOf<ClientScreenRegistar<*>>()
 
-    val SHIP_HELM = ::ShipHelmScreenMenu withScreen ::ShipHelmScreen withName "ship_helm"
+    val SHIP_HELM = ShipHelmScreenMenu.factory withScreen ::ShipHelmScreen withName "ship_helm"
 
     fun register() {
         SCREENS.register()

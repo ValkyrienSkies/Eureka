@@ -90,17 +90,8 @@ allprojects {
             }
         }
 
-        // maven { Needs authentication wich is no good
-        //    name = "Valkyrien Skies Github"
-        //    url = uri("https://maven.pkg.github.com/ValkyrienSkies/Valkyrien-Skies-2")
-        //    credentials {
-        //        username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-        //        password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-        //    }
-        // }
-
         // as a temporary solution:
-        //mavenLocal()
+        mavenLocal()
     }
 
     tasks.withType(JavaCompile) {
