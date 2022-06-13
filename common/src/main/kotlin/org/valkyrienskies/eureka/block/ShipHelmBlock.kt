@@ -48,7 +48,7 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
         return if (player.isCrouching) {
             player.openMenu(blockEntity)
             InteractionResult.CONSUME
-        } else if (player.startRiding(blockEntity.seat!!)) {
+        } else if (player.startRiding(blockEntity.seat)) {
             InteractionResult.CONSUME
         } else InteractionResult.PASS
     }
@@ -85,7 +85,7 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
         if (level.isClientSide) return
 
         val be = level.getBlockEntity(pos) as ShipHelmBlockEntity
-        be.seat?.remove()
+        be.seat.remove()
     }
 
     override fun getShape(

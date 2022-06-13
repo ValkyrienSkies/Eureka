@@ -25,7 +25,14 @@ class ShipHelmBlockEntity :
     BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider {
 
     private var seatUuid: UUID? = null
-    val seat by lazy { (level as ServerLevel).getEntity(seatUuid) as SeatEntity }
+    val seat by lazy {
+        val r = (level as ServerLevel).getEntity(seatUuid) as SeatEntity
+        if (assembled)
+            r.ship = (level as ServerLevel).getShipManagingPos(blockPos)!!
+
+        r
+    }
+
     val assembled get() = level?.getShipManagingPos(blockPos) != null
 
     companion object {
@@ -46,20 +53,25 @@ class ShipHelmBlockEntity :
     }
 
     override fun load(blockState: BlockState, tag: CompoundTag) {
-        seatUuid = tag.getUUID("Seat")
+        if (tag.contains("Seat"))
+            seatUuid = tag.getUUID("Seat")
         super.load(blockState, tag)
     }
 
+    // Needs to get called server-side
     fun initSeat(blockPos: BlockPos, state: BlockState, level: ServerLevel) {
         val newPos = blockPos.relative(state.getValue(HorizontalDirectionalBlock.FACING)).below()
         val entity = EurekaEntities.SEAT.get().create(level)!!.apply { moveTo(newPos, 0f, 0f) }
         level.addFreshEntityWithPassengers(entity)
         seatUuid = entity.uuid
+        seat.position() // To get the lazy to act
     }
 
+    // Needs to get called server-side
     fun onAssemble() {
         val level = level as ServerLevel
         val ship = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, 0)
         ShipAssembler.fillShip(level, ship, blockPos)
+        seat.ship = ship
     }
 }

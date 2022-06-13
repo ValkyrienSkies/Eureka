@@ -18,8 +18,10 @@ object ShipAssembler {
     fun fillShip(level: ServerLevel, ship: ShipData, center: BlockPos) {
         val shipCenter = ship.chunkClaim.getCenterBlockCoordinates(Vector3i()).toBlockPos()
 
-        level.setBlock(shipCenter, level.getBlockState(center), 0)
-        level.setBlock(center, AIR, 0)
+        val blockState = level.getBlockState(center)
+        level.setBlock(center, AIR, 11)
+        level.setBlock(shipCenter, blockState, 11)
+
 
         Direction.values()
             .forEach { forwardAxis(level, shipCenter.relative(it), center.relative(it), it) }
@@ -36,8 +38,8 @@ object ShipAssembler {
         var blockState = level.getBlockState(pos)
 
         while (!BLOCK_BLACKLIST.contains(Registry.BLOCK.getKey(blockState.block).toString())) {
-            level.setBlock(pos, AIR, 0)
-            level.setBlock(shipPos, blockState, 0)
+            level.setBlock(pos, AIR, 11)
+            level.setBlock(shipPos, blockState, 11)
 
             Direction.values().filter { it != direction && it != direction.opposite }
                 .forEach { forwardAxis(level, shipPos.relative(it), pos.relative(it), it) }

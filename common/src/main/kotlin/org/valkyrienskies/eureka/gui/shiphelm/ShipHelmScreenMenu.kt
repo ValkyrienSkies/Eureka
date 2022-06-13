@@ -18,7 +18,7 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
     override fun clickMenuButton(player: Player, id: Int): Boolean {
         if (blockEntity == null) return false
 
-        if (id == 0 && !blockEntity.assembled) {
+        if (id == 0 && !blockEntity.assembled && !player.level.isClientSide) {
             blockEntity.onAssemble()
             return true
         }
