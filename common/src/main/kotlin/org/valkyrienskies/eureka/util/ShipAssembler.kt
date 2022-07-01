@@ -21,8 +21,6 @@ object ShipAssembler {
         val blockState = level.getBlockState(center)
         level.setBlock(center, AIR, 11)
         level.setBlock(shipCenter, blockState, 11)
-
-
         Direction.values()
             .forEach { forwardAxis(level, shipCenter.relative(it), center.relative(it), it) }
     }

@@ -87,11 +87,12 @@ allprojects {
             content {
                 // this repository *only* contains artifacts with group "org.valkyrienskies"
                 includeGroup("org.valkyrienskies")
+                includeGroup("org.valkyrienskies.core")
             }
         }
 
         // as a temporary solution:
-        mavenLocal()
+        // mavenLocal()
     }
 
     tasks.withType(JavaCompile) {

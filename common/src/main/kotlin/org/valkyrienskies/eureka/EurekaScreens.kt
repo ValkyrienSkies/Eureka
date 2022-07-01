@@ -9,6 +9,8 @@ import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.MenuType
+import org.valkyrienskies.eureka.gui.engine.EngineScreen
+import org.valkyrienskies.eureka.gui.engine.EngineScreenMenu
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreen
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
 
@@ -28,7 +30,7 @@ object EurekaScreens {
     private val SCREENS_CLIENT = mutableListOf<ClientScreenRegistar<*>>()
 
     val SHIP_HELM = ShipHelmScreenMenu.factory withScreen ::ShipHelmScreen withName "ship_helm"
-
+    val ENGINE = EngineScreenMenu.factory withScreen ::EngineScreen withName "engine"
     fun register() {
         SCREENS.register()
     }

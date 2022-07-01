@@ -7,7 +7,9 @@ import net.minecraft.util.datafix.fixes.References
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
+import org.valkyrienskies.eureka.block.EngineBlock
 import org.valkyrienskies.eureka.block.ShipHelmBlock
+import org.valkyrienskies.eureka.blockentity.EngineBlockEntity
 import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 
 @Suppress("unused")
@@ -15,6 +17,7 @@ object EurekaBlockEntities {
     private val BLOCKENTITIES = DeferredRegister.create(EurekaMod.MOD_ID, Registry.BLOCK_ENTITY_TYPE_REGISTRY)
 
     val SHIP_HELM = ShipHelmBlock withBE ShipHelmBlockEntity.supplier byName "ship_helm"
+    val ENGINE = EngineBlock withBE EngineBlockEntity.supplier byName "engine"
 
     fun register() {
         BLOCKENTITIES.register()

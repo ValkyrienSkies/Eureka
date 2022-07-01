@@ -35,10 +35,6 @@ class ShipHelmBlockEntity :
 
     val assembled get() = level?.getShipManagingPos(blockPos) != null
 
-    companion object {
-        val supplier = { ShipHelmBlockEntity() }
-    }
-
     override fun createMenu(id: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
         return ShipHelmScreenMenu(id, playerInventory, this)
     }
@@ -73,5 +69,9 @@ class ShipHelmBlockEntity :
         val ship = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, 0)
         ShipAssembler.fillShip(level, ship, blockPos)
         seat.ship = ship
+    }
+
+    companion object {
+        val supplier = { ShipHelmBlockEntity() }
     }
 }

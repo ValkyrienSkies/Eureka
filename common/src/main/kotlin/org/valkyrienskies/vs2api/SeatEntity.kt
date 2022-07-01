@@ -20,7 +20,7 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
             if (value == field) return
             field = value
             shipPosition = position().toJOML()
-            entityData.set(SHIP_DATA, Optional.ofNullable(value?.shipUUID))
+            entityData.set(SHIP_DATA, Optional.ofNullable(value?.id))
             println("SHIP SET: ShipPos: $shipPosition")
             reapplyPosition()
             println("SHIP SET: RealPos: ${position()}")
@@ -42,7 +42,7 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
         super.tick()
         reapplyPosition()
         if (ship == null && entityData.get(SHIP_DATA).isPresent) {
-            val ship = level.shipObjectWorld.queryableShipData.getShipDataFromUUID(entityData.get(SHIP_DATA).get())!!
+            val ship = level.shipObjectWorld.queryableShipData.getById(entityData.get(SHIP_DATA).get())!!
             val inShip = ship.shipTransform.worldToShipMatrix.transformPosition(position().toJOML())
             setPosRaw(inShip.x, inShip.y, inShip.z)
             this.ship = ship

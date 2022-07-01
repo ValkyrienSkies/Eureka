@@ -22,10 +22,14 @@ configurations {
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.7.1+kotlin.1.6.10")
     // Remove the next line if you don't want to depend on the API
     modApi "me.shedaniel:architectury-fabric:${rootProject.architectury_version}"
-    modApi("org.valkyrienskies:valkyrienskies-116-fabric:${rootProject.vs2_version}")
+    modApi("org.valkyrienskies:valkyrienskies-116-fabric:${rootProject.vs2_version}") {
+        transitive = false
+    }
 
+    api "org.valkyrienskies.core:vs-core:${rootProject.vs2_core_version}"
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }

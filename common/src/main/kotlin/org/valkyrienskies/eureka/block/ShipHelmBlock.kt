@@ -34,6 +34,10 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
 
     val HELM_SHAPE = DirectionalShape(RotShapes.or(HELM_BASE, HELM_POLE))
 
+    init {
+        registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH))
+    }
+
     override fun use(
         state: BlockState,
         level: Level,
@@ -51,10 +55,6 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
         } else if (player.startRiding(blockEntity.seat)) {
             InteractionResult.CONSUME
         } else InteractionResult.PASS
-    }
-
-    init {
-        registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH))
     }
 
     override fun getRenderShape(blockState: BlockState): RenderShape {

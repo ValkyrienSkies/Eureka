@@ -11,9 +11,7 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
 
     constructor(syncId: Int, playerInv: Inventory) : this(syncId, playerInv, null)
 
-    override fun stillValid(player: Player): Boolean {
-        return true
-    }
+    override fun stillValid(player: Player): Boolean = true
 
     override fun clickMenuButton(player: Player, id: Int): Boolean {
         if (blockEntity == null) return false
