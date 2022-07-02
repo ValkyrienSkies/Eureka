@@ -21,7 +21,7 @@ dependencies {
 publishing {
     publications {
         mavenCommon(MavenPublication) {
-            groupId = "org.valkyrienskies"
+            groupId = "org.valkyrienskies.eureka"
             version = project.version
             artifactId = rootProject.archives_base_name + "-" + project.name
             from components.java
@@ -33,7 +33,7 @@ publishing {
         // Add repositories to publish to here.
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/ValkyrienSkies/Valkyrien-Skies-2")
+            url = uri("https://maven.pkg.github.com/ValkyrienSkies/Eureka")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")

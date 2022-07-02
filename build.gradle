@@ -10,6 +10,23 @@ plugins {
     id "checkstyle"
 }
 
+// Determine the version
+if (project.hasProperty("CustomReleaseVersion")) {
+    version = project.property("CustomReleaseVersion") as String
+} else {
+    // Yes, I know there is a gradle plugin to detect git version.
+    // But its made by Palantir 0_0.
+    Process gitRevisionProcess = Runtime.getRuntime().exec("git rev-parse HEAD", new String[0], projectDir)
+    InputStream processInputStream = gitRevisionProcess.inputStream
+
+    String gitRevision = ""
+    while (true) {
+        int lastReadByte = processInputStream.read()
+        if (lastReadByte == -1) break
+        gitRevision += ((char) lastReadByte)
+    }
+    version = "1.0.0+" + gitRevision.substring(0, 10)
+}
 
 architectury {
     minecraft = rootProject.minecraft_version
@@ -77,7 +94,7 @@ allprojects {
     apply plugin: "maven-publish"
 
     archivesBaseName = rootProject.archives_base_name
-    version = rootProject.mod_version
+    version = rootProject.version
     group = rootProject.maven_group
 
     repositories {
@@ -90,9 +107,6 @@ allprojects {
                 includeGroup("org.valkyrienskies.core")
             }
         }
-
-        // as a temporary solution:
-        // mavenLocal()
     }
 
     tasks.withType(JavaCompile) {
