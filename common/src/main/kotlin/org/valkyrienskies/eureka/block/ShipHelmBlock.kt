@@ -78,7 +78,11 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
         if (level.isClientSide) return
 
         val be = level.getBlockEntity(pos) as ShipHelmBlockEntity
-        be.initSeat(pos, state, level as ServerLevel)
+        try {
+            be.initSeat(pos, state, level as ServerLevel)
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+        }
     }
 
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
