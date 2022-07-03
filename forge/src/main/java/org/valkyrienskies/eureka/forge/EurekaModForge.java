@@ -15,7 +15,7 @@ public class EurekaModForge {
         EurekaMod.init();
     }
 
-    void clientSetup(FMLClientSetupEvent event) {
+    void clientSetup(final FMLClientSetupEvent event) {
         EurekaMod.initClient();
     }
 }
