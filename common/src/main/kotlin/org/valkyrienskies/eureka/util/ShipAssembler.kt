@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.Blocks
 import org.joml.Vector3i
 import org.valkyrienskies.core.game.ships.ShipData
+import org.valkyrienskies.mod.common.util.relocateBlock
 import org.valkyrienskies.mod.common.util.toBlockPos
 
 object ShipAssembler {
@@ -18,9 +19,7 @@ object ShipAssembler {
     fun fillShip(level: ServerLevel, ship: ShipData, center: BlockPos) {
         val shipCenter = ship.chunkClaim.getCenterBlockCoordinates(Vector3i()).toBlockPos()
 
-        val blockState = level.getBlockState(center)
-        level.setBlock(center, AIR, 11)
-        level.setBlock(shipCenter, blockState, 11)
+        level.relocateBlock(center, shipCenter)
         Direction.values()
             .forEach { forwardAxis(level, shipCenter.relative(it), center.relative(it), it) }
     }
@@ -34,10 +33,11 @@ object ShipAssembler {
         var pos = pos
         var shipPos = shipPos
         var blockState = level.getBlockState(pos)
+        var depth = 0
 
         while (!BLOCK_BLACKLIST.contains(Registry.BLOCK.getKey(blockState.block).toString())) {
-            level.setBlock(pos, AIR, 11)
-            level.setBlock(shipPos, blockState, 11)
+            level.relocateBlock(pos, shipPos)
+            depth++
 
             Direction.values().filter { it != direction && it != direction.opposite }
                 .forEach { forwardAxis(level, shipPos.relative(it), pos.relative(it), it) }
