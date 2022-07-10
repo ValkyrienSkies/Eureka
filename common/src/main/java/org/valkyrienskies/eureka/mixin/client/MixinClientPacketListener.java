@@ -3,10 +3,8 @@ package org.valkyrienskies.eureka.mixin.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.resources.sounds.MinecartSoundInstance;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,9 +38,6 @@ public class MixinClientPacketListener {
             entity.setId(i);
             entity.setUUID(packet.getUUID());
             this.level.putNonPlayerEntity(i, entity);
-            if (entity instanceof AbstractMinecart) {
-                this.minecraft.getSoundManager().play(new MinecartSoundInstance((AbstractMinecart) entity));
-            }
         }
     }
 }

@@ -89,7 +89,7 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
         if (level.isClientSide) return
 
         val be = level.getBlockEntity(pos) as ShipHelmBlockEntity
-        be.seat.remove()
+        be.seat?.remove()
     }
 
     override fun getShape(

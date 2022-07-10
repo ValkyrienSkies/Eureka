@@ -1,57 +1,49 @@
 package org.valkyrienskies.vs2api
 
+import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.syncher.EntityDataSerializers
-import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
-import org.joml.Vector3d
 import org.valkyrienskies.core.game.ships.ShipDataCommon
-import org.valkyrienskies.mod.common.shipObjectWorld
-import org.valkyrienskies.mod.common.util.toJOML
-import java.util.Optional
+import org.valkyrienskies.eureka.util.defineSynced
+import org.valkyrienskies.eureka.util.registerSynced
+import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.util.toJOMLD
 
 class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, level) {
-    var ship: ShipDataCommon? = null
-        set(value) {
-            if (value == field) return
-            field = value
-            shipPosition = position().toJOML()
-            entityData.set(SHIP_DATA, Optional.ofNullable(value?.id))
-            println("SHIP SET: ShipPos: $shipPosition")
-            reapplyPosition()
-            println("SHIP SET: RealPos: ${position()}")
+    private val ship: ShipDataCommon?
+        get() = inShipPosition?.let {
+            level.getShipManagingPos(BlockPos(it.x, it.y, it.z))
         }
 
-    private var shipPosition = position().toJOML()
+    var inShipPosition
+        get() = IN_SHIP_POSITION.get(this)
+        set(value) = IN_SHIP_POSITION.set(this, value)
 
     init {
         blocksBuilding = true
     }
 
+    private fun niceInShipPosition() = inShipPosition?.toJOMLD()?.add(0.5, -0.5, 0.5)
+
     // We discard any position assignments as long we are on a ship
     override fun setPosRaw(x: Double, y: Double, z: Double) {
-        val vec = ship?.shipTransform?.shipToWorldMatrix?.transformPosition(Vector3d(shipPosition))
+        val vec = ship?.shipTransform?.shipToWorldMatrix?.transformPosition(niceInShipPosition())
         super.setPosRaw(vec?.x ?: x, vec?.y ?: y, vec?.z ?: z)
     }
 
     override fun tick() {
         super.tick()
         reapplyPosition()
-        if (ship == null && entityData.get(SHIP_DATA).isPresent) {
-            val ship = level.shipObjectWorld.queryableShipData.getById(entityData.get(SHIP_DATA).get())!!
-            val inShip = ship.shipTransform.worldToShipMatrix.transformPosition(position().toJOML())
-            setPosRaw(inShip.x, inShip.y, inShip.z)
-            this.ship = ship
-            // if (level.getShipManagingPos(this.blockPosition())!!.shipUUID != ship.shipUUID) println("Shouldn't happen REE")
-        }
     }
 
     override fun defineSynchedData() {
-        entityData.define(SHIP_DATA, Optional.empty())
+        registerSynced(IN_SHIP_POSITION, BlockPos.ZERO)
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
@@ -70,10 +62,14 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
         return ClientboundAddEntityPacket(this)
     }
 
+    override fun addPassenger(passenger: Entity) {
+        super.addPassenger(passenger)
+        if (passenger is ServerPlayer) {
+            passenger.setPos(this.x, this.y, this.z)
+        }
+    }
+
     companion object {
-        val SHIP_DATA = SynchedEntityData.defineId(
-            this::class.java.declaringClass as Class<SeatEntity>,
-            EntityDataSerializers.OPTIONAL_UUID
-        )
+        val IN_SHIP_POSITION = defineSynced<SeatEntity, BlockPos>(EntityDataSerializers.BLOCK_POS)
     }
 }
