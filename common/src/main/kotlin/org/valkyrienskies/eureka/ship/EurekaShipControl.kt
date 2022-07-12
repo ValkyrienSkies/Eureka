@@ -11,6 +11,8 @@ private const val MAX_RISE_ACC = 2.0
 
 class EurekaShipControl : ShipForcesInducer {
 
+    var leftImpulse = 0.0f
+    var forwardImpulse = 0.0f
     var alleviationTarget: Double = 30.0
 
     override fun applyForces(forcesApplier: ForcesApplier, ship: PhysShip) {
@@ -45,6 +47,8 @@ class EurekaShipControl : ShipForcesInducer {
         if (alleviationTarget != Double.NaN) {
         }
 
-        forcesApplier.applyInvariantForceToPos(Vector3d(0.0, mass * 10, 0.0), Vector3d())
+        // forcesApplier.applyInvariantForce(Vector3d(0.0, mass * 10, 0.0))
+        forcesApplier.applyRotDependentForce(Vector3d(0.0, 0.0, mass * 10 * forwardImpulse))
+        forcesApplier.applyInvariantTorque(moiTensor.transform(Vector3d(0.0, leftImpulse.toDouble(), 0.0)))
     }
 }

@@ -8,8 +8,11 @@ import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
+import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.core.game.ships.ShipDataCommon
+import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.defineSynced
 import org.valkyrienskies.eureka.util.getBlockPos
 import org.valkyrienskies.eureka.util.putBlockPos
@@ -42,6 +45,16 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
     override fun tick() {
         super.tick()
         reapplyPosition()
+        this.controllingPassenger?.let { player ->
+            player as Player
+
+            ship?.getAttachment<EurekaShipControl>()?.apply {
+                // xRot = player.xRot
+                // yRot = player.yRot
+                leftImpulse = player.xxa
+                forwardImpulse = player.zza
+            }
+        }
     }
 
     override fun defineSynchedData() {
@@ -49,11 +62,11 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
-        compound.putBlockPos("inShipPosition", inShipPosition)
+        inShipPosition = compound.getBlockPos("inShipPosition")
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
-        inShipPosition = compound.getBlockPos("inShipPosition")
+        compound.putBlockPos("inShipPosition", inShipPosition)
     }
 
     override fun getControllingPassenger(): Entity? {
