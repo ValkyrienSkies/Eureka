@@ -5,6 +5,7 @@
   "mixins": [
   ],
   "client": [
+    "client.MixinCamera",
     "client.MixinClientPacketListener",
     "client.MixinEntityRenderDispatcher"
   ],

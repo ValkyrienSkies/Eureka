@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
 import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.core.game.ships.ShipDataCommon
 import org.valkyrienskies.eureka.ship.EurekaShipControl
@@ -19,6 +20,7 @@ import org.valkyrienskies.eureka.util.putBlockPos
 import org.valkyrienskies.eureka.util.registerSynced
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.util.toJOMLD
+import org.valkyrienskies.mod.common.util.toVec3d
 
 class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, level) {
     private val ship: ShipDataCommon?
@@ -38,7 +40,7 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
 
     // We discard any position assignments as long we are on a ship
     override fun setPosRaw(x: Double, y: Double, z: Double) {
-        val vec = ship?.shipTransform?.shipToWorldMatrix?.transformPosition(niceInShipPosition())
+        val vec = calcWorldPos()
         super.setPosRaw(vec?.x ?: x, vec?.y ?: y, vec?.z ?: z)
     }
 
@@ -83,6 +85,9 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
             passenger.setPos(this.x, this.y, this.z)
         }
     }
+
+    fun calcWorldPos(): Vec3? =
+        ship?.shipTransform?.shipToWorldMatrix?.transformPosition(niceInShipPosition())?.toVec3d()
 
     companion object {
         val IN_SHIP_POSITION = defineSynced<SeatEntity, BlockPos>(EntityDataSerializers.BLOCK_POS)
