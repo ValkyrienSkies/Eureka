@@ -11,6 +11,8 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 import org.valkyrienskies.core.game.ships.ShipDataCommon
 import org.valkyrienskies.eureka.util.defineSynced
+import org.valkyrienskies.eureka.util.getBlockPos
+import org.valkyrienskies.eureka.util.putBlockPos
 import org.valkyrienskies.eureka.util.registerSynced
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.util.toJOMLD
@@ -29,7 +31,7 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
         blocksBuilding = true
     }
 
-    private fun niceInShipPosition() = inShipPosition?.toJOMLD()?.add(0.5, -0.5, 0.5)
+    private fun niceInShipPosition() = inShipPosition?.toJOMLD()?.add(0.5, -1.0, 0.5)
 
     // We discard any position assignments as long we are on a ship
     override fun setPosRaw(x: Double, y: Double, z: Double) {
@@ -47,11 +49,11 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
-        // TODO("Not yet implemented")
+        compound.putBlockPos("inShipPosition", inShipPosition)
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
-        // TODO("Not yet implemented")
+        inShipPosition = compound.getBlockPos("inShipPosition")
     }
 
     override fun getControllingPassenger(): Entity? {
