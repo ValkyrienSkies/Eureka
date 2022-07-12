@@ -48,5 +48,16 @@ object ShipAssembler {
             shipPos = shipPos.relative(direction)
             blockState = level.getBlockState(pos)
         }
+
+        /*
+        pos = pos.relative(direction.opposite, depth)
+
+        repeat(depth) {
+            val from1 = pos.relative(direction, it + 1)
+            val from2 = pos.relative(direction, it + 1)
+            level.neighborChanged(pos.relative(direction, it), level.getBlockState(from1).block, from1)
+            level.neighborChanged(pos.relative(direction, it), level.getBlockState(from2).block, from2)
+        }
+        */
     }
 }
