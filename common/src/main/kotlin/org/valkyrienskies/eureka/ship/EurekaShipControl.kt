@@ -16,7 +16,7 @@ class EurekaShipControl : ShipForcesInducer {
     var leftImpulse = 0.0f
     var forwardImpulse = 0.0f
     var maxSpeed = 100.0f
-    var alleviationTarget: Double = 30.0
+    var alleviationTarget = 30.0
 
     override fun applyForces(forcesApplier: ForcesApplier, ship: PhysShip) {
         val mass = ship.inertia.shipMass
