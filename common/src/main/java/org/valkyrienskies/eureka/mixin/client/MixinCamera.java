@@ -28,7 +28,7 @@ public abstract class MixinCamera {
 
         final Entity vehicle = renderViewEntity.getVehicle();
         if (vehicle != null && vehicle.getType().equals(EurekaEntities.INSTANCE.getSEAT().get())) {
-            final Vec3 r = ((SeatEntity) vehicle).calcWorldPos();
+            final Vec3 r = ((SeatEntity) vehicle).clientRenderPos();
             if (r != null) {
                 setPosition(r);
             }

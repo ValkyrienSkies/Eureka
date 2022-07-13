@@ -12,20 +12,22 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import org.valkyrienskies.core.api.getAttachment
-import org.valkyrienskies.core.game.ships.ShipDataCommon
+import org.valkyrienskies.core.game.ships.ShipObject
+import org.valkyrienskies.core.game.ships.ShipObjectClient
+import org.valkyrienskies.core.game.ships.ShipObjectServer
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.defineSynced
 import org.valkyrienskies.eureka.util.getBlockPos
 import org.valkyrienskies.eureka.util.putBlockPos
 import org.valkyrienskies.eureka.util.registerSynced
-import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.util.toJOMLD
 import org.valkyrienskies.mod.common.util.toVec3d
 
 class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, level) {
-    private val ship: ShipDataCommon?
+    private val ship: ShipObject?
         get() = inShipPosition?.let {
-            level.getShipManagingPos(BlockPos(it.x, it.y, it.z))
+            level.getShipObjectManagingPos(BlockPos(it.x, it.y, it.z))
         }
 
     var inShipPosition
@@ -40,17 +42,19 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
 
     // We discard any position assignments as long we are on a ship
     override fun setPosRaw(x: Double, y: Double, z: Double) {
-        val vec = calcWorldPos()
+        val vec = ship?.shipData?.shipTransform?.shipToWorldMatrix?.transformPosition(niceInShipPosition())?.toVec3d()
         super.setPosRaw(vec?.x ?: x, vec?.y ?: y, vec?.z ?: z)
     }
 
     override fun tick() {
         super.tick()
         reapplyPosition()
+
+        if (level.isClientSide) return
         this.controllingPassenger?.let { player ->
             player as Player
 
-            ship?.getAttachment<EurekaShipControl>()?.apply {
+            (ship as ShipObjectServer?)?.getAttachment<EurekaShipControl>()?.apply {
                 // xRot = player.xRot
                 // yRot = player.yRot
                 leftImpulse = player.xxa
@@ -86,8 +90,12 @@ class SeatEntity(type: EntityType<SeatEntity>, level: Level) : Entity(type, leve
         }
     }
 
-    fun calcWorldPos(): Vec3? =
-        ship?.shipTransform?.shipToWorldMatrix?.transformPosition(niceInShipPosition())?.toVec3d()
+    // Client only
+    fun clientRenderPos(): Vec3? =
+        (ship as ShipObjectClient?)?.renderTransform?.shipToWorldMatrix?.transformPosition(
+            inShipPosition?.toJOMLD()?.add(0.5, 1.5, 0.5)
+        )
+            ?.toVec3d()
 
     companion object {
         val IN_SHIP_POSITION = defineSynced<SeatEntity, BlockPos>(EntityDataSerializers.BLOCK_POS)

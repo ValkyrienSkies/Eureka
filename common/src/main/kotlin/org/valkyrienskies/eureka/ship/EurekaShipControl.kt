@@ -15,7 +15,7 @@ class EurekaShipControl : ShipForcesInducer {
 
     var leftImpulse = 0.0f
     var forwardImpulse = 0.0f
-    var maxSpeed = 20.0f
+    var maxSpeed = 100.0f
     var alleviationTarget: Double = 30.0
 
     override fun applyForces(forcesApplier: ForcesApplier, ship: PhysShip) {
