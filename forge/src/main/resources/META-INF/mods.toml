@@ -7,7 +7,7 @@ license = "Apache-2.0"
 modId = "vs_eureka"
 version = "${version}"
 displayName = "VS Eureka Mod"
-authors = ["Tri0de", "ewoudje"]
+authors = ["Tri0de", "ewoudje", "VS2 Discord Artists"]
 description = '''
 Basically Archimedes Ships, but with VS2 as the backend!
 '''
