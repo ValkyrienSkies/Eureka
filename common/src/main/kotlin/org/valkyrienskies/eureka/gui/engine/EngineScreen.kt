@@ -19,14 +19,12 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         minecraft!!.textureManager.bind(TEXTURE)
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
-        blitOffset = 2
         blit(matrixStack, x, y, 0, 0, imageWidth, imageHeight)
 
         menu as EngineScreenMenu
 
         // Draw the coals
-        blitOffset = 1
-        val coalState = menu.coalLevel
+        val coalState = menu.fuelLevel
         if (coalState > 0) {
             val xx = coalState - 1
             blit(
@@ -41,7 +39,6 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         }
 
         // Draw the orangyness based on the heat
-        blitOffset = 0
         val heatState = menu.heatLevel
         if (heatState > 0) {
             val xx = heatState - 1
@@ -51,6 +48,16 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
                 y + FIRE_HOLE_Y,
                 HEAT_X + (xx * FIRE_HOLE_SIZE),
                 HEAT_Y,
+                FIRE_HOLE_SIZE,
+                FIRE_HOLE_SIZE
+            )
+        } else {
+            blit(
+                matrixStack,
+                x + FIRE_HOLE_X,
+                y + FIRE_HOLE_Y,
+                GLASS_X,
+                GLASS_Y,
                 FIRE_HOLE_SIZE,
                 FIRE_HOLE_SIZE
             )
@@ -68,5 +75,7 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         private const val HEAT_Y = 0
         private const val COAL_X = 176
         private const val COAL_Y = 20
+        private const val GLASS_X = 176
+        private const val GLASS_Y = 40
     }
 }

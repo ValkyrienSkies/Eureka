@@ -1,9 +1,11 @@
 package org.valkyrienskies.eureka.gui.engine
 
+import net.minecraft.world.Container
 import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.item.ItemStack
 import org.valkyrienskies.eureka.EurekaScreens
 import org.valkyrienskies.eureka.blockentity.EngineBlockEntity
 import org.valkyrienskies.eureka.util.KtContainerData
@@ -14,20 +16,39 @@ class EngineScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Engin
 
     constructor(syncId: Int, playerInv: Inventory) : this(syncId, playerInv, null)
 
-    private val container = blockEntity ?: SimpleContainer(1)
+    private val container: Container = blockEntity ?: SimpleContainer(1)
     private val data = blockEntity?.data?.clone() ?: KtContainerData()
     var heatLevel by data
-    var coalLevel by data
+    var fuelLevel by data
 
     init {
-        inventorySlots(::addSlot, playerInv)
-        addDataSlots(data)
-
         // Add the fuel slot
         addSlot(FuelSlot(container, 0, 80, 57))
+
+        // Make inventory
+        inventorySlots(::addSlot, playerInv)
+
+        // Synced data
+        addDataSlots(data)
     }
 
-    override fun stillValid(player: Player?): Boolean = true
+    override fun stillValid(player: Player): Boolean = container.stillValid(player)
+
+    override fun quickMoveStack(player: Player, index: Int): ItemStack {
+        val slot = this.slots[index]
+        if (slot != null && slot.hasItem()) {
+            if (index != 0) {
+                this.moveItemStackTo(slot.item, 0, 1, false)
+                slot.setChanged()
+                return slot.item
+            } else {
+                slot.onTake(player, slot.item)
+                this.moveItemStackTo(slot.item, 1, 37, true)
+            }
+        }
+
+        return ItemStack.EMPTY
+    }
 
     companion object {
         val factory: (syncId: Int, playerInv: Inventory) -> EngineScreenMenu = ::EngineScreenMenu
