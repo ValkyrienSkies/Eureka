@@ -61,5 +61,4 @@ class ContainerDataDelegate(private val id: Int, private val containerData: Cont
     operator fun getValue(thisRef: Any, property: KProperty<*>): Int = containerData.get(id)
 
     operator fun setValue(thisRef: Any, property: KProperty<*>, value: Int) = containerData.set(id, value)
-
 }
