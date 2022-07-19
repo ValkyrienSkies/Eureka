@@ -8,8 +8,7 @@ import org.valkyrienskies.core.game.ships.PhysShip
 
 private const val STABILIZATION_TORQUE_CONSTANT = 15.0
 private const val TURN_SPEED = 3.0
-private const val RISE_ACC = 0.1
-private const val MAX_RISE_ACC = 2.0
+private const val MAX_RISE_VEL = 1.0
 
 class EurekaShipControl : ShipForcesInducer {
 
@@ -75,12 +74,23 @@ class EurekaShipControl : ShipForcesInducer {
 
         forcesApplier.applyInvariantTorque(rotationVector)
 
-        if (alleviationTarget != Double.NaN) {
+        if (alleviationTarget.isFinite()) {
+            val diff = alleviationTarget - ship.position.y()
+
+            val shipRiseVelo = ship.velocity.y()
+            val idealRiseVelo = clamp(diff, -MAX_RISE_VEL, MAX_RISE_VEL)
+            val impulse = idealRiseVelo - shipRiseVelo
+
+            // so if i remeber correcly newton told me
+            //         acc=force/mass
+            // and vel(t) = vel(t-1) + acc
+            // so vel(t) = ship.velocity.y() + myInput/mass
+            // so vel(t) = ship.velocity.y() + (myInput2*mass)/mass
+            forcesApplier.applyInvariantForce(Vector3d(0.0, impulse * mass * 10, 0.0))
         }
 
-        // forcesApplier.applyInvariantForce(Vector3d(0.0, mass * 10, 0.0))
-
         // Player Controlled Forward
+        // val idealForwardVelo = ;
         val forceMul = clamp(0.0, 0.1, 1 - (ship.velocity.length() / maxSpeed)) * 10.0
         val forwardPower = mass * 10 * forwardImpulse * forceMul
         forcesApplier.applyRotDependentForce(Vector3d(0.0, 0.0, forwardPower))

@@ -19,7 +19,7 @@ import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.ShipAssembler
-import org.valkyrienskies.mod.api.BlockEntityShipProvider
+import org.valkyrienskies.mod.api.ShipBlockEntity
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toJOML
@@ -27,7 +27,7 @@ import org.valkyrienskies.vs2api.SeatEntity
 import java.util.UUID
 
 class ShipHelmBlockEntity :
-    BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider, BlockEntityShipProvider {
+    BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider, ShipBlockEntity {
 
     private var seatUuid: UUID? = null
     var seat: SeatEntity? = null

@@ -19,13 +19,13 @@ import org.valkyrienskies.core.api.Ship
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.gui.engine.EngineScreenMenu
 import org.valkyrienskies.eureka.util.KtContainerData
-import org.valkyrienskies.mod.api.BlockEntityShipProvider
+import org.valkyrienskies.mod.api.ShipBlockEntity
 
 const val MAX_HEAT = 2000
 
 class EngineBlockEntity :
     BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get()),
-    BlockEntityShipProvider,
+    ShipBlockEntity,
     TickableBlockEntity,
     StackedContentsCompatible,
     WorldlyContainer {
