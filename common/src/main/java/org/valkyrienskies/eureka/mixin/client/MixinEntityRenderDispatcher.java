@@ -12,6 +12,7 @@ import org.valkyrienskies.eureka.EurekaEntities;
 @Mixin(EntityRenderDispatcher.class)
 public class MixinEntityRenderDispatcher {
 
+    // TODO keep or remove?
     @Inject(method = "registerRenderers", at = @At("TAIL"))
     void registerRenderers(final ItemRenderer itemRenderer,
                            final ReloadableResourceManager reloadableResourceManager,

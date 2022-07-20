@@ -10,8 +10,6 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.MobCategory
 import net.minecraft.world.level.Level
-import org.valkyrienskies.eureka.client.EmptyRenderer
-import org.valkyrienskies.vs2api.SeatEntity
 
 private typealias EFactory<T> = (EntityType<T>, Level) -> T
 private typealias RFactory<T> = EntityRenderDispatcher.(ItemRenderer) -> EntityRenderer<T>
@@ -28,7 +26,7 @@ object EurekaEntities {
     private val ENTITIES = DeferredRegister.create(EurekaMod.MOD_ID, Registry.ENTITY_TYPE_REGISTRY)
     private val ENTITY_RENDERERS = mutableListOf<ToRegEntityRenderer<*>>()
 
-    val SEAT = ::SeatEntity category MobCategory.MISC byName "seat" registerRenderer ::EmptyRenderer
+    // val SEAT = ::SeatEntity category MobCategory.MISC byName "seat" registerRenderer ::EmptyRenderer
 
     fun register() {
         ENTITIES.register()
