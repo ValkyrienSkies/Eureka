@@ -100,17 +100,12 @@ allprojects {
     repositories {
         maven {
             name = "Valkyrien Skies Internal"
-            url = project.vs_maven_url
-            if (project.hasProperty('vs_maven_username') && project.hasProperty('vs_maven_url')) {
+            url = project.vs_maven_url ?: 'https://maven.valkyrienskies.org'
+            if (project.vs_maven_username && project.vs_maven_url) {
                 credentials {
-                    username = project.findProperty('vs_maven_username')
-                    password = project.findProperty('vs_maven_password')
+                    username = project.vs_maven_username
+                    password = project.vs_maven_url
                 }
-            }
-            content {
-                // this repository *only* contains artifacts with group "org.valkyrienskies"
-                includeGroup("org.valkyrienskies")
-                includeGroup("org.valkyrienskies.core")
             }
         }
     }
