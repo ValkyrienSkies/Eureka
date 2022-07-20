@@ -23,6 +23,6 @@ object EurekaMod {
 
     @JvmStatic
     fun initClient() {
-        EurekaScreens.registerClient()
+        EurekaClientScreens.register()
     }
 }

@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import org.valkyrienskies.eureka.EurekaMod
 
-@Environment(EnvType.CLIENT) // Am i allowed to do this in forge?
+@Environment(EnvType.CLIENT)
 class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, text: Component) :
     AbstractContainerScreen<ShipHelmScreenMenu>(handler, playerInventory, text) {
 
