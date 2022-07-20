@@ -11,11 +11,12 @@ import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.core.game.ships.PhysShip
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
+import kotlin.math.abs
 
 private const val STABILIZATION_TORQUE_CONSTANT = 15.0
 private const val TURN_SPEED = 3.0
-private const val MAX_RISE_VEL = 0.7
-private const val IMPULSE_ALLEVIATION_RATE = 1f
+private const val MAX_RISE_VEL = 2.5
+private const val IMPULSE_ALLEVIATION_RATE = 2.3
 
 class EurekaShipControl : ShipForcesInducer, ShipUser {
 
@@ -24,7 +25,7 @@ class EurekaShipControl : ShipForcesInducer, ShipUser {
     val controllingPlayer by shipValue<SeatedControllingPlayer>()
 
     var maxSpeed = 20.0f
-    var alleviationTarget = Float.NaN
+    var alleviationTarget = Double.NaN
 
     override fun applyForces(forcesApplier: ForcesApplier, ship: PhysShip) {
         val mass = ship.inertia.shipMass
@@ -91,7 +92,8 @@ class EurekaShipControl : ShipForcesInducer, ShipUser {
 
             forcesApplier.applyInvariantForce(idealForwardVel)
 
-            alleviationTarget = ship.position.y().toFloat() + (player.upImpulse * IMPULSE_ALLEVIATION_RATE)
+            if (abs(player.upImpulse) > 0.1)
+                alleviationTarget = ship.position.y() + (player.upImpulse * IMPULSE_ALLEVIATION_RATE)
         }
 
         if (alleviationTarget.isFinite()) {
