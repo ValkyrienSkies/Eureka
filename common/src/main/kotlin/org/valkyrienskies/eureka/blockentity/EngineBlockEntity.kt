@@ -16,8 +16,10 @@ import net.minecraft.world.level.block.entity.FurnaceBlockEntity
 import net.minecraft.world.level.block.entity.TickableBlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import org.valkyrienskies.core.api.Ship
+import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.gui.engine.EngineScreenMenu
+import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.KtContainerData
 import org.valkyrienskies.mod.api.ShipBlockEntity
 
@@ -31,6 +33,7 @@ class EngineBlockEntity :
     WorldlyContainer {
 
     override var ship: Ship? = null
+    private val eurekaShipControl by shipValue<EurekaShipControl>()
     val data = KtContainerData()
     var heatLevel by data
     var fuelLevel by data
@@ -44,9 +47,11 @@ class EngineBlockEntity :
     private var fuelLeft = 0
     private var prevFuelTotal = 0
     private var heat = 0
+    private var skipCost = false
 
     override fun tick() {
         if (!this.level!!.isClientSide) {
+            skipCost = !skipCost
 
             if (this.fuelLeft > 0) {
                 this.fuelLeft--
@@ -63,6 +68,11 @@ class EngineBlockEntity :
 
             fuelLevel = ((fuelLeft.toFloat() / prevFuelTotal.toFloat()) * 4.5f).toInt()
             heatLevel = (heat * 4) / MAX_HEAT
+
+            if (heat > 0 && ship != null && eurekaShipControl != null) {
+                eurekaShipControl!!.power += 2000000f
+                if (!skipCost) heat--
+            }
         }
     }
 

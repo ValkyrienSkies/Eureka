@@ -7,35 +7,37 @@ import org.valkyrienskies.core.api.ForcesApplier
 import org.valkyrienskies.core.api.Ship
 import org.valkyrienskies.core.api.ShipForcesInducer
 import org.valkyrienskies.core.api.ShipUser
+import org.valkyrienskies.core.api.Ticked
 import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.core.game.ships.PhysShip
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
-import kotlin.math.abs
 
 private const val STABILIZATION_TORQUE_CONSTANT = 15.0
-private const val TURN_SPEED = 3.0
+private const val STABILIZATION_FORCE_CONSTANT = 15.0
+private const val TURN_SPEED = 4.0
 private const val MAX_RISE_VEL = 2.5
 private const val IMPULSE_ALLEVIATION_RATE = 2.3
+private const val BASE_SPEED = 3.0
 
-class EurekaShipControl : ShipForcesInducer, ShipUser {
+class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
 
     @JsonIgnore
     override var ship: Ship? = null
     val controllingPlayer by shipValue<SeatedControllingPlayer>()
 
-    var maxSpeed = 20.0f
-    var alleviationTarget = Double.NaN
+    private var extraForce = 0.0
+    private var alleviationTarget = Double.NaN
 
-    override fun applyForces(forcesApplier: ForcesApplier, ship: PhysShip) {
-        val mass = ship.inertia.shipMass
-        val moiTensor = ship.inertia.momentOfInertiaTensor
+    override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
+        val mass = physShip.inertia.shipMass
+        val moiTensor = physShip.inertia.momentOfInertiaTensor
         val shipUp = Vector3d(0.0, 1.0, 0.0)
         val shipFront = Vector3d(0.0, 0.0, 1.0)
         val worldUp = Vector3d(0.0, 1.0, 0.0)
 
-        ship.rotation.transform(shipUp)
-        ship.rotation.transform(shipFront)
+        physShip.rotation.transform(shipUp)
+        physShip.rotation.transform(shipFront)
 
         run { // Stabilization
             val angleBetween = shipUp.angle(worldUp)
@@ -45,14 +47,14 @@ class EurekaShipControl : ShipForcesInducer, ShipUser {
                     stabilizationRotationAxisNormalized.mul(angleBetween, stabilizationRotationAxisNormalized)
                 // Only subtract the x/z components of omega. We still want to allow rotation along the Y-axis (yaw).
                 idealAngularAcceleration.sub(
-                    ship.omega.x(),
+                    physShip.omega.x(),
                     0.0,
-                    ship.omega.z()
+                    physShip.omega.z()
                 )
 
-                val stabilizationTorque = ship.rotation.transform(
+                val stabilizationTorque = physShip.rotation.transform(
                     moiTensor.transform(
-                        ship.rotation.transformInverse(
+                        physShip.rotation.transformInverse(
                             idealAngularAcceleration,
                             idealAngularAcceleration
                         )
@@ -64,42 +66,65 @@ class EurekaShipControl : ShipForcesInducer, ShipUser {
             }
         }
 
+        var linearStabilize = controllingPlayer == null
+
         controllingPlayer?.let { player ->
             // Player controlled rotation
             val rotationVector = Vector3d(
                 0.0,
                 if (player.leftImpulse != 0.0f)
-                    player.leftImpulse.toDouble() * TURN_SPEED
+                    (player.leftImpulse.toDouble() * TURN_SPEED)
                 else
-                    -ship.omega.y() * STABILIZATION_TORQUE_CONSTANT,
+                    -physShip.omega.y() * STABILIZATION_TORQUE_CONSTANT,
                 0.0
             )
-            ship.rotation.transform(
+
+            physShip.rotation.transform(
                 moiTensor.transform(
-                    ship.rotation.transformInverse(
+                    physShip.rotation.transformInverse(
                         rotationVector,
                         rotationVector
                     )
                 )
             )
+
             forcesApplier.applyInvariantTorque(rotationVector)
 
-            val idealForwardVel = player.seatInDirection.normal.toJOMLD()
-            ship.rotation.transform(idealForwardVel)
-            idealForwardVel.mul(player.forwardImpulse.toDouble() * maxSpeed)
-            idealForwardVel.sub(ship.velocity.x(), 0.0, ship.velocity.z())
-            idealForwardVel.mul(mass * 10)
+            // Player controlled forward and backward thrust
+            val forwardVector = player.seatInDirection.normal.toJOMLD()
+            forwardVector.mul(player.forwardImpulse.toDouble())
+            physShip.rotation.transform(forwardVector)
+            val idealForwardVel = Vector3d(forwardVector)
+            idealForwardVel.mul(BASE_SPEED)
+            val forwardVelInc = idealForwardVel.sub(physShip.velocity.x(), 0.0, physShip.velocity.z())
+            forwardVelInc.mul(mass * 10)
+            forwardVelInc.add(forwardVector.mul(extraForce))
 
-            forcesApplier.applyInvariantForce(idealForwardVel)
+            if (forwardVelInc.lengthSquared() < 0.1f) {
+                linearStabilize = true
+            }
 
-            if (abs(player.upImpulse) > 0.1)
-                alleviationTarget = ship.position.y() + (player.upImpulse * IMPULSE_ALLEVIATION_RATE)
+            forcesApplier.applyInvariantForce(forwardVelInc)
+
+            // Player controlled alleviation
+            if (player.upImpulse != 0.0f)
+                alleviationTarget = physShip.position.y() + (player.upImpulse * IMPULSE_ALLEVIATION_RATE)
+        }
+
+        // If player is null or if there is no linear impulse we will apply a linear force to stabilize the ship.
+        if (linearStabilize) {
+            val antiVel = Vector3d(physShip.velocity).negate()
+
+            if (antiVel.lengthSquared() > STABILIZATION_FORCE_CONSTANT * STABILIZATION_FORCE_CONSTANT)
+                antiVel.normalize().mul(STABILIZATION_FORCE_CONSTANT)
+
+            forcesApplier.applyInvariantForce(antiVel)
         }
 
         if (alleviationTarget.isFinite()) {
-            val diff = alleviationTarget - ship.position.y()
+            val diff = alleviationTarget - physShip.position.y()
 
-            val shipRiseVelo = ship.velocity.y()
+            val shipRiseVelo = physShip.velocity.y()
             val idealRiseVelo = clamp(diff, -MAX_RISE_VEL, MAX_RISE_VEL)
             val impulse = idealRiseVelo - shipRiseVelo
 
@@ -110,5 +135,12 @@ class EurekaShipControl : ShipForcesInducer, ShipUser {
             // so vel(t) = ship.velocity.y() + (myInput2*mass)/mass
             forcesApplier.applyInvariantForce(Vector3d(0.0, impulse * mass * 10, 0.0))
         }
+    }
+
+    var power = 0.0
+
+    override fun tick() {
+        extraForce = power
+        power = 0.0
     }
 }
