@@ -138,6 +138,7 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
     }
 
     var power = 0.0
+    var anchored = 0
 
     override fun tick() {
         extraForce = power

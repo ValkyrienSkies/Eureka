@@ -2,18 +2,24 @@ package org.valkyrienskies.eureka.block
 
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
+import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
+import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.world.level.material.Material
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
+import org.valkyrienskies.core.api.getAttachment
+import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
+import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
 object AnchorBlock :
     HorizontalDirectionalBlock(Properties.of(Material.METAL).strength(5.0f, 1200.0f).sound(SoundType.ANVIL)) {
@@ -28,12 +34,16 @@ object AnchorBlock :
     }
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
-        builder.add(FACING)
+        builder.add(FACING).add(BlockStateProperties.POWERED)
     }
 
     override fun getStateForPlacement(ctx: BlockPlaceContext): BlockState? {
         return defaultBlockState()
             .setValue(FACING, ctx.horizontalDirection.opposite)
+            .setValue(BlockStateProperties.POWERED, ctx.level.hasNeighborSignal(ctx.clickedPos).apply {
+                if (ctx.level.isClientSide) return@apply
+                updateAnchor(this, ctx.level as ServerLevel, ctx.clickedPos, true)
+            })
     }
 
     override fun getShape(
@@ -43,5 +53,32 @@ object AnchorBlock :
         collisionContext: CollisionContext
     ): VoxelShape {
         return ANCHOR_SHAPE[blockState.getValue(FACING)]
+    }
+
+    override fun neighborChanged(
+        state: BlockState,
+        level: Level,
+        pos: BlockPos,
+        block: Block,
+        fromPos: BlockPos,
+        isMoving: Boolean
+    ) {
+        if (level.isClientSide) return
+        level as ServerLevel
+
+        val bl = level.hasNeighborSignal(pos)
+        if (bl != state.getValue(BlockStateProperties.POWERED)) {
+            level.setBlock(pos, state.setValue(BlockStateProperties.POWERED, bl), 11)
+
+            updateAnchor(bl, level, pos)
+        }
+
+        super.neighborChanged(state, level, pos, block, fromPos, isMoving)
+    }
+
+    private fun updateAnchor(bl: Boolean, level: ServerLevel, pos: BlockPos, initial: Boolean = false) {
+        level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
+            it.anchored += if (bl) 1 else if (initial) 0 else -1
+        }
     }
 }
