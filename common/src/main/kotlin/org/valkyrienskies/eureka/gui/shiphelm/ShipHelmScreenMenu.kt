@@ -11,13 +11,20 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
 
     constructor(syncId: Int, playerInv: Inventory) : this(syncId, playerInv, null)
 
+    val assembled = blockEntity?.assembled ?: false
+
     override fun stillValid(player: Player): Boolean = true
 
     override fun clickMenuButton(player: Player, id: Int): Boolean {
         if (blockEntity == null) return false
 
-        if (id == 0 && !blockEntity.assembled && !player.level.isClientSide) {
-            blockEntity.onAssemble()
+        if (id == 0 && !assembled && !player.level.isClientSide) {
+            blockEntity.assemble()
+            return true
+        }
+
+        if (id == 1 && assembled && !player.level.isClientSide) {
+            blockEntity.align()
             return true
         }
 

@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.core.api.Ship
+import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.core.api.saveAttachment
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.block.ShipHelmBlock
@@ -68,7 +69,7 @@ class ShipHelmBlockEntity :
     }
 
     // Needs to get called server-side
-    fun onAssemble() {
+    fun assemble() {
         val level = level as ServerLevel
 
         // Check the block state before assembling to avoid creating an empty ship
@@ -80,6 +81,10 @@ class ShipHelmBlockEntity :
         val ship = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
         ship.saveAttachment(EurekaShipControl())
         ShipAssembler.fillShip(level, ship, blockPos)
+    }
+
+    fun align() {
+        ship?.getAttachment<EurekaShipControl>()?.align()
     }
 
     companion object {

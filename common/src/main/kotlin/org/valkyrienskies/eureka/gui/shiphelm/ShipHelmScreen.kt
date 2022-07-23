@@ -28,12 +28,12 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
             }
         )
         addButton(
-            ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, Component.nullToEmpty("Go Crazy"), font) {
+            ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, Component.nullToEmpty("Align"), font) {
                 minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 1)
             }
         )
         addButton(
-            ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, Component.nullToEmpty("Align"), font) {
+            ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, Component.nullToEmpty("Summon Gus"), font) {
                 minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 2)
             }
         )

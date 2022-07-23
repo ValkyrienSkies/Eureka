@@ -40,10 +40,13 @@ object AnchorBlock :
     override fun getStateForPlacement(ctx: BlockPlaceContext): BlockState? {
         return defaultBlockState()
             .setValue(FACING, ctx.horizontalDirection.opposite)
-            .setValue(BlockStateProperties.POWERED, ctx.level.hasNeighborSignal(ctx.clickedPos).apply {
-                if (ctx.level.isClientSide) return@apply
-                updateAnchor(this, ctx.level as ServerLevel, ctx.clickedPos, true)
-            })
+            .setValue(
+                BlockStateProperties.POWERED,
+                ctx.level.hasNeighborSignal(ctx.clickedPos).apply {
+                    if (ctx.level.isClientSide) return@apply
+                    updateAnchor(this, ctx.level as ServerLevel, ctx.clickedPos, true)
+                }
+            )
     }
 
     override fun getShape(

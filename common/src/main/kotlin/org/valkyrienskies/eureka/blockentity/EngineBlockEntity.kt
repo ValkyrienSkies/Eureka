@@ -94,6 +94,7 @@ class EngineBlockEntity :
         super.load(blockState, compoundTag)
     }
 
+    // region Container Stuff
     override fun clearContent() {
         fuel = ItemStack.EMPTY
     }
@@ -145,6 +146,7 @@ class EngineBlockEntity :
         index == 0 && AbstractFurnaceBlockEntity.isFuel(stack)
 
     override fun fillStackedContents(helper: StackedContents) = helper.accountStack(fuel)
+    // endregion Container Stuff
 
     companion object {
         val supplier = { EngineBlockEntity() }
