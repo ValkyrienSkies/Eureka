@@ -36,7 +36,8 @@ class EngineBlockEntity :
     private val eurekaShipControl by shipValue<EurekaShipControl>()
     val data = KtContainerData()
     var heatLevel by data
-    var fuelLevel by data
+    var fuelLeft by data
+    var fuelTotal by data
     private var fuel: ItemStack = ItemStack.EMPTY
 
     override fun createMenu(containerId: Int, inventory: Inventory): AbstractContainerMenu =
@@ -44,8 +45,6 @@ class EngineBlockEntity :
 
     override fun getDefaultName(): Component = Component.nullToEmpty("Ship Engine")
 
-    private var fuelLeft = 0
-    private var prevFuelTotal = 0
     private var heat = 0
     private var skipCost = false
 
@@ -60,13 +59,12 @@ class EngineBlockEntity :
                     this.heat++
                 }
             } else if (!fuel.isEmpty && this.heat < MAX_HEAT) {
-                prevFuelTotal = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
-                fuelLeft = prevFuelTotal
+                fuelTotal = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
+                fuelLeft = fuelTotal
                 removeItem(0, 1)
                 setChanged()
             }
 
-            fuelLevel = ((fuelLeft.toFloat() / prevFuelTotal.toFloat()) * 4.5f).toInt()
             heatLevel = (heat * 4) / MAX_HEAT
 
             if (heat > 0 && ship != null && eurekaShipControl != null) {
@@ -81,7 +79,7 @@ class EngineBlockEntity :
     override fun save(tag: CompoundTag): CompoundTag {
         tag.put("FuelSlot", fuel.save(CompoundTag()))
         tag.putInt("FuelLeft", fuelLeft)
-        tag.putInt("PrevFuelTotal", prevFuelTotal)
+        tag.putInt("PrevFuelTotal", fuelTotal)
         tag.putInt("Heat", heat)
         return super.save(tag)
     }
@@ -89,7 +87,7 @@ class EngineBlockEntity :
     override fun load(blockState: BlockState, compoundTag: CompoundTag) {
         fuel = ItemStack.of(compoundTag.getCompound("FuelSlot"))
         fuelLeft = compoundTag.getInt("FuelLeft")
-        prevFuelTotal = compoundTag.getInt("PrevFuelTotal")
+        fuelTotal = compoundTag.getInt("PrevFuelTotal")
         heat = compoundTag.getInt("Heat")
         super.load(blockState, compoundTag)
     }

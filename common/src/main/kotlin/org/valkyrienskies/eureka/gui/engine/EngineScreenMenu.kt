@@ -19,7 +19,8 @@ class EngineScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Engin
     private val container: Container = blockEntity ?: SimpleContainer(1)
     private val data = blockEntity?.data?.clone() ?: KtContainerData()
     var heatLevel by data
-    var fuelLevel by data
+    var fuelLeft by data
+    var fuelTotal by data
 
     init {
         // Add the fuel slot

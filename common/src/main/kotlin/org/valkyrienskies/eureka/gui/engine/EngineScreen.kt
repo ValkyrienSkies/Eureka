@@ -14,68 +14,85 @@ import org.valkyrienskies.eureka.EurekaMod
 class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: Component) :
     AbstractContainerScreen<EngineScreenMenu>(handler, playerInventory, text) {
 
+    // The texture is 512 so every coord is 2 pixels big
     override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f)
         minecraft!!.textureManager.bind(TEXTURE)
-        val x = (width - imageWidth) / 2
-        val y = (height - imageHeight) / 2
-        blit(matrixStack, x, y, 0, 0, imageWidth, imageHeight)
+        val x = (width - imageWidth) / 4
+        val y = (height - imageHeight) / 4
 
         menu as EngineScreenMenu
 
-        // Draw the coals
-        val coalState = menu.fuelLevel
-        if (coalState > 0) {
-            val xx = coalState - 1
-            blit(
-                matrixStack,
-                x + FIRE_HOLE_X,
-                y + FIRE_HOLE_Y,
-                COAL_X + (xx * FIRE_HOLE_SIZE),
-                COAL_Y,
-                FIRE_HOLE_SIZE,
-                FIRE_HOLE_SIZE
-            )
-        }
+        matrixStack.pushPose()
+        matrixStack.scale(2f, 2f, 2F)
+        // Draw the container background
+        val (containerX, containerY) = if (menu.heatLevel > 1)
+            Pair(HEATED_CONTAINER_X, HEATED_CONTAINER_Y)
+        else
+            Pair(CONTAINER_X, CONTAINER_Y)
 
-        // Draw the orangyness based on the heat
-        val heatState = menu.heatLevel
-        if (heatState > 0) {
-            val xx = heatState - 1
-            blit(
-                matrixStack,
-                x + FIRE_HOLE_X,
-                y + FIRE_HOLE_Y,
-                HEAT_X + (xx * FIRE_HOLE_SIZE),
-                HEAT_Y,
-                FIRE_HOLE_SIZE,
-                FIRE_HOLE_SIZE
-            )
-        } else {
-            blit(
-                matrixStack,
-                x + FIRE_HOLE_X,
-                y + FIRE_HOLE_Y,
-                GLASS_X,
-                GLASS_Y,
-                FIRE_HOLE_SIZE,
-                FIRE_HOLE_SIZE
-            )
-        }
+        blit(matrixStack, x + FIRE_HOLE_X, y + FIRE_HOLE_Y, containerX, containerY, FIRE_HOLE_WIDTH, FIRE_HOLE_HEIGHT)
+
+        // region COALS
+        // Draw the coal
+        // TODO
+        // endregion
+
+
+        // Draw the glass background
+        val (glassX, glassY) = if (menu.heatLevel > 3)
+            Pair(HEATED_GLASS_X, HEATED_GLASS_Y)
+        else
+            Pair(GLASS_X, GLASS_Y)
+
+        blit(matrixStack, x + FIRE_HOLE_X, y + FIRE_HOLE_Y, glassX, glassY, FIRE_HOLE_WIDTH, FIRE_HOLE_HEIGHT)
+
+        // Draw the inventory
+        blit(matrixStack, x, y, 0, 0, imageWidth / 2, imageHeight / 2)
+        matrixStack.popPose()
+    }
+
+    override fun renderLabels(poseStack: PoseStack?, mouseX: Int, mouseY: Int) {
+        // super.renderLabels(poseStack, mouseX, mouseY)
     }
 
     companion object { // TEXTURE DATA
         internal val TEXTURE = ResourceLocation(EurekaMod.MOD_ID, "textures/gui/engine.png")
 
-        private const val FIRE_HOLE_X = 78
-        private const val FIRE_HOLE_Y = 29
-        private const val FIRE_HOLE_SIZE = 20
+        private const val FIRE_HOLE_X = 10 / 2
+        private const val FIRE_HOLE_Y = 8 / 2
 
-        private const val HEAT_X = 176
-        private const val HEAT_Y = 0
-        private const val COAL_X = 176
-        private const val COAL_Y = 20
-        private const val GLASS_X = 176
-        private const val GLASS_Y = 40
+        private const val FIRE_HOLE_WIDTH = 156 / 2
+        private const val FIRE_HOLE_HEIGHT = 68 / 2
+
+        private const val HEATED_GLASS_X = 10 / 2
+        private const val HEATED_GLASS_Y = 172 / 2
+        private const val GLASS_X = 10 / 2
+        private const val GLASS_Y = 244 / 2
+
+        private const val HEATED_CONTAINER_X = 10 / 2
+        private const val HEATED_CONTAINER_Y = 390 / 2
+        private const val CONTAINER_X = 10 / 2
+        private const val CONTAINER_Y = 318 / 2
+
+        private const val COAL_4_MULT = 1.5f
+        private const val COAL_3_MULT = 1.2f
+        private const val COAL_2_MULT = 1.1f
+        private const val COAL_1_MULT = 1f
+
+        // TODO fill in actual pixel coords
+        private const val COAL_4_X = 10 / 2
+        private const val COAL_4_Y = 10 / 2
+        private const val COAL_3_X = 10 / 2
+        private const val COAL_3_Y = 10 / 2
+        private const val COAL_2_X = 10 / 2
+        private const val COAL_2_Y = 10 / 2
+        private const val COAL_1_X = 10 / 2
+        private const val COAL_1_Y = 10 / 2
+        private const val COAL_WIDTH = 100 / 2
+        private const val COAL_4_HEIGHT = 50 / 2
+        private const val COAL_3_HEIGHT = 50 / 2
+        private const val COAL_2_HEIGHT = 50 / 2
+        private const val COAL_1_HEIGHT = 50 / 2
     }
 }
