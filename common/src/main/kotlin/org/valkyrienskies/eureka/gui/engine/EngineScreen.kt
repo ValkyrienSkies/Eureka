@@ -18,24 +18,36 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
     override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f)
         minecraft!!.textureManager.bind(TEXTURE)
-        val x = (width - imageWidth) / 4
-        val y = (height - imageHeight) / 4
+        val xP = (width - imageWidth) / 2
+        val yP = (height - imageHeight) / 2
 
         menu as EngineScreenMenu
 
         matrixStack.pushPose()
+        // This matrix magic is bcs the texture is 512x512 and is 256x256 mc classic (mojank)
+        matrixStack.translate(xP.toDouble(), yP.toDouble(), 0.0)
         matrixStack.scale(2f, 2f, 2F)
+
         // Draw the container background
         val (containerX, containerY) = if (menu.heatLevel > 1)
             Pair(HEATED_CONTAINER_X, HEATED_CONTAINER_Y)
         else
             Pair(CONTAINER_X, CONTAINER_Y)
 
-        blit(matrixStack, x + FIRE_HOLE_X, y + FIRE_HOLE_Y, containerX, containerY, FIRE_HOLE_WIDTH, FIRE_HOLE_HEIGHT)
+        blit(matrixStack, FIRE_HOLE_X, FIRE_HOLE_Y, containerX, containerY, FIRE_HOLE_WIDTH, FIRE_HOLE_HEIGHT)
 
         // region COALS
         // Draw the coal
-        // TODO
+        fun coal(xC: Int, yC: Int, heightC: Int, mult: Float) {
+            val drop = (0 * mult).toInt()
+            val calcY = FIRE_HOLE_HEIGHT - heightC + drop
+            blit(matrixStack, FIRE_HOLE_X, FIRE_HOLE_Y + calcY, xC, yC, COAL_WIDTH, heightC)
+        }
+
+        coal(COAL_4_X, COAL_4_Y, COAL_4_HEIGHT, COAL_4_MULT)
+        coal(COAL_3_X, COAL_3_Y, COAL_3_HEIGHT, COAL_3_MULT)
+        coal(COAL_2_X, COAL_2_Y, COAL_2_HEIGHT, COAL_2_MULT)
+        coal(COAL_1_X, COAL_1_Y, COAL_1_HEIGHT, COAL_1_MULT)
         // endregion
 
         // Draw the glass background
@@ -44,10 +56,10 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         else
             Pair(GLASS_X, GLASS_Y)
 
-        blit(matrixStack, x + FIRE_HOLE_X, y + FIRE_HOLE_Y, glassX, glassY, FIRE_HOLE_WIDTH, FIRE_HOLE_HEIGHT)
+        blit(matrixStack, FIRE_HOLE_X, FIRE_HOLE_Y, glassX, glassY, FIRE_HOLE_WIDTH, FIRE_HOLE_HEIGHT)
 
         // Draw the inventory
-        blit(matrixStack, x, y, 0, 0, imageWidth / 2, imageHeight / 2)
+        blit(matrixStack, 0, 0, 0, 0, imageWidth / 2, imageHeight / 2)
         matrixStack.popPose()
     }
 
@@ -80,18 +92,18 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         private const val COAL_1_MULT = 1f
 
         // TODO fill in actual pixel coords
-        private const val COAL_4_X = 10 / 2
-        private const val COAL_4_Y = 10 / 2
-        private const val COAL_3_X = 10 / 2
-        private const val COAL_3_Y = 10 / 2
-        private const val COAL_2_X = 10 / 2
-        private const val COAL_2_Y = 10 / 2
-        private const val COAL_1_X = 10 / 2
-        private const val COAL_1_Y = 10 / 2
-        private const val COAL_WIDTH = 100 / 2
-        private const val COAL_4_HEIGHT = 50 / 2
-        private const val COAL_3_HEIGHT = 50 / 2
-        private const val COAL_2_HEIGHT = 50 / 2
-        private const val COAL_1_HEIGHT = 50 / 2
+        private const val COAL_4_X = 184 / 2
+        private const val COAL_4_Y = 18 / 2
+        private const val COAL_3_X = 184 / 2
+        private const val COAL_3_Y = 80 / 2
+        private const val COAL_2_X = 184 / 2
+        private const val COAL_2_Y = 128 / 2
+        private const val COAL_1_X = 184 / 2
+        private const val COAL_1_Y = 166 / 2
+        private const val COAL_WIDTH = 158 / 2
+        private const val COAL_4_HEIGHT = 60 / 2
+        private const val COAL_3_HEIGHT = 44 / 2
+        private const val COAL_2_HEIGHT = 34 / 2
+        private const val COAL_1_HEIGHT = 26 / 2
     }
 }
