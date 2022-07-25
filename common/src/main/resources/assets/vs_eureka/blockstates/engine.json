@@ -1,18 +1,78 @@
 {
   "variants": {
-    "facing=north": {
-      "model": "vs_eureka:block/engine"
-    },
-    "facing=east": {
+    "facing=east,heat=0": {
       "model": "vs_eureka:block/engine",
       "y": 90
     },
-    "facing=south": {
+    "facing=east,heat=1": {
+      "model": "vs_eureka:block/engine_on1",
+      "y": 90
+    },
+    "facing=east,heat=2": {
+      "model": "vs_eureka:block/engine_on2",
+      "y": 90
+    },
+    "facing=east,heat=3": {
+      "model": "vs_eureka:block/engine_on3",
+      "y": 90
+    },
+    "facing=east,heat=4": {
+      "model": "vs_eureka:block/engine_on4",
+      "y": 90
+    },
+    "facing=north,heat=0": {
+      "model": "vs_eureka:block/engine"
+    },
+    "facing=north,heat=1": {
+      "model": "vs_eureka:block/engine_on1"
+    },
+    "facing=north,heat=2": {
+      "model": "vs_eureka:block/engine_on2"
+    },
+    "facing=north,heat=3": {
+      "model": "vs_eureka:block/engine_on3"
+    },
+    "facing=north,heat=4": {
+      "model": "vs_eureka:block/engine_on4"
+    },
+    "facing=south,heat=0": {
       "model": "vs_eureka:block/engine",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,heat=1": {
+      "model": "vs_eureka:block/engine_on1",
+      "y": 180
+    },
+    "facing=south,heat=2": {
+      "model": "vs_eureka:block/engine_on2",
+      "y": 180
+    },
+    "facing=south,heat=3": {
+      "model": "vs_eureka:block/engine_on3",
+      "y": 180
+    },
+    "facing=south,heat=4": {
+      "model": "vs_eureka:block/engine_on4",
+      "y": 180
+    },
+    "facing=west,heat=0": {
       "model": "vs_eureka:block/engine",
+      "y": 270
+    },
+    "facing=west,heat=1": {
+      "model": "vs_eureka:block/engine_on1",
+      "y": 270
+    },
+    "facing=west,heat=2": {
+      "model": "vs_eureka:block/engine_on2",
+      "y": 270
+    },
+    "facing=west,heat=3": {
+      "model": "vs_eureka:block/engine_on3",
+      "y": 270
+    },
+    "facing=west,heat=4": {
+      "model": "vs_eureka:block/engine_on4",
       "y": 270
     }
   }

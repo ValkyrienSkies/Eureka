@@ -38,7 +38,6 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         // TODO
         // endregion
 
-
         // Draw the glass background
         val (glassX, glassY) = if (menu.heatLevel > 3)
             Pair(HEATED_GLASS_X, HEATED_GLASS_Y)

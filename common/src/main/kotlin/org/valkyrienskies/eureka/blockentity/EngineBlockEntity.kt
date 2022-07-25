@@ -18,10 +18,12 @@ import net.minecraft.world.level.block.state.BlockState
 import org.valkyrienskies.core.api.Ship
 import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.eureka.EurekaBlockEntities
+import org.valkyrienskies.eureka.EurekaProperties.HEAT
 import org.valkyrienskies.eureka.gui.engine.EngineScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.KtContainerData
 import org.valkyrienskies.mod.api.ShipBlockEntity
+import kotlin.math.ceil
 
 const val MAX_HEAT = 2000
 
@@ -65,7 +67,11 @@ class EngineBlockEntity :
                 setChanged()
             }
 
-            heatLevel = (heat * 4) / MAX_HEAT
+            val prevHeatLevel = heatLevel
+            heatLevel = ceil(heat * 4f / MAX_HEAT).toInt()
+            if (prevHeatLevel != heatLevel) {
+                level!!.setBlock(blockPos, this.blockState.setValue(HEAT, heatLevel), 11)
+            }
 
             if (heat > 0 && ship != null && eurekaShipControl != null) {
                 eurekaShipControl!!.power += 2000000f

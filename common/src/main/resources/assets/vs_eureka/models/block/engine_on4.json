@@ -1,0 +1,6 @@
+{
+  "parent": "vs_eureka:block/engine",
+  "textures": {
+    "front": "vs_eureka:block/engine_front_on_4"
+  }
+}
