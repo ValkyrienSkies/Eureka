@@ -38,16 +38,19 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
 
         // region COALS
         // Draw the coal
-        fun coal(xC: Int, yC: Int, heightC: Int, mult: Float) {
-            val drop = (0 * mult).toInt()
-            val calcY = FIRE_HOLE_HEIGHT - heightC + drop
-            blit(matrixStack, FIRE_HOLE_X, FIRE_HOLE_Y + calcY, xC, yC, COAL_WIDTH, heightC)
-        }
+        if (menu.fuelLeft != 0) {
+            val t = COAL_MULTI_MAX - ((menu.fuelLeft.toFloat() / menu.fuelTotal.toFloat()) * COAL_MULTI_MAX)
+            fun coal(xC: Int, yC: Int, heightC: Int, mult: Float) {
+                val drop = (t * mult).toInt()
+                val calcY = FIRE_HOLE_HEIGHT - heightC + drop
+                blit(matrixStack, FIRE_HOLE_X, FIRE_HOLE_Y + calcY, xC, yC, COAL_WIDTH, heightC)
+            }
 
-        coal(COAL_4_X, COAL_4_Y, COAL_4_HEIGHT, COAL_4_MULT)
-        coal(COAL_3_X, COAL_3_Y, COAL_3_HEIGHT, COAL_3_MULT)
-        coal(COAL_2_X, COAL_2_Y, COAL_2_HEIGHT, COAL_2_MULT)
-        coal(COAL_1_X, COAL_1_Y, COAL_1_HEIGHT, COAL_1_MULT)
+            coal(COAL_4_X, COAL_4_Y, COAL_4_HEIGHT, COAL_4_MULT)
+            coal(COAL_3_X, COAL_3_Y, COAL_3_HEIGHT, COAL_3_MULT)
+            coal(COAL_2_X, COAL_2_Y, COAL_2_HEIGHT, COAL_2_MULT)
+            coal(COAL_1_X, COAL_1_Y, COAL_1_HEIGHT, COAL_1_MULT)
+        }
         // endregion
 
         // Draw the glass background
@@ -86,11 +89,6 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         private const val CONTAINER_X = 10 / 2
         private const val CONTAINER_Y = 318 / 2
 
-        private const val COAL_4_MULT = 1.5f
-        private const val COAL_3_MULT = 1.2f
-        private const val COAL_2_MULT = 1.1f
-        private const val COAL_1_MULT = 1f
-
         // TODO fill in actual pixel coords
         private const val COAL_4_X = 184 / 2
         private const val COAL_4_Y = 18 / 2
@@ -105,5 +103,11 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         private const val COAL_3_HEIGHT = 44 / 2
         private const val COAL_2_HEIGHT = 34 / 2
         private const val COAL_1_HEIGHT = 26 / 2
+
+        private const val COAL_MULTI_MAX = COAL_1_HEIGHT.toFloat()
+        private const val COAL_4_MULT = COAL_4_HEIGHT.toFloat() / COAL_MULTI_MAX
+        private const val COAL_3_MULT = COAL_3_HEIGHT.toFloat() / COAL_MULTI_MAX
+        private const val COAL_2_MULT = COAL_2_HEIGHT.toFloat() / COAL_MULTI_MAX
+        private const val COAL_1_MULT = 1f
     }
 }
