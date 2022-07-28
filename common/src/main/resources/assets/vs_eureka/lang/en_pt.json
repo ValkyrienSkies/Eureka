@@ -2,7 +2,7 @@
   "itemGroup.vs_eureka.eureka_tab": "VS Eureka",
   "block.vs_eureka.ship_helm": "Ship Helm",
   "block.vs_eureka.anchor": "Anchor",
-  "block.vs_eureka.engine": "Ship Engine",
-  "block.vs_eureka.balloon": "Balloon",
-  "block.vs_eureka.floater": "Floater"
+  "block.vs_eureka.engine": "Oven Sail",
+  "block.vs_eureka.balloon": "Dutchman's Sail",
+  "block.vs_eureka.floater": "Float'r"
 }
