@@ -53,12 +53,18 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
             // value between 0 and 3 (inclusive) to horizontal direction
             val alignTo = Direction.from2DDataValue(floor((angle / (Math.PI / 2.0)) + 0.5).toInt())
 
-            val linearDiff = Vector3d().sub(physShip.position.floor(Vector3d()))
+            val linearDiff = Vector3d(physShip.position)
+                .sub(
+                    Vector3d(physShip.position)
+                        .add(0.5, 0.5, 0.5)
+                        .floor()
+                        .add(0.5, 0.5, 0.0)
+                )
 
             // Were gonna use a direction as sole input, cus this would work well with dissasembly
             val alignFront = alignTo.normal.toJOMLD()
             val angleAlign = shipFront.angle(alignFront)
-            if (angleAlign < 0.001 && linearDiff.lengthSquared() < 0.001)
+            if (angleAlign < 0.01 && linearDiff.lengthSquared() < 0.1)
                 aligning--
             else {
                 // Torque
@@ -179,7 +185,12 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
         }
 
         // region If player is null or if there is no linear impulse we will apply a linear force to stabilize the ship.
-        // TODO see region
+        if (linearStabilize) {
+            val idealVelocity = Vector3d()
+            idealVelocity.sub(physShip.velocity.x(), 0.0, physShip.velocity.z())
+            idealVelocity.mul(mass * 10)
+            forcesApplier.applyInvariantForce(idealVelocity)
+        }
         // endregion
 
         // region Alleviation
