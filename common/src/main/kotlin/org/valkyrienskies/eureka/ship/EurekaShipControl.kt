@@ -31,6 +31,7 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
     private var extraForce = 0.0
     private var alleviationTarget = Double.NaN
     private var aligning = 0 // tries to align the ship in this amount of physticks
+    private var cruiseSpeed = Double.NaN
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
         val mass = physShip.inertia.shipMass
@@ -212,7 +213,6 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
     }
 
     var power = 0.0
-    var anchored = 0
 
     override fun tick() {
         extraForce = power
@@ -223,4 +223,8 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
         if (aligning == 0)
             aligning += 60
     }
+
+    var anchors = 0 // Amount of anchors
+    var anchorsActive = 0 // Anchors that are active
+    var balloons = 0 // Amount of balloons
 }

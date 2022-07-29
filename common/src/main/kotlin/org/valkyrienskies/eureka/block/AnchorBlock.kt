@@ -44,7 +44,7 @@ object AnchorBlock :
                 BlockStateProperties.POWERED,
                 ctx.level.hasNeighborSignal(ctx.clickedPos).apply {
                     if (ctx.level.isClientSide) return@apply
-                    updateAnchor(this, ctx.level as ServerLevel, ctx.clickedPos, true)
+                    updateAnchor(this, false, ctx.level as ServerLevel, ctx.clickedPos)
                 }
             )
     }
@@ -70,18 +70,43 @@ object AnchorBlock :
         level as ServerLevel
 
         val bl = level.hasNeighborSignal(pos)
-        if (bl != state.getValue(BlockStateProperties.POWERED)) {
+        val prevBl = state.getValue(BlockStateProperties.POWERED)
+        if (bl != prevBl) {
             level.setBlock(pos, state.setValue(BlockStateProperties.POWERED, bl), 11)
 
-            updateAnchor(bl, level, pos)
+            updateAnchor(bl, prevBl, level, pos)
         }
 
         super.neighborChanged(state, level, pos, block, fromPos, isMoving)
     }
 
-    private fun updateAnchor(bl: Boolean, level: ServerLevel, pos: BlockPos, initial: Boolean = false) {
+    private fun updateAnchor(bl: Boolean, prevBl: Boolean, level: ServerLevel, pos: BlockPos) {
+        if (bl == prevBl) return
+
         level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.anchored += if (bl) 1 else if (initial) 0 else -1
+            it.anchorsActive += if (bl) 1 else -1
+        }
+    }
+
+    override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
+        super.onPlace(state, level, pos, oldState, isMoving)
+
+        if (level.isClientSide) return
+        level as ServerLevel
+
+        level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
+            it.anchors += 1
+        }
+    }
+
+    override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
+        super.onRemove(state, level, pos, newState, isMoving)
+
+        if (level.isClientSide) return
+        level as ServerLevel
+
+        level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
+            it.anchors -= 1
         }
     }
 }
