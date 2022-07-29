@@ -1,7 +1,6 @@
 package org.valkyrienskies.eureka.ship
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import net.minecraft.core.Direction
 import org.joml.Math.clamp
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ForcesApplier
@@ -13,10 +12,7 @@ import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.core.game.ships.PhysShip
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
-import kotlin.math.floor
 
-private const val STABILIZATION_TORQUE_CONSTANT = 15.0
-private const val STABILIZATION_FORCE_CONSTANT = 15.0
 private const val TURN_SPEED = 4.0
 private const val MAX_RISE_VEL = 2.5
 private const val IMPULSE_ALLEVIATION_RATE = 2.3
@@ -45,8 +41,19 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
         physShip.rotation.transform(shipUp)
         physShip.rotation.transform(shipFront)
 
-        // region Aligning
+        // Revisiting eureka control code.
+        // [x] Move torque stabilization code
+        // [ ] Move linear stabilization code
+        // [x] Revisit player controlled torque
+        // [ ] Revisit player controlled linear force
+        // [ ] Anchor freezing
+        // [ ] Rewrite Alignment code
+        // [ ] Balloon limiter
+        // [ ] Add Cruise code
 
+
+        // region Aligning
+        /*
         if (aligning > 0) {
 
             val angle = shipFront.angle(worldFront)
@@ -96,48 +103,12 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
                 forcesApplier.applyInvariantForce(idealVelocity)
             }
         }
+        */
 
         // endregion
 
         // region Stabilization
-        run {
-            val angleBetween = shipUp.angle(worldUp)
-            val idealAngularAcceleration = Vector3d()
-            if (angleBetween > .01) {
-                val stabilizationRotationAxisNormalized = shipUp.cross(worldUp, Vector3d()).normalize()
-                idealAngularAcceleration.add(
-                    stabilizationRotationAxisNormalized.mul(
-                        angleBetween,
-                        stabilizationRotationAxisNormalized
-                    )
-                )
-                // Only subtract the x/z components of omega. We still want to allow rotation along the Y-axis (yaw).
-                idealAngularAcceleration.sub(
-                    physShip.omega.x(),
-                    0.0,
-                    physShip.omega.z()
-                )
-            } else if (controllingPlayer == null) {
-                // When no player stabilize omega
-                idealAngularAcceleration.sub(
-                    physShip.omega.x(),
-                    physShip.omega.y(),
-                    physShip.omega.z()
-                )
-            }
-
-            val stabilizationTorque = physShip.rotation.transform(
-                moiTensor.transform(
-                    physShip.rotation.transformInverse(
-                        idealAngularAcceleration,
-                        idealAngularAcceleration
-                    )
-                )
-            )
-            // stabilizationTorque.mul(1.0 / 60.0)
-            stabilizationTorque.mul(STABILIZATION_TORQUE_CONSTANT)
-            forcesApplier.applyInvariantTorque(stabilizationTorque)
-        }
+        stabilize(physShip, forcesApplier, linearStabilize, controllingPlayer == null)
         // endregion
 
         controllingPlayer?.let { player ->
@@ -147,9 +118,11 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
                 if (player.leftImpulse != 0.0f)
                     (player.leftImpulse.toDouble() * TURN_SPEED)
                 else
-                    -physShip.omega.y() * STABILIZATION_TORQUE_CONSTANT,
+                    -physShip.omega.y() * TURN_SPEED,
                 0.0
             )
+
+            rotationVector.sub(0.0, physShip.omega.y(), 0.0)
 
             physShip.rotation.transform(
                 moiTensor.transform(
