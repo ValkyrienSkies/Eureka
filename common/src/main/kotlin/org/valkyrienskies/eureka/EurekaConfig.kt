@@ -22,5 +22,17 @@ object EurekaConfig {
 
         // The strength used when trying to level the ship
         var stabilizationTorqueConstant = 15.0
+
+        // Blacklist of blocks that don't get added for ship building
+        var blockBlacklist = setOf(
+            "vs_eureka:ship_helm",
+            "minecraft:dirt",
+            "minecraft:grass_block",
+            "minecraft:stone",
+            "minecraft:bedrock",
+            "minecraft:sand",
+            "minecraft:gravel",
+            "minecraft:air"
+        )
     }
 }

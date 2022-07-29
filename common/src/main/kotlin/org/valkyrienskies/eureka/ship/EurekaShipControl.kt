@@ -27,6 +27,7 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
     private var aligning = 0 // tries to align the ship in this amount of physticks
     private var cruiseSpeed = Double.NaN
     private val anchored get() = anchorsActive > 0
+    private var wasAnchored = false
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
         val mass = physShip.inertia.shipMass
@@ -160,15 +161,12 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
                 forcesApplier.applyInvariantForce(Vector3d(0.0, impulse * mass * 10, 0.0))
             }
             // endregion
-        } else {
-            // Anchor freezing
-            val antiVelocity = Vector3d(physShip.velocity).negate()
-            antiVelocity.mul(mass * 10)
-            antiVelocity.add(0.0, mass * 10, 0.0) // Add zero gravity
-            forcesApplier.applyInvariantForce(antiVelocity)
-
-            stabilize(physShip, forcesApplier, linear = false, yaw = true)
+        } else if (wasAnchored != anchored) {
+            // forcesApplier.setStatic(anchored)
         }
+
+        // Drag
+        forcesApplier.applyInvariantForce(Vector3d(physShip.velocity.y()).mul(-mass))
     }
 
     var power = 0.0

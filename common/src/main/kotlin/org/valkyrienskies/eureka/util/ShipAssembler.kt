@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.Blocks
 import org.joml.Vector3i
 import org.valkyrienskies.core.api.Ship
 import org.valkyrienskies.core.game.ships.ShipData
+import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.common.util.relocateBlock
 import org.valkyrienskies.mod.common.util.toBlockPos
 
@@ -37,7 +38,7 @@ object ShipAssembler {
         var blockState = level.getBlockState(pos)
         var depth = 0
 
-        while (!BLOCK_BLACKLIST.contains(Registry.BLOCK.getKey(blockState.block).toString())) {
+        while (!EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(blockState.block).toString())) {
             level.relocateBlock(pos, shipPos, ship)
             depth++
 
