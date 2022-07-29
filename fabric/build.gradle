@@ -23,6 +23,11 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
     modImplementation("net.fabricmc:fabric-language-kotlin:1.7.1+kotlin.1.6.10")
+
+    // Mod menu
+    modImplementation("com.terraformersmc:modmenu:1.16.23")
+    modImplementation("me.shedaniel.cloth:cloth-config:4.14.64")
+
     // Remove the next line if you don't want to depend on the API
     modApi "me.shedaniel:architectury-fabric:${rootProject.architectury_version}"
     modApi("org.valkyrienskies:valkyrienskies-116-fabric:${rootProject.vs2_version}")

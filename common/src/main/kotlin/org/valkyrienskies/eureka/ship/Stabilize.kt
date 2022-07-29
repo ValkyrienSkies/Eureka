@@ -3,13 +3,12 @@ package org.valkyrienskies.eureka.ship
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ForcesApplier
 import org.valkyrienskies.core.game.ships.PhysShip
-
-private const val STABILIZATION_TORQUE_CONSTANT = 15.0
-private const val STABILIZATION_FORCE_CONSTANT = 15.0
+import org.valkyrienskies.eureka.EurekaConfig
 
 fun stabilize(ship: PhysShip, forces: ForcesApplier, linear: Boolean, yaw: Boolean) {
     val shipUp = Vector3d(0.0, 1.0, 0.0)
     val worldUp = Vector3d(0.0, 1.0, 0.0)
+    ship.rotation.transform(shipUp)
 
     val angleBetween = shipUp.angle(worldUp)
     val idealAngularAcceleration = Vector3d()
@@ -41,6 +40,12 @@ fun stabilize(ship: PhysShip, forces: ForcesApplier, linear: Boolean, yaw: Boole
         )
     )
 
-    stabilizationTorque.mul(STABILIZATION_TORQUE_CONSTANT)
+    stabilizationTorque.mul(EurekaConfig.SERVER.stabilizationTorqueConstant)
     forces.applyInvariantTorque(stabilizationTorque)
+
+    if (linear) {
+        val idealVelocity = Vector3d(ship.velocity).negate()
+        idealVelocity.mul(ship.inertia.shipMass * 10)
+        forces.applyInvariantForce(idealVelocity)
+    }
 }

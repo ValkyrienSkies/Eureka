@@ -22,6 +22,9 @@
     ],
     "client": [
       "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}Client"
+    ],
+    "modmenu": [
+      "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}ModMenu"
     ]
   },
   "mixins": [

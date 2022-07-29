@@ -1,5 +1,6 @@
 package org.valkyrienskies.eureka.fabric;
 
+import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,5 +20,13 @@ public class EurekaModFabric implements ModInitializer {
         public void onInitializeClient() {
             EurekaMod.initClient();
         }
+    }
+
+    public static class ModMenu implements ModMenuApi {
+        /* TODO
+        @Override
+        public ConfigScreenFactory<?> getModConfigScreenFactory() {
+            return (parent) -> VSConfig
+        }*/
     }
 }
