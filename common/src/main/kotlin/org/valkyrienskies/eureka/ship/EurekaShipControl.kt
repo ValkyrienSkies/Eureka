@@ -162,7 +162,7 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
             }
             // endregion
         } else if (wasAnchored != anchored) {
-            // forcesApplier.setStatic(anchored)
+            forcesApplier.setStatic(anchored)
         }
 
         // Drag
