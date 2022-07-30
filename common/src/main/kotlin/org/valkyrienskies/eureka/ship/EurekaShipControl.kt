@@ -48,10 +48,7 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
         /*
         if (aligning > 0) {
 
-            val angle = shipFront.angle(worldFront)
 
-            // value between 0 and 3 (inclusive) to horizontal direction
-            val alignTo = Direction.from2DDataValue(floor((angle / (Math.PI / 2.0)) + 0.5).toInt())
 
             val linearDiff = Vector3d(physShip.position)
                 .sub(
@@ -68,22 +65,7 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
                 aligning--
             else {
                 // Torque
-                val idealAlignAccel =
-                    shipFront.cross(alignFront, alignFront).normalize().mul(angleAlign, alignFront)
 
-                idealAlignAccel.sub(physShip.omega)
-
-                val alignTorque = physShip.rotation.transform(
-                    moiTensor.transform(
-                        physShip.rotation.transformInverse(
-                            idealAlignAccel,
-                            idealAlignAccel
-                        )
-                    )
-                )
-
-                alignTorque.mul(STABILIZATION_TORQUE_CONSTANT)
-                forcesApplier.applyInvariantTorque(alignTorque)
 
                 // Linear
                 linearStabilize = false
@@ -100,9 +82,11 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
         // endregion
 
         if (!anchored) {
-            var linearStabilize = controllingPlayer == null
+            if (aligning > 0)
+                if (alignShip(physShip, forcesApplier, ship!!))
+                    aligning--
 
-            stabilize(physShip, forcesApplier, linearStabilize, controllingPlayer == null)
+            stabilize(physShip, forcesApplier, controllingPlayer == null && aligning == 0, controllingPlayer == null)
 
             controllingPlayer?.let { player ->
                 // region Player controlled rotation
@@ -139,9 +123,7 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
                 forwardVelInc.mul(mass * 10)
                 forwardVelInc.add(forwardVector.mul(extraForce))
 
-                if (forwardVelInc.lengthSquared() < 0.1f) {
-                    linearStabilize = true
-                } else forcesApplier.applyInvariantForce(forwardVelInc)
+                forcesApplier.applyInvariantForce(forwardVelInc)
                 // endregion
 
                 // Player controlled alleviation

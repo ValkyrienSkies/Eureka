@@ -25,6 +25,7 @@ import org.valkyrienskies.mod.api.ShipBlockEntity
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.entity.ShipMountingEntity
+import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOML
@@ -32,7 +33,8 @@ import org.valkyrienskies.mod.common.util.toJOML
 class ShipHelmBlockEntity :
     BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider, ShipBlockEntity {
 
-    override var ship: Ship? = null
+    override var ship: Ship? = null // TODO ship is not being set in vs2?
+        get() = field ?: (level as ServerLevel).getShipObjectManagingPos(this.blockPos)
     val assembled get() = ship != null
 
     override fun createMenu(id: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
