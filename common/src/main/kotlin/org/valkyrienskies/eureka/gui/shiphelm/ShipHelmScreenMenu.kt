@@ -20,7 +20,7 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, var blockEntity: Shi
 
         if (id == 0 && !assembled && !player.level.isClientSide) {
             blockEntity = blockEntity!!.assemble() ?: throw IllegalStateException()
-            blockEntity!!.sit(player, true)
+            // player.teleportTo(player.x, player.y + 3, player.z)
             return true
         }
 
