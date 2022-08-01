@@ -133,8 +133,13 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
 
                 // region Player controlled forward and backward thrust
                 val forwardVector = player.seatInDirection.normal.toJOMLD()
+                SegmentUtils.transformDirectionWithoutScale(
+                    physShip.poseVel,
+                    segment,
+                    forwardVector,
+                    forwardVector
+                )
                 forwardVector.mul(player.forwardImpulse.toDouble())
-                segment.transformDirectionWithoutScale(forwardVector)
                 val idealForwardVel = Vector3d(forwardVector)
                 idealForwardVel.mul(EurekaConfig.SERVER.baseSpeed)
                 val forwardVelInc = idealForwardVel.sub(vel.x(), 0.0, vel.z())
