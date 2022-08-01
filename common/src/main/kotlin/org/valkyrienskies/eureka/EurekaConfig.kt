@@ -23,6 +23,13 @@ object EurekaConfig {
         // The strength used when trying to level the ship
         var stabilizationTorqueConstant = 15.0
 
+        // Max anti-velocity used when trying to stop the ship
+        var linearStabilizeMaxAntiVelocity = 1.0
+
+        // Anti-velocity mass relevance when stopping the ship
+        // Max 10.0 (means no mass irrelevance)
+        var antiVelocityMassRelevance = 0.8
+
         // Blacklist of blocks that don't get added for ship building
         var blockBlacklist = setOf(
             "vs_eureka:ship_helm",
