@@ -42,10 +42,7 @@ object AnchorBlock :
             .setValue(FACING, ctx.horizontalDirection.opposite)
             .setValue(
                 BlockStateProperties.POWERED,
-                ctx.level.hasNeighborSignal(ctx.clickedPos).apply {
-                    if (ctx.level.isClientSide) return@apply
-                    updateAnchor(this, false, ctx.level as ServerLevel, ctx.clickedPos)
-                }
+                ctx.level.hasNeighborSignal(ctx.clickedPos)
             )
     }
 
@@ -94,8 +91,11 @@ object AnchorBlock :
         if (level.isClientSide) return
         level as ServerLevel
 
+        val bl = state.getValue(BlockStateProperties.POWERED)
+
         level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.anchors += 1
+            it.anchorsActive += if (bl) 1 else 0
         }
     }
 
@@ -105,8 +105,11 @@ object AnchorBlock :
         if (level.isClientSide) return
         level as ServerLevel
 
+        val bl = state.getValue(BlockStateProperties.POWERED)
+
         level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.anchors -= 1
+            it.anchorsActive -= if (bl) 1 else 0
         }
     }
 }
