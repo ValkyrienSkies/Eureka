@@ -10,6 +10,7 @@ import org.valkyrienskies.core.api.ShipUser
 import org.valkyrienskies.core.api.Ticked
 import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.core.game.ships.PhysShip
+import org.valkyrienskies.core.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
@@ -32,6 +33,10 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
         val mass = physShip.inertia.shipMass
         val moiTensor = physShip.inertia.momentOfInertiaTensor
+        val segment = physShip.segments.segments[0]?.segmentDisplacement!!
+        val omega = SegmentUtils.getOmega(physShip.poseVel, segment, Vector3d())
+        val vel = SegmentUtils.getVelocity(physShip.poseVel, segment, Vector3d())
+        val pos = physShip.poseVel.pos
 
         // Revisiting eureka control code.
         // [x] Move torque stabilization code
@@ -86,7 +91,15 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
                 if (alignShip(physShip, forcesApplier, ship!!))
                     aligning--
 
-            stabilize(physShip, forcesApplier, controllingPlayer == null && aligning == 0, controllingPlayer == null)
+            stabilize(
+                physShip,
+                omega,
+                vel,
+                segment,
+                forcesApplier,
+                controllingPlayer == null && aligning == 0,
+                controllingPlayer == null
+            )
 
             controllingPlayer?.let { player ->
                 // region Player controlled rotation
@@ -95,19 +108,24 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
                     if (player.leftImpulse != 0.0f)
                         (player.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed)
                     else
-                        -physShip.omega.y() * EurekaConfig.SERVER.turnSpeed,
+                        -omega.y() * EurekaConfig.SERVER.turnSpeed,
                     0.0
                 )
 
-                rotationVector.sub(0.0, physShip.omega.y(), 0.0)
+                rotationVector.sub(0.0, omega.y(), 0.0)
 
-                physShip.rotation.transform(
+                SegmentUtils.transformDirectionWithScale(
+                    physShip.poseVel,
+                    segment,
                     moiTensor.transform(
-                        physShip.rotation.transformInverse(
+                        SegmentUtils.invTransformDirectionWithScale(
+                            physShip.poseVel,
+                            segment,
                             rotationVector,
                             rotationVector
                         )
-                    )
+                    ),
+                    rotationVector
                 )
 
                 forcesApplier.applyInvariantTorque(rotationVector)
@@ -116,10 +134,10 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
                 // region Player controlled forward and backward thrust
                 val forwardVector = player.seatInDirection.normal.toJOMLD()
                 forwardVector.mul(player.forwardImpulse.toDouble())
-                physShip.rotation.transform(forwardVector)
+                segment.transformDirectionWithoutScale(forwardVector)
                 val idealForwardVel = Vector3d(forwardVector)
                 idealForwardVel.mul(EurekaConfig.SERVER.baseSpeed)
-                val forwardVelInc = idealForwardVel.sub(physShip.velocity.x(), 0.0, physShip.velocity.z())
+                val forwardVelInc = idealForwardVel.sub(vel.x(), 0.0, vel.z())
                 forwardVelInc.mul(mass * 10)
                 forwardVelInc.add(forwardVector.mul(extraForce))
 
@@ -129,14 +147,14 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
                 // Player controlled alleviation
                 if (player.upImpulse != 0.0f)
                     alleviationTarget =
-                        physShip.position.y() + (player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate)
+                        pos.y() + (player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate)
             }
 
             // region Alleviation
             if (alleviationTarget.isFinite()) {
-                val diff = alleviationTarget - physShip.position.y()
+                val diff = alleviationTarget - pos.y()
 
-                val shipRiseVelo = physShip.velocity.y()
+                val shipRiseVelo = vel.y()
                 val idealRiseVelo = clamp(diff, -MAX_RISE_VEL, MAX_RISE_VEL)
                 val impulse = idealRiseVelo - shipRiseVelo
 
@@ -148,7 +166,7 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
         }
 
         // Drag
-        forcesApplier.applyInvariantForce(Vector3d(physShip.velocity.y()).mul(-mass))
+        forcesApplier.applyInvariantForce(Vector3d(vel.y()).mul(-mass))
     }
 
     var power = 0.0

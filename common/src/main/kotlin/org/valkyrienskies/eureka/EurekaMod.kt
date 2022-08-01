@@ -1,5 +1,7 @@
 package org.valkyrienskies.eureka
 
+import org.valkyrienskies.core.config.VSConfigClass
+
 object EurekaMod {
     const val MOD_ID = "vs_eureka"
 
@@ -10,6 +12,7 @@ object EurekaMod {
         EurekaItems.register()
         EurekaScreens.register()
         EurekaEntities.register()
+        VSConfigClass.registerConfig("vs_eureka", EurekaConfig::class.java)
     }
 
     @JvmStatic

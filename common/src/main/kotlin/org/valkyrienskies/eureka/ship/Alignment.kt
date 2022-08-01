@@ -1,22 +1,17 @@
 package org.valkyrienskies.eureka.ship
 
-import net.minecraft.core.Direction
-import org.joml.Vector3d
 import org.valkyrienskies.core.api.ForcesApplier
 import org.valkyrienskies.core.api.Ship
 import org.valkyrienskies.core.game.ships.PhysShip
-import org.valkyrienskies.eureka.EurekaConfig
-import org.valkyrienskies.mod.common.util.toJOMLD
-import kotlin.math.floor
 
 // TODO illegal usage of [Ship]
 fun alignShip(physShip: PhysShip, forces: ForcesApplier, ship: Ship): Boolean {
-
+    /*val segment = physShip.segments.segments[0]?.segmentDisplacement!!
     // region Align Rotation
     val worldFront = Vector3d(0.0, 0.0, 1.0)
     val shipFront = Vector3d(worldFront)
 
-    physShip.rotation.transform(shipFront)
+    segment.transformDirectionWithoutScale(shipFront)
 
     val angle = shipFront.angle(worldFront)
 
@@ -61,5 +56,6 @@ fun alignShip(physShip: PhysShip, forces: ForcesApplier, ship: Ship): Boolean {
     forces.applyInvariantForce(linearForces)
     // endregion
 
-    return angleAlign < 0.01 && diff.lengthSquared() < 0.01
+    return angleAlign < 0.01 && diff.lengthSquared() < 0.01*/
+    return true
 }

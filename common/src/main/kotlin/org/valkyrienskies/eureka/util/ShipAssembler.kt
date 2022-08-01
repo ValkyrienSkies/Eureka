@@ -1,5 +1,7 @@
 package org.valkyrienskies.eureka.util
 
+import it.unimi.dsi.fastutil.Stack
+import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.Registry
@@ -22,16 +24,24 @@ object ShipAssembler {
         val shipCenter = ship.chunkClaim.getCenterBlockCoordinates(Vector3i()).toBlockPos()
 
         level.relocateBlock(center, shipCenter, ship)
+        val stack = ObjectArrayList<Triple<BlockPos, BlockPos, Direction>>()
         Direction.values()
-            .forEach { forwardAxis(level, shipCenter.relative(it), center.relative(it), it, ship) }
+            .forEach { forwardAxis(level, shipCenter.relative(it), center, center.relative(it), it, ship, stack) }
+
+        while (!stack.isEmpty) {
+            val (to, from, dir) = stack.pop()
+            forwardAxis(level, to, center, from, dir, ship, stack)
+        }
     }
 
     private fun forwardAxis(
         level: ServerLevel,
         shipPos: BlockPos,
+        center: BlockPos,
         pos: BlockPos,
         direction: Direction,
-        ship: Ship
+        ship: Ship,
+        stack: Stack<Triple<BlockPos, BlockPos, Direction>>
     ) {
         var pos = pos
         var shipPos = shipPos
@@ -39,11 +49,13 @@ object ShipAssembler {
         var depth = 0
 
         while (!EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(blockState.block).toString())) {
+            if (!pos.closerThan(center, 32.0 * 16.0)) return
+
             level.relocateBlock(pos, shipPos, ship)
             depth++
 
             Direction.values().filter { it != direction && it != direction.opposite }
-                .forEach { forwardAxis(level, shipPos.relative(it), pos.relative(it), it, ship) }
+                .forEach { stack.push(Triple(shipPos.relative(it), pos.relative(it), it)) }
 
             pos = pos.relative(direction)
             shipPos = shipPos.relative(direction)
