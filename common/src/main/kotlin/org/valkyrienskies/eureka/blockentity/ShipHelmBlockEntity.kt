@@ -2,6 +2,7 @@ package org.valkyrienskies.eureka.blockentity
 
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction.Axis
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
@@ -9,8 +10,10 @@ import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
+import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.block.state.properties.Half
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.core.api.Ship
@@ -48,8 +51,19 @@ class ShipHelmBlockEntity :
     // Needs to get called server-side
     fun spawnSeat(blockPos: BlockPos, state: BlockState, level: ServerLevel): ShipMountingEntity {
         val newPos = blockPos.relative(state.getValue(HorizontalDirectionalBlock.FACING))
+        val newState = level.getBlockState(newPos)
+        val newShape = newState.getShape(level, newPos)
+        val newBlock = newState.getBlock()
+        var height = 0.0
+        if (!newState.isAir()) {
+            if (newBlock is StairBlock && (!newState.hasProperty(StairBlock.HALF) || newState.getValue(StairBlock.HALF) == Half.BOTTOM)) {
+                height = 0.5
+            } else {
+                height = newShape.max(Axis.Y)
+            }
+        }
         val entity = ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE.create(level)!!.apply {
-            val seatEntityPos: Vector3dc = Vector3d(newPos.x + .5, newPos.y + .5, newPos.z + .5)
+            val seatEntityPos: Vector3dc = Vector3d(newPos.x + .5, (newPos.y - .5) + height, newPos.z + .5)
             inShipPosition = seatEntityPos
             if (ship != null) {
                 val posInWorld = ship!!.shipToWorld.transformPosition(seatEntityPos, Vector3d())
