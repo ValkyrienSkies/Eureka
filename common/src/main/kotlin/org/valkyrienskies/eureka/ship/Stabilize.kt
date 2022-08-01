@@ -60,6 +60,9 @@ fun stabilize(
 
     if (linear) {
         val idealVelocity = Vector3d(vel).negate()
+        if (idealVelocity.lengthSquared() > 2.0)
+            idealVelocity.normalize().mul(2.0)
+
         idealVelocity.mul(ship.inertia.shipMass * 10)
         forces.applyInvariantForce(idealVelocity)
     }

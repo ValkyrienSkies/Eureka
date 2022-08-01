@@ -166,7 +166,7 @@ class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
         }
 
         // Drag
-        forcesApplier.applyInvariantForce(Vector3d(vel.y()).mul(-mass))
+        // forcesApplier.applyInvariantForce(Vector3d(vel.y()).mul(-mass))
     }
 
     var power = 0.0
