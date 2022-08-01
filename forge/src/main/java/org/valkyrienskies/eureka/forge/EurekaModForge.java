@@ -20,9 +20,10 @@ public class EurekaModForge {
         EventBuses.registerModEventBus(EurekaMod.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
 
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (Minecraft client, Screen parent) ->
-                VSClothConfig.createConfigScreenFor(parent,
-                        VSConfigClass.Companion.getRegisteredConfig(EurekaConfig.class))
+        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY,
+                () -> (Minecraft client, Screen parent) ->
+                        VSClothConfig.createConfigScreenFor(parent,
+                                VSConfigClass.Companion.getRegisteredConfig(EurekaConfig.class))
         );
 
 
