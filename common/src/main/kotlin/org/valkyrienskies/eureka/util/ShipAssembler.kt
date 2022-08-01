@@ -20,7 +20,7 @@ object ShipAssembler {
     // TODO use dense packed to send updates
     // with a more optimized algorithm for bigger ships
 
-    fun fillShip(level: ServerLevel, ship: ShipData, center: BlockPos) {
+    fun fillShip(level: ServerLevel, ship: ShipData, center: BlockPos): BlockPos {
         val shipCenter = ship.chunkClaim.getCenterBlockCoordinates(Vector3i()).toBlockPos()
 
         level.relocateBlock(center, shipCenter, ship)
@@ -32,6 +32,8 @@ object ShipAssembler {
             val (to, from, dir) = stack.pop()
             forwardAxis(level, to, center, from, dir, ship, stack)
         }
+
+        return shipCenter
     }
 
     private fun forwardAxis(

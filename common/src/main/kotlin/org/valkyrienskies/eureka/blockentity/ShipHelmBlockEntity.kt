@@ -71,23 +71,28 @@ class ShipHelmBlockEntity :
     }
 
     // Needs to get called server-side
-    fun assemble() {
+    fun assemble(): ShipHelmBlockEntity? {
         val level = level as ServerLevel
 
         // Check the block state before assembling to avoid creating an empty ship
         val blockState = level.getBlockState(blockPos)
         if (blockState.block != ShipHelmBlock) {
-            return
+            return null
         }
 
         val ship = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
         ship.saveAttachment(EurekaShipControl())
-        ShipAssembler.fillShip(level, ship, blockPos)
+        val pos = ShipAssembler.fillShip(level, ship, blockPos)
+
+        return level.getBlockEntity(pos) as ShipHelmBlockEntity?
     }
 
     fun align() {
         ship?.getAttachment<EurekaShipControl>()?.align()
     }
+
+    fun sit(player: Player, force: Boolean = false): Boolean =
+        player.startRiding(spawnSeat(blockPos, blockState, level as ServerLevel), force)
 
     companion object {
         val supplier = { ShipHelmBlockEntity() }

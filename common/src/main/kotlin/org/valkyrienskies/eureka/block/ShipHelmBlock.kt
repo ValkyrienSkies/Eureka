@@ -2,7 +2,6 @@ package org.valkyrienskies.eureka.block
 
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
@@ -52,7 +51,7 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
         return if (player.isCrouching) {
             player.openMenu(blockEntity)
             InteractionResult.CONSUME
-        } else if (player.startRiding(blockEntity.spawnSeat(pos, state, level as ServerLevel))) {
+        } else if (blockEntity.sit(player)) {
             InteractionResult.CONSUME
         } else InteractionResult.PASS
     }
