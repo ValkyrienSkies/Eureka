@@ -16,7 +16,7 @@ public class EurekaModFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         // TODO HELP, ValkyrienSkiesModFabric#registerAddon is not static :trollage:
-        Class<?> clazz = ValkyrienSkiesModFabric.class;
+        final Class<?> clazz = ValkyrienSkiesModFabric.class;
         EurekaMod.init();
     }
 
