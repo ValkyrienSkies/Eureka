@@ -68,21 +68,10 @@ object AnchorBlock :
 
         val bl = level.hasNeighborSignal(pos)
         val prevBl = state.getValue(BlockStateProperties.POWERED)
-        if (bl != prevBl) {
+        if (bl != prevBl)
             level.setBlock(pos, state.setValue(BlockStateProperties.POWERED, bl), 11)
 
-            updateAnchor(bl, prevBl, level, pos)
-        }
-
         super.neighborChanged(state, level, pos, block, fromPos, isMoving)
-    }
-
-    private fun updateAnchor(bl: Boolean, prevBl: Boolean, level: ServerLevel, pos: BlockPos) {
-        if (bl == prevBl) return
-
-        level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.anchorsActive += if (bl) 1 else -1
-        }
     }
 
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
