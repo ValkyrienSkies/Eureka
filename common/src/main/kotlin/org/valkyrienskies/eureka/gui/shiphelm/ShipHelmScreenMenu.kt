@@ -6,7 +6,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import org.valkyrienskies.eureka.EurekaScreens
 import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 
-class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, var blockEntity: ShipHelmBlockEntity?) :
+class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: ShipHelmBlockEntity?) :
     AbstractContainerMenu(EurekaScreens.SHIP_HELM.get(), syncId) {
 
     constructor(syncId: Int, playerInv: Inventory) : this(syncId, playerInv, null)
@@ -19,13 +19,13 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, var blockEntity: Shi
         if (blockEntity == null) return false
 
         if (id == 0 && !assembled && !player.level.isClientSide) {
-            blockEntity = blockEntity!!.assemble() ?: throw IllegalStateException()
-            // player.teleportTo(player.x, player.y + 3, player.z)
+            val blockEntity = blockEntity.assemble() // ?: throw IllegalStateException()
+            // blockEntity.sit(player, true)
             return true
         }
 
         if (id == 1 && assembled && !player.level.isClientSide) {
-            blockEntity!!.align()
+            blockEntity.align()
             return true
         }
 
