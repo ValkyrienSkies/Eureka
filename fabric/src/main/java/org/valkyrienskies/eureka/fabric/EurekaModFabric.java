@@ -15,8 +15,12 @@ import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 public class EurekaModFabric implements ModInitializer {
     @Override
     public void onInitialize() {
-        // TODO HELP, ValkyrienSkiesModFabric#registerAddon is not static :trollage:
-        final Class<?> clazz = ValkyrienSkiesModFabric.class;
+        try {
+            Class.forName("org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
         EurekaMod.init();
     }
 
