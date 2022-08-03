@@ -19,6 +19,8 @@ import org.joml.Vector3dc
 import org.valkyrienskies.core.api.Ship
 import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.core.api.saveAttachment
+import org.valkyrienskies.core.game.ships.ShipData
+import org.valkyrienskies.core.game.ships.ShipObjectServer
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
@@ -32,6 +34,7 @@ import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOML
+import java.util.concurrent.CompletableFuture
 
 class ShipHelmBlockEntity :
     BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider, ShipBlockEntity {
@@ -85,20 +88,19 @@ class ShipHelmBlockEntity :
     }
 
     // Needs to get called server-side
-    fun assemble(): ShipHelmBlockEntity? {
+    fun assemble() {
         val level = level as ServerLevel
 
         // Check the block state before assembling to avoid creating an empty ship
         val blockState = level.getBlockState(blockPos)
         if (blockState.block != ShipHelmBlock) {
-            return null
+            return
         }
 
-        val ship = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
+        val ship: ShipData = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
         ship.saveAttachment(EurekaShipControl())
-        val pos = ShipAssembler.fillShip(level, ship, blockPos)
+        ShipAssembler.fillShip(level, ship, blockPos)
 
-        return level.getBlockEntity(pos) as ShipHelmBlockEntity?
     }
 
     fun align() {

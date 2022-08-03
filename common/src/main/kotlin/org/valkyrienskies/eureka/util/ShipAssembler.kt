@@ -11,6 +11,7 @@ import org.joml.Vector3i
 import org.valkyrienskies.core.api.Ship
 import org.valkyrienskies.core.game.ships.ShipData
 import org.valkyrienskies.eureka.EurekaConfig
+import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.relocateBlock
 import org.valkyrienskies.mod.common.util.toBlockPos
 
@@ -20,20 +21,23 @@ object ShipAssembler {
     // TODO use dense packed to send updates
     // with a more optimized algorithm for bigger ships
 
-    fun fillShip(level: ServerLevel, ship: ShipData, center: BlockPos): BlockPos {
+    fun fillShip(level: ServerLevel, ship: ShipData, center: BlockPos) {
         val shipCenter = ship.chunkClaim.getCenterBlockCoordinates(Vector3i()).toBlockPos()
-
         level.relocateBlock(center, shipCenter, ship)
-        val stack = ObjectArrayList<Triple<BlockPos, BlockPos, Direction>>()
-        Direction.values()
-            .forEach { forwardAxis(level, shipCenter.relative(it), center, center.relative(it), it, ship, stack) }
 
-        while (!stack.isEmpty) {
-            val (to, from, dir) = stack.pop()
-            forwardAxis(level, to, center, from, dir, ship, stack)
+        level.shipObjectWorld.shipLoadEvent.on { evt, _ -> println("Ship loaded: ${evt.ship.shipData.id}")}
+
+        // wait until this ship is loaded to copy blocks
+        level.shipObjectWorld.shipLoadEvent.once({ it.ship.shipData == ship }) {
+            val stack = ObjectArrayList<Triple<BlockPos, BlockPos, Direction>>()
+            Direction.values()
+                .forEach { forwardAxis(level, shipCenter.relative(it), center, center.relative(it), it, ship, stack) }
+
+            while (!stack.isEmpty) {
+                val (to, from, dir) = stack.pop()
+                forwardAxis(level, to, center, from, dir, ship, stack)
+            }
         }
-
-        return shipCenter
     }
 
     private fun forwardAxis(
