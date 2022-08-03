@@ -8,23 +8,18 @@ plugins {
     id "org.jlleitschuh.gradle.ktlint" version "10.3.0"
     // Java linter
     id "checkstyle"
+
+    id 'com.matthewprenger.cursegradle' version '1.4.0' apply false
+    id "com.modrinth.minotaur" version "2.4.3" apply false
 }
 
 // Determine the version
 if (project.hasProperty("CustomReleaseVersion")) {
-    version = project.property("CustomReleaseVersion") as String
+    // Remove release/ from the version if present
+    version = project.property("CustomReleaseVersion").replaceFirst("^release/", "")
 } else {
-    // Yes, I know there is a gradle plugin to detect git version.
-    // But its made by Palantir 0_0.
-    Process gitRevisionProcess = Runtime.getRuntime().exec("git rev-parse HEAD", new String[0], projectDir)
-    InputStream processInputStream = gitRevisionProcess.inputStream
+    String gitRevision = "git rev-parse HEAD".execute().text.trim()
 
-    String gitRevision = ""
-    while (true) {
-        int lastReadByte = processInputStream.read()
-        if (lastReadByte == -1) break
-        gitRevision += ((char) lastReadByte)
-    }
     version = "1.0.0+" + gitRevision.substring(0, 10)
 }
 
