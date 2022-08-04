@@ -8,10 +8,10 @@ import net.minecraft.core.Registry
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.Blocks
 import org.joml.Vector3i
-import org.valkyrienskies.core.api.Ship
+import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.game.ships.ShipData
+import org.valkyrienskies.core.hooks.VSEvents.ShipLoadEvent
 import org.valkyrienskies.eureka.EurekaConfig
-import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.relocateBlock
 import org.valkyrienskies.mod.common.util.toBlockPos
 
@@ -21,14 +21,14 @@ object ShipAssembler {
     // TODO use dense packed to send updates
     // with a more optimized algorithm for bigger ships
 
-    fun fillShip(level: ServerLevel, ship: ShipData, center: BlockPos) {
-        val shipCenter = ship.chunkClaim.getCenterBlockCoordinates(Vector3i()).toBlockPos()
+    fun fillShip(level: ServerLevel, ship: ServerShip, center: BlockPos) {
+        val shipCenter = (ship as ShipData).chunkClaim.getCenterBlockCoordinates(Vector3i()).toBlockPos()
         level.relocateBlock(center, shipCenter, ship)
 
-        level.shipObjectWorld.shipLoadEvent.on { evt, _ -> println("Ship loaded: ${evt.ship.shipData.id}")}
+        ShipLoadEvent.on { evt, _ -> println("Ship loaded: ${evt.ship.shipData.id}") }
 
         // wait until this ship is loaded to copy blocks
-        level.shipObjectWorld.shipLoadEvent.once({ it.ship.shipData == ship }) {
+        ShipLoadEvent.once({ it.ship.shipData == ship }) {
             val stack = ObjectArrayList<Triple<BlockPos, BlockPos, Direction>>()
             Direction.values()
                 .forEach { forwardAxis(level, shipCenter.relative(it), center, center.relative(it), it, ship, stack) }
@@ -46,7 +46,7 @@ object ShipAssembler {
         center: BlockPos,
         pos: BlockPos,
         direction: Direction,
-        ship: Ship,
+        ship: ServerShip,
         stack: Stack<Triple<BlockPos, BlockPos, Direction>>
     ) {
         var pos = pos

@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity
 import net.minecraft.world.level.block.entity.TickableBlockEntity
 import net.minecraft.world.level.block.state.BlockState
-import org.valkyrienskies.core.api.Ship
+import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaProperties.HEAT
@@ -34,7 +34,7 @@ class EngineBlockEntity :
     StackedContentsCompatible,
     WorldlyContainer {
 
-    override var ship: Ship? = null
+    override var ship: ServerShip? = null
     private val eurekaShipControl by shipValue<EurekaShipControl>()
     val data = KtContainerData()
     var heatLevel by data

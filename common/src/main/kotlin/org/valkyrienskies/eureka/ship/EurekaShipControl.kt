@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.joml.Math.clamp
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ForcesApplier
-import org.valkyrienskies.core.api.Ship
+import org.valkyrienskies.core.api.ServerShip
+import org.valkyrienskies.core.api.ServerShipUser
 import org.valkyrienskies.core.api.ShipForcesInducer
-import org.valkyrienskies.core.api.ShipUser
 import org.valkyrienskies.core.api.Ticked
 import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.core.game.ships.PhysShip
@@ -17,10 +17,10 @@ import org.valkyrienskies.mod.common.util.toJOMLD
 
 private const val MAX_RISE_VEL = 2.5
 
-class EurekaShipControl : ShipForcesInducer, ShipUser, Ticked {
+class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     @JsonIgnore
-    override var ship: Ship? = null
+    override var ship: ServerShip? = null
     val controllingPlayer by shipValue<SeatedControllingPlayer>()
 
     private var extraForce = 0.0
