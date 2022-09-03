@@ -15,7 +15,13 @@ object EurekaConfig {
 
         // Sensitivity of the up/down impulse buttons.
         // TODO maybe should be moved to VS2 client-side config?
-        var impulseAlleviationRate = 2.5
+        var impulseAlleviationRate = 0.5
+
+        // If a ship with weight 0 and 0 balloons would exist in the world, it would have this attitude.
+        var neutralLimit = 80.0
+
+        // If a ship with weight 0 and 0 balloons would exist in the world, it would have this attitude.
+        var massPerBalloon = 5000.0
 
         // The amount of speed that the ship can move at when the left/right impulse button is held down.
         var turnSpeed = 3.0

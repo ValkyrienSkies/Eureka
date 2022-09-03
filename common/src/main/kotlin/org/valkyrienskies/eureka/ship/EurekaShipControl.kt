@@ -1,7 +1,6 @@
 package org.valkyrienskies.eureka.ship
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.google.common.primitives.Doubles.max
 import org.joml.Math.clamp
 import org.joml.Math.cos
 import org.joml.Vector3d
@@ -16,8 +15,14 @@ import org.valkyrienskies.core.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
-private const val MAX_RISE_VEL = 6.0
+private const val MAX_RISE_VEL = 3.0
+private val BALLOON_PER_MASS = 1 / EurekaConfig.SERVER.massPerBalloon
+private val NEUTRAL_FLOAT = EurekaConfig.SERVER.neutralLimit
+private val NEUTRAL_LIMIT get() = NEUTRAL_FLOAT - 10
 
 class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
@@ -156,25 +161,43 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                 if (player.upImpulse != 0.0f)
                     alleviationTarget =
                         pos.y() + (player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate * max(
-                            alleviationPower,
-                            2.0
+                            alleviationPower * 0.2,
+                            1.5
                         ))
             }
 
             // region Alleviation
             if (alleviationTarget.isFinite()) {
-                val alleviationPower = alleviationPower *
-                        (1 + cos(((256 - pos.y()) / 256) * Math.PI))
+                val massPenalty =
+                    min((alleviationPower / (mass * BALLOON_PER_MASS)) - 1.0, alleviationPower) * NEUTRAL_FLOAT
+                val limit = (NEUTRAL_LIMIT + massPenalty)
+                var stable = true
 
-                val weightPenalty = alleviationPower / max((mass * mass * 0.0001), 1.0)
+                val alleviationPower = if (pos.y() > limit) {
+                    if ((pos.y() - limit) > 20.0) {
+                        stable = false
+                        0.0
+                    } else {
+                        val mod = 1 + cos(((pos.y() - limit) / 10.0) * (Math.PI / 2) + (Math.PI / 2))
+                        if ((pos.y() - limit) > 10.0) {
+                            stable = false
+                            (1 - mod) * 0.1 + 0.1
+                        } else alleviationPower * mod
+                    }
+                } else alleviationPower
 
-                val diff = alleviationTarget - pos.y()
+                val diff = (alleviationTarget - pos.y())
+                    .let { if (abs(it) < 0.05) 0.0 else it }
+
+                val penalisedVel = if (alleviationPower < 0.1) 0.0 else
+                    (MAX_RISE_VEL * alleviationPower)
 
                 val shipRiseVelo = vel.y()
-                val idealRiseVelo = clamp(diff * alleviationPower * weightPenalty, -MAX_RISE_VEL, MAX_RISE_VEL)
+                val idealRiseVelo = clamp(-MAX_RISE_VEL, penalisedVel, diff)
                 val impulse = idealRiseVelo - shipRiseVelo
 
-                forcesApplier.applyInvariantForce(Vector3d(0.0, impulse * mass * 10, 0.0))
+                if (idealRiseVelo > 0.1 || stable)
+                    forcesApplier.applyInvariantForce(Vector3d(0.0, (impulse + if (stable) 1 else 0) * mass * 10, 0.0))
             }
             // endregion
         } else if (wasAnchored != anchored) {
