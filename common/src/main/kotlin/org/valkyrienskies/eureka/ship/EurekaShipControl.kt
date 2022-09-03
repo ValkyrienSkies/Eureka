@@ -1,7 +1,9 @@
 package org.valkyrienskies.eureka.ship
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.google.common.primitives.Doubles.max
 import org.joml.Math.clamp
+import org.joml.Math.cos
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ForcesApplier
 import org.valkyrienskies.core.api.ServerShip
@@ -15,7 +17,7 @@ import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
 
-private const val MAX_RISE_VEL = 2.5
+private const val MAX_RISE_VEL = 6.0
 
 class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
@@ -29,6 +31,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     private var cruiseSpeed = Double.NaN
     private val anchored get() = anchorsActive > 0
     private var wasAnchored = false
+    private val alleviationPower get() = balloons + 1.0
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
         val mass = physShip.inertia.shipMass
@@ -152,15 +155,23 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                 // Player controlled alleviation
                 if (player.upImpulse != 0.0f)
                     alleviationTarget =
-                        pos.y() + (player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate)
+                        pos.y() + (player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate * max(
+                            alleviationPower,
+                            2.0
+                        ))
             }
 
             // region Alleviation
             if (alleviationTarget.isFinite()) {
+                val alleviationPower = alleviationPower *
+                        (1 + cos(((256 - pos.y()) / 256) * Math.PI))
+
+                val weightPenalty = alleviationPower / max((mass * mass * 0.0001), 1.0)
+
                 val diff = alleviationTarget - pos.y()
 
                 val shipRiseVelo = vel.y()
-                val idealRiseVelo = clamp(diff, -MAX_RISE_VEL, MAX_RISE_VEL)
+                val idealRiseVelo = clamp(diff * alleviationPower * weightPenalty, -MAX_RISE_VEL, MAX_RISE_VEL)
                 val impulse = idealRiseVelo - shipRiseVelo
 
                 forcesApplier.applyInvariantForce(Vector3d(0.0, impulse * mass * 10, 0.0))
@@ -189,4 +200,5 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     var anchors = 0 // Amount of anchors
     var anchorsActive = 0 // Anchors that are active
     var balloons = 0 // Amount of balloons
+    var floaters = 0 // Amount of floaters
 }

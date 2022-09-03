@@ -15,7 +15,7 @@ object EurekaConfig {
 
         // Sensitivity of the up/down impulse buttons.
         // TODO maybe should be moved to VS2 client-side config?
-        var impulseAlleviationRate = 2.3
+        var impulseAlleviationRate = 2.5
 
         // The amount of speed that the ship can move at when the left/right impulse button is held down.
         var turnSpeed = 3.0
