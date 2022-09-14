@@ -33,7 +33,8 @@
     ]
   },
   "mixins": [
-    "vs_eureka-common.mixins.json"
+    "vs_eureka-common.mixins.json",
+    "vs_eureka.mixins.json"
   ],
   "depends": {
     "fabric": "*",

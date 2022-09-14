@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "org.valkyrienskies.eureka.fabric.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "client.main.MixinMain"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
