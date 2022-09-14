@@ -37,9 +37,6 @@
     "vs_eureka.mixins.json"
   ],
   "depends": {
-    "fabric": "*",
-    "minecraft": ">=1.16.5",
-    "architectury": ">=1.31.61",
-    "valkyrienskies": ">=2.0.0"
+    "minecraft": ">=1.16.5"
   }
 }
