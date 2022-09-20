@@ -3,6 +3,7 @@ package org.valkyrienskies.eureka.blockentity
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction.Axis
+import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
@@ -21,6 +22,7 @@ import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.core.api.saveAttachment
 import org.valkyrienskies.core.game.ships.ShipData
 import org.valkyrienskies.eureka.EurekaBlockEntities
+import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
@@ -100,7 +102,11 @@ class ShipHelmBlockEntity :
         val ship: ShipData =
             level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
         ship.saveAttachment(EurekaShipControl())
-        ShipAssembler.fillShip(level, ship, blockPos)
+        ShipAssembler.fillShip(
+            level,
+            ship,
+            blockPos
+        ) { !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
     }
 
     fun align() {

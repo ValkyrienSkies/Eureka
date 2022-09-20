@@ -104,5 +104,7 @@ object EurekaConfig {
             "minecraft:large_fern",
             "minecraft:air"
         )
+
+        val diagonals = false
     }
 }
