@@ -11,6 +11,7 @@ import org.joml.Vector3i
 import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.game.ships.ShipData
 import org.valkyrienskies.core.hooks.VSEvents.ShipLoadEvent
+import org.valkyrienskies.core.util.logger
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.common.util.relocateBlock
 import org.valkyrienskies.mod.common.util.toBlockPos
@@ -31,6 +32,7 @@ object ShipAssembler {
         ShipLoadEvent.once({ it.ship.shipData == ship }) {
             val task = AssemblyTask(level, ship, center, predicate) {
                 ship.isStatic = false
+                logger.info("Ship assembled!")
             }
 
             move(level, ship, shipCenter, center) {}
@@ -108,8 +110,10 @@ object ShipAssembler {
                 tAmount++
             }
 
-            if (task.todo.isEmpty) tasks.remove(task)
-            task.onDone()
+            if (task.todo.isEmpty) {
+                tasks.remove(task)
+                task.onDone()
+            }
 
             amount += tAmount
 
@@ -134,4 +138,6 @@ object ShipAssembler {
     ) {
         val todo = ObjectArrayList<Pair<BlockPos, BlockPos>>()
     }
+
+    private val logger by logger()
 }
