@@ -105,6 +105,7 @@ object EurekaConfig {
             "minecraft:air"
         )
 
-        val diagonals = false
+        val diagonals = true
+        val assembliesPerTick = 1000
     }
 }

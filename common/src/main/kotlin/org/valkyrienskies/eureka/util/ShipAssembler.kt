@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import org.joml.Vector3i
 import org.valkyrienskies.core.api.ServerShip
@@ -18,29 +19,24 @@ object ShipAssembler {
     // TODO use dense packed to send updates
     // with a more optimized algorithm for bigger ships
     private val MAX_SIZE = 32 * 16
+    private val tasks = mutableListOf<AssemblyTask>()
 
     fun fillShip(level: ServerLevel, ship: ServerShip, center: BlockPos, predicate: (BlockState) -> Boolean) {
         val shipCenter = (ship as ShipData).chunkClaim.getCenterBlockCoordinates(Vector3i()).toBlockPos()
         ShipLoadEvent.on { evt, _ -> println("Ship loaded: ${evt.ship.shipData.id}") }
 
+        ship.isStatic = true
+
         // wait until this ship is loaded to copy blocks
         ShipLoadEvent.once({ it.ship.shipData == ship }) {
-            val todo = ObjectArrayList<Pair<BlockPos, BlockPos>>()
-            val changed = mutableSetOf<BlockPos>()
-
-            move(level, ship, shipCenter, center, changed)
-            directions(shipCenter, center) { a, b -> todo.push(Pair(a, b)) }
-
-            while (!todo.isEmpty) {
-                val (to, from) = todo.pop()
-
-                if (from.distSqr(center) > (MAX_SIZE * MAX_SIZE)) continue
-                bfs(level, ship, to, from, todo, predicate, changed)
+            val task = AssemblyTask(level, ship, center, predicate) {
+                ship.isStatic = false
             }
 
-            changed.forEach {
-                level.updateNeighborsAt(it, level.getBlockState(it).block)
-            }
+            move(level, ship, shipCenter, center) {}
+            directions(shipCenter, center) { a, b -> task.todo.push(Pair(a, b)) }
+
+            tasks += task
         }
     }
 
@@ -51,11 +47,11 @@ object ShipAssembler {
         old: BlockPos,
         stack: Stack<Pair<BlockPos, BlockPos>>,
         predicate: (BlockState) -> Boolean,
-        modifications: MutableSet<BlockPos>
+        modifications: MutableSet<Pair<Level, BlockPos>>
     ) {
 
         if (predicate(level.getBlockState(old))) {
-            move(level, ship, new, old, modifications)
+            move(level, ship, new, old, modifications::add)
 
             directions(new, old) { a, b -> stack.push(Pair(a, b)) }
         }
@@ -64,18 +60,17 @@ object ShipAssembler {
     private fun directions(new: BlockPos, old: BlockPos, lambda: (BlockPos, BlockPos) -> Unit) {
         if (!EurekaConfig.SERVER.diagonals) Direction.values().forEach { lambda(new.relative(it), old.relative(it)) }
 
-        fun minusOneAndOne(lambda: (Int) -> Unit) {
+        fun minusOneOneZero(lambda: (Int) -> Unit) {
             lambda(-1)
+            lambda(0)
             lambda(1)
         }
 
-        minusOneAndOne { x ->
-            minusOneAndOne { Y ->
-                minusOneAndOne { z ->
-                    lambda(
-                        new.offset(x, Y, z),
-                        old.offset(x, Y, z)
-                    )
+        minusOneOneZero { x ->
+            minusOneOneZero { y ->
+                minusOneOneZero { z ->
+                    if (x != 0 || y != 0 || z != 0)
+                        lambda(new.offset(x, y, z), old.offset(x, y, z))
                 }
             }
         }
@@ -86,11 +81,57 @@ object ShipAssembler {
         ship: ServerShip,
         new: BlockPos,
         old: BlockPos,
-        modifications: MutableSet<BlockPos>
+        modifications: (Pair<Level, BlockPos>) -> Unit
     ) {
-        modifications += new
-        modifications += old
+        modifications(Pair(level, new))
+        modifications(Pair(level, old))
 
         level.relocateBlock(old, new, ship)
+    }
+
+    fun tickAssemblyTasks() {
+        if (tasks.isEmpty()) return
+
+        var amount = 0
+        var i = 0
+        val maxPerTask = EurekaConfig.SERVER.assembliesPerTick / tasks.size
+        val changed = mutableSetOf<Pair<Level, BlockPos>>()
+
+        while (amount < EurekaConfig.SERVER.assembliesPerTick && tasks.isNotEmpty()) {
+            val task = tasks[i]
+            var tAmount = 0
+            while (tAmount < maxPerTask && !task.todo.isEmpty) {
+                val (to, from) = task.todo.pop()
+
+                if (from.distSqr(task.center) > (MAX_SIZE * MAX_SIZE)) continue
+                bfs(task.level, task.ship, to, from, task.todo, task.predicate, changed)
+                tAmount++
+            }
+
+            if (task.todo.isEmpty) tasks.remove(task)
+            task.onDone()
+
+            amount += tAmount
+
+            if (++i > tasks.size) i = 0
+        }
+
+        changed.forEach { (level, pos) ->
+            level.updateNeighborsAt(pos, level.getBlockState(pos).block)
+        }
+    }
+
+    fun clearAssemblyTasks() {
+        tasks.clear()
+    }
+
+    private class AssemblyTask(
+        val level: ServerLevel,
+        val ship: ServerShip,
+        val center: BlockPos,
+        val predicate: (BlockState) -> Boolean,
+        val onDone: () -> Unit
+    ) {
+        val todo = ObjectArrayList<Pair<BlockPos, BlockPos>>()
     }
 }
