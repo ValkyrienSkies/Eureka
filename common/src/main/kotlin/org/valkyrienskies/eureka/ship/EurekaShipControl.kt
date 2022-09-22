@@ -36,7 +36,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     private var cruiseSpeed = Double.NaN
     private val anchored get() = anchorsActive > 0
     private var wasAnchored = false
-    private val alleviationPower get() = balloons + 1.0
+    private val alleviationPower get() = balloons.toDouble()
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
         val mass = physShip.inertia.shipMass
@@ -53,8 +53,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // [x] Revisit player controlled linear force
         // [x] Anchor freezing
         // [ ] Rewrite Alignment code
-        // [ ] Revisit Alleviation code
-        // [ ] Balloon limiter
+        // [x] Revisit Alleviation code
+        // [x] Balloon limiter
         // [ ] Add Cruise code
 
         // region Aligning
@@ -158,7 +158,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                 // endregion
 
                 // Player controlled alleviation
-                if (player.upImpulse != 0.0f)
+                if (player.upImpulse != 0.0f && balloons > 0)
                     alleviationTarget =
                         pos.y() + (player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate * max(
                             alleviationPower * 0.2,
@@ -167,7 +167,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             }
 
             // region Alleviation
-            if (alleviationTarget.isFinite()) {
+            if (alleviationTarget.isFinite() && balloons > 0) {
                 val massPenalty =
                     min((alleviationPower / (mass * BALLOON_PER_MASS)) - 1.0, alleviationPower) * NEUTRAL_FLOAT
                 val limit = (NEUTRAL_LIMIT + massPenalty)
