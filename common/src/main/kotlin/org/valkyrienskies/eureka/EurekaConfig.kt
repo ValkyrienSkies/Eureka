@@ -36,6 +36,9 @@ object EurekaConfig {
         // Max 10.0 (means no mass irrelevance)
         var antiVelocityMassRelevance = 0.8
 
+        // Chance that if side will pop, its this chance per side
+        var popSideBalloonChance = 0.3
+
         // Blacklist of blocks that don't get added for ship building
         var blockBlacklist = setOf(
             "vs_eureka:ship_helm",
