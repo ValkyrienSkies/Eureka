@@ -60,8 +60,11 @@ fun stabilize(
 
     if (linear) {
         val idealVelocity = Vector3d(vel).negate()
-        if (idealVelocity.lengthSquared() > EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity)
-            idealVelocity.normalize().mul(1.0)
+        idealVelocity.y = 0.0
+        idealVelocity.normalize()
+
+        if (idealVelocity.lengthSquared() > (EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity * EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity))
+            idealVelocity.normalize(EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity)
 
         idealVelocity.mul(ship.inertia.shipMass * (10 - EurekaConfig.SERVER.antiVelocityMassRelevance))
         forces.applyInvariantForce(idealVelocity)
