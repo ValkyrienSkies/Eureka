@@ -48,6 +48,8 @@ object BalloonBlock : Block(
     }
 
     override fun onProjectileHit(level: Level, state: BlockState, hit: BlockHitResult, projectile: Projectile) {
+        if (level.isClientSide) return
+
         level.destroyBlock(hit.blockPos, false)
         Direction.values().forEach {
             if (level.random.nextFloat() < EurekaConfig.SERVER.popSideBalloonChance) {
