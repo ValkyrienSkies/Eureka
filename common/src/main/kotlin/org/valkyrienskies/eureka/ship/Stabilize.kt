@@ -61,7 +61,6 @@ fun stabilize(
     if (linear) {
         val idealVelocity = Vector3d(vel).negate()
         idealVelocity.y = 0.0
-        idealVelocity.normalize()
 
         if (idealVelocity.lengthSquared() > (EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity * EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity))
             idealVelocity.normalize(EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity)
