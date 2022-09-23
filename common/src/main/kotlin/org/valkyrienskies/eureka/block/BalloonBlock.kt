@@ -52,8 +52,11 @@ object BalloonBlock : Block(
 
         level.destroyBlock(hit.blockPos, false)
         Direction.values().forEach {
-            if (level.random.nextFloat() < EurekaConfig.SERVER.popSideBalloonChance) {
-                level.destroyBlock(hit.blockPos.relative(it), false)
+            val neighbor = hit.blockPos.relative(it)
+            if (level.getBlockState(neighbor).block == this &&
+                level.random.nextFloat() < EurekaConfig.SERVER.popSideBalloonChance
+            ) {
+                level.destroyBlock(neighbor, false)
             }
         }
     }
