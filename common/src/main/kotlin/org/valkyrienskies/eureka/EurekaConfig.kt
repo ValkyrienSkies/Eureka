@@ -44,12 +44,15 @@ object EurekaConfig {
             "vs_eureka:ship_helm",
             "minecraft:dirt",
             "minecraft:grass_block",
+            "minecraft:grass_path",
             "minecraft:stone",
             "minecraft:bedrock",
             "minecraft:sand",
             "minecraft:gravel",
             "minecraft:water",
+            "minecraft:flowing_water",
             "minecraft:lava",
+            "minecraft:flowing_lava",
             "minecraft:lily_pad",
             "minecraft:coarse_dirt",
             "minecraft:podzol",
@@ -105,7 +108,16 @@ object EurekaConfig {
             "minecraft:peony",
             "minecraft:tall_grass",
             "minecraft:large_fern",
-            "minecraft:air"
+            "minecraft:air",
+            "minecraft:ice",
+            "minecraft:packed_ice",
+            "minecraft:blue_ice",
+            "minecraft:portal",
+            "minecraft:bedrock",
+            "minecraft:end_portal_frame",
+            "minecraft:end_portal",
+            "minecraft:end_gateway",
+            "minecraft:portal"
         )
 
         val diagonals = true
