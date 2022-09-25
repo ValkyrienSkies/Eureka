@@ -57,7 +57,6 @@ class ShipHelmButton(x: Int, y: Int, text: Component, private val font: Font, on
 
     override fun onRelease(mouseX: Double, mouseY: Double) {
         isPressed = false
-        onPress()
     }
 
     companion object {

@@ -1,8 +1,10 @@
 package org.valkyrienskies.eureka.ship
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import org.joml.AxisAngle4d
 import org.joml.Math.clamp
 import org.joml.Math.cos
+import org.joml.Quaterniond
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ForcesApplier
 import org.valkyrienskies.core.api.ServerShip
@@ -32,7 +34,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     private var extraForce = 0.0
     private var alleviationTarget = Double.NaN
-    private var aligning = 0 // tries to align the ship in this amount of physticks
+    private var aligning = false
     private var cruiseSpeed = Double.NaN
     private val anchored get() = anchorsActive > 0
     private var wasAnchored = false
@@ -64,6 +66,21 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // [ ] Add Cruise code
 
         // region Aligning
+        if (aligning) {
+            val invRotation = physShip.poseVel.rot.invert(Quaterniond())
+            val invRotationAxisAngle = AxisAngle4d(invRotation)
+            val angle = invRotationAxisAngle.angle
+            if (angle < 0.001) {
+                return
+            }
+
+            val stabilizationSpeed = 10.0
+            val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z).mul(angle)
+                .mul(stabilizationSpeed)
+            val idealTorque = moiTensor.transform(idealOmega)
+
+            forcesApplier.applyInvariantTorque(idealTorque)
+        }
         /*
         if (aligning > 0) {
 
@@ -101,17 +118,13 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // endregion
 
         if (!anchored) {
-            if (aligning > 0)
-                if (alignShip(physShip, forcesApplier, ship!!))
-                    aligning--
-
             stabilize(
                 physShip,
                 omega,
                 vel,
                 segment,
                 forcesApplier,
-                controllingPlayer == null && aligning == 0,
+                controllingPlayer == null && !aligning,
                 controllingPlayer == null
             )
 
@@ -222,8 +235,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     }
 
     fun align() {
-        if (aligning == 0)
-            aligning += 60
+        aligning = !aligning
     }
 
     var anchors = 0 // Amount of anchors

@@ -29,6 +29,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         )
         addButton(
             ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, Component.nullToEmpty("Align"), font) {
+                println("align pressed " + Thread.currentThread().name)
                 minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 1)
             }
         )
