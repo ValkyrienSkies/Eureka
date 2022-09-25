@@ -2,6 +2,7 @@ package org.valkyrienskies.eureka.blockentity
 
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
+import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
@@ -10,9 +11,11 @@ import net.minecraft.world.MenuProvider
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.entity.TickableBlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.Half
 import org.joml.Vector3d
@@ -37,11 +40,12 @@ import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOML
 
 class ShipHelmBlockEntity :
-    BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider, ShipBlockEntity {
+    BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider, ShipBlockEntity, TickableBlockEntity {
 
     override var ship: ServerShip? = null // TODO ship is not being set in vs2?
         get() = field ?: (level as ServerLevel).getShipObjectManagingPos(this.blockPos)
     val assembled get() = ship != null
+    var shouldDisassembleWhenPossible = false
 
     override fun createMenu(id: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
         return ShipHelmScreenMenu(id, playerInventory, this)
@@ -109,8 +113,59 @@ class ShipHelmBlockEntity :
         ) { !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
     }
 
+    override fun tick() {
+        if (shouldDisassembleWhenPossible && ship?.getAttachment<EurekaShipControl>()?.canDisassemble == true) {
+            this.disassemble()
+        }
+    }
+
+    fun disassemble() {
+        val ship = ship ?: return
+        val level = level ?: return
+
+        val control = ship.getAttachment<EurekaShipControl>() ?: return
+        if (!control.canDisassemble) {
+            shouldDisassembleWhenPossible = true
+            control.aligning = true
+            return
+        }
+
+        val shipToWorld = ship.shipToWorld
+        val temp0 = Vector3d()
+        val temp1 = MutableBlockPos()
+        ship.shipActiveChunksSet.iterateChunkPos { chunkX, chunkZ ->
+            val chunk = level.getChunk(chunkX, chunkZ)
+            for (section in chunk.sections) {
+                if (section == null) continue
+                for (x in 0 .. 15) {
+                    for (y in 0 .. 15) {
+                        for (z in 0 .. 15) {
+                            val state = section.getBlockState(x, y, z)
+                            if (state.isAir) continue
+
+                            val realX = (chunkX shl 4) + x
+                            val realY = section.bottomBlockY() + y
+                            val realZ = (chunkZ shl 4) + z
+
+
+                            val inWorldPos = shipToWorld.transformPosition(
+                                temp0.set(realX.toDouble(), realY.toDouble(), realZ.toDouble())).round();
+                            val inWorldBlockPos = temp1.set(inWorldPos.x.toInt(), inWorldPos.y.toInt(), inWorldPos.z.toInt())
+                            level.setBlock(inWorldBlockPos, state, 2)
+
+                            val realPos = temp1.set(realX, realY, realZ)
+                            level.setBlock(realPos, Blocks.AIR.defaultBlockState(), 2)
+                        }
+                    }
+                }
+            }
+        }
+        shouldDisassembleWhenPossible = false
+    }
+
     fun align() {
-        ship?.getAttachment<EurekaShipControl>()?.align()
+        val control = ship?.getAttachment<EurekaShipControl>() ?: return
+        control.aligning = !control.aligning
     }
 
     fun sit(player: Player, force: Boolean = false): Boolean =

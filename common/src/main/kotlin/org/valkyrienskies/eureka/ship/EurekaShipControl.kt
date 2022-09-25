@@ -6,12 +6,7 @@ import org.joml.Math.clamp
 import org.joml.Math.cos
 import org.joml.Quaterniond
 import org.joml.Vector3d
-import org.valkyrienskies.core.api.ForcesApplier
-import org.valkyrienskies.core.api.ServerShip
-import org.valkyrienskies.core.api.ServerShipUser
-import org.valkyrienskies.core.api.ShipForcesInducer
-import org.valkyrienskies.core.api.Ticked
-import org.valkyrienskies.core.api.shipValue
+import org.valkyrienskies.core.api.*
 import org.valkyrienskies.core.game.ships.PhysShip
 import org.valkyrienskies.core.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
@@ -28,17 +23,25 @@ private val NEUTRAL_LIMIT get() = NEUTRAL_FLOAT - 10
 
 class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
+    companion object {
+        private const val ALIGN_THRESHOLD = 0.01
+        private const val DISASSEMBLE_THRESHOLD = 0.02
+    }
+
     @JsonIgnore
     override var ship: ServerShip? = null
     val controllingPlayer by shipValue<SeatedControllingPlayer>()
 
     private var extraForce = 0.0
     private var alleviationTarget = Double.NaN
-    private var aligning = false
+    var aligning = false
     private var cruiseSpeed = Double.NaN
     private val anchored get() = anchorsActive > 0
     private var wasAnchored = false
     private val alleviationPower get() = balloons.toDouble()
+
+    private var angleUntilAligned = 0.0
+    val canDisassemble get() = angleUntilAligned < DISASSEMBLE_THRESHOLD
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
         val mass = physShip.inertia.shipMass
@@ -66,16 +69,18 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // [ ] Add Cruise code
 
         // region Aligning
+        val invRotation = physShip.poseVel.rot.invert(Quaterniond())
+        val invRotationAxisAngle = AxisAngle4d(invRotation)
+        angleUntilAligned = invRotationAxisAngle.angle
         if (aligning) {
-            val invRotation = physShip.poseVel.rot.invert(Quaterniond())
-            val invRotationAxisAngle = AxisAngle4d(invRotation)
-            val angle = invRotationAxisAngle.angle
-            if (angle < 0.001) {
+            if (angleUntilAligned < ALIGN_THRESHOLD) {
                 return
             }
 
-            val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z).mul(angle)
+            val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z)
+                .mul(max(angleUntilAligned, 0.03))
                 .mul(EurekaConfig.SERVER.stabilizationSpeed)
+
             val idealTorque = moiTensor.transform(idealOmega)
 
             forcesApplier.applyInvariantTorque(idealTorque)
@@ -231,10 +236,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     override fun tick() {
         extraForce = power
         power = 0.0
-    }
-
-    fun align() {
-        aligning = !aligning
     }
 
     var anchors = 0 // Amount of anchors

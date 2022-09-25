@@ -29,6 +29,11 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
             return true
         }
 
+        if (id == 2 && assembled && !player.level.isClientSide) {
+            blockEntity.disassemble()
+            return true
+        }
+
         return super.clickMenuButton(player, id)
     }
 

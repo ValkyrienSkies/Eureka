@@ -13,7 +13,7 @@ import org.valkyrienskies.core.game.ships.ShipData
 import org.valkyrienskies.core.hooks.VSEvents.ShipLoadEvent
 import org.valkyrienskies.core.util.logger
 import org.valkyrienskies.eureka.EurekaConfig
-import org.valkyrienskies.mod.common.util.relocateBlock
+import org.valkyrienskies.mod.util.relocateBlock
 import org.valkyrienskies.mod.common.util.toBlockPos
 
 object ShipAssembler {
