@@ -12,6 +12,9 @@ object EurekaConfig {
     class Client
 
     class Server {
+        @JsonSchema(description = "The speed at which the ship stabilizes")
+        var stabilizationSpeed = 10.0
+
         @JsonSchema(description = "The amount extra that each floater will make the ship float, per kg mass")
         var floaterBuoyantFactorPerKg = 50_000.0
 

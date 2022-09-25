@@ -74,9 +74,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                 return
             }
 
-            val stabilizationSpeed = 10.0
             val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z).mul(angle)
-                .mul(stabilizationSpeed)
+                .mul(EurekaConfig.SERVER.stabilizationSpeed)
             val idealTorque = moiTensor.transform(idealOmega)
 
             forcesApplier.applyInvariantTorque(idealTorque)
