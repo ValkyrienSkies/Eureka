@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TextComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.entity.player.Inventory
@@ -52,7 +53,7 @@ class ShipHelmBlockEntity :
     }
 
     override fun getDisplayName(): Component {
-        return Component.nullToEmpty("Ship Helm")
+        return TextComponent("Ship Helm")
     }
 
     // Needs to get called server-side
