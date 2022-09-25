@@ -1,5 +1,7 @@
 package org.valkyrienskies.eureka
 
+import com.github.imifou.jsonschema.module.addon.annotation.JsonSchema
+
 object EurekaConfig {
     @JvmField
     val CLIENT = Client()
@@ -10,6 +12,12 @@ object EurekaConfig {
     class Client
 
     class Server {
+        @JsonSchema(description = "The amount extra that each floater will make the ship float, per kg mass")
+        var floaterBuoyantFactorPerKg = 2e5
+
+        @JsonSchema(description = "The maximum amount extra each floater will multiply the buoyant force by, irrespective of mass")
+        var maxFloaterBuoyantFactor = 1.0
+
         // The velocity any ship at least can move at.
         var baseSpeed = 3.0
 
