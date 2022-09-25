@@ -13,7 +13,7 @@ object EurekaConfig {
 
     class Server {
         @JsonSchema(description = "The amount extra that each floater will make the ship float, per kg mass")
-        var floaterBuoyantFactorPerKg = 2e5
+        var floaterBuoyantFactorPerKg = 50_000.0
 
         @JsonSchema(description = "The maximum amount extra each floater will multiply the buoyant force by, irrespective of mass")
         var maxFloaterBuoyantFactor = 1.0
