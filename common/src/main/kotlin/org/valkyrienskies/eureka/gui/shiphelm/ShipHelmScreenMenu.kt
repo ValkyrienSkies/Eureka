@@ -11,6 +11,8 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
 
     constructor(syncId: Int, playerInv: Inventory) : this(syncId, playerInv, null)
 
+    //TODO this isn't synced...
+    val aligning = blockEntity?.aligning ?: false
     val assembled = blockEntity?.assembled ?: false
 
     override fun stillValid(player: Player): Boolean = true
@@ -19,8 +21,7 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
         if (blockEntity == null) return false
 
         if (id == 0 && !assembled && !player.level.isClientSide) {
-            blockEntity.assemble() // ?: throw IllegalStateException()
-            // blockEntity.sit(player, true)
+            blockEntity.assemble()
             return true
         }
 
@@ -29,7 +30,7 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
             return true
         }
 
-        if (id == 2 && assembled && !player.level.isClientSide) {
+        if (id == 3 && assembled && !player.level.isClientSide) {
             blockEntity.disassemble()
             return true
         }

@@ -10,11 +10,12 @@ import net.minecraft.world.level.block.state.BlockState
 import org.joml.Vector3i
 import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.game.ships.ShipData
+import org.valkyrienskies.core.game.ships.ShipObjectServer
 import org.valkyrienskies.core.hooks.VSEvents.ShipLoadEvent
 import org.valkyrienskies.core.util.logger
 import org.valkyrienskies.eureka.EurekaConfig
-import org.valkyrienskies.mod.util.relocateBlock
 import org.valkyrienskies.mod.common.util.toBlockPos
+import org.valkyrienskies.mod.util.relocateBlock
 
 object ShipAssembler {
     // TODO use dense packed to send updates
@@ -30,21 +31,37 @@ object ShipAssembler {
 
         // wait until this ship is loaded to copy blocks
         ShipLoadEvent.once({ it.ship.shipData == ship }) {
-            val task = AssemblyTask(level, ship, center, predicate) {
+            // North is no change in directions
+            val task = AssemblyTask(level, ship, Direction.NORTH, center, predicate) {
                 ship.isStatic = false
                 logger.info("Ship assembled!")
             }
 
-            move(level, ship, shipCenter, center) {}
+            move(level, ship, Direction.NORTH, shipCenter, center) {}
             directions(shipCenter, center) { a, b -> task.todo.push(Pair(a, b)) }
 
             tasks += task
         }
     }
 
+    fun unfillShip(level: ServerLevel, ship: ServerShip, direction: Direction, shipCenter: BlockPos, center: BlockPos) {
+        ship as ShipObjectServer // TODO fix this
+        ship.shipData.isStatic = true
+
+        val task = AssemblyTask(level, ship, direction, shipCenter, { !it.isAir }) {
+            ship.shipData.isStatic = false
+            logger.info("Ship dissembled!")
+        }
+
+        directions(center, shipCenter) { a, b -> task.todo.push(Pair(a, b)) }
+
+        tasks += task
+    }
+
     private fun bfs(
         level: ServerLevel,
-        ship: ServerShip,
+        ship: ServerShip?,
+        direction: Direction,
         new: BlockPos,
         old: BlockPos,
         stack: Stack<Pair<BlockPos, BlockPos>>,
@@ -53,7 +70,7 @@ object ShipAssembler {
     ) {
 
         if (predicate(level.getBlockState(old))) {
-            move(level, ship, new, old, modifications::add)
+            move(level, ship, direction, new, old, modifications::add)
 
             directions(new, old) { a, b -> stack.push(Pair(a, b)) }
         }
@@ -62,8 +79,8 @@ object ShipAssembler {
     private fun directions(new: BlockPos, old: BlockPos, lambda: (BlockPos, BlockPos) -> Unit) {
         if (!EurekaConfig.SERVER.diagonals) Direction.values().forEach { lambda(new.relative(it), old.relative(it)) }
         for (x in -1..1) {
-            for (y in -1 .. 1) {
-                for (z in -1 .. 1 ) {
+            for (y in -1..1) {
+                for (z in -1..1) {
                     if (x != 0 || y != 0 || z != 0) {
                         lambda(new.offset(x, y, z), old.offset(x, y, z))
                     }
@@ -74,7 +91,8 @@ object ShipAssembler {
 
     private fun move(
         level: ServerLevel,
-        ship: ServerShip,
+        ship: ServerShip?,
+        direction: Direction, // TODO
         new: BlockPos,
         old: BlockPos,
         modifications: (Pair<Level, BlockPos>) -> Unit
@@ -100,7 +118,7 @@ object ShipAssembler {
                 val (to, from) = task.todo.pop()
 
                 if (from.distSqr(task.center) > (MAX_SIZE * MAX_SIZE)) continue
-                bfs(task.level, task.ship, to, from, task.todo, task.predicate, changed)
+                bfs(task.level, task.ship, task.direction, to, from, task.todo, task.predicate, changed)
                 tAmount++
             }
 
@@ -125,7 +143,8 @@ object ShipAssembler {
 
     private class AssemblyTask(
         val level: ServerLevel,
-        val ship: ServerShip,
+        val ship: ServerShip?,
+        val direction: Direction,
         val center: BlockPos,
         val predicate: (BlockState) -> Boolean,
         val onDone: () -> Unit

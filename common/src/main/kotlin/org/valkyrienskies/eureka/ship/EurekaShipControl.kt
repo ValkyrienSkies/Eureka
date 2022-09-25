@@ -1,12 +1,18 @@
 package org.valkyrienskies.eureka.ship
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import net.minecraft.core.Direction
 import org.joml.AxisAngle4d
 import org.joml.Math.clamp
 import org.joml.Math.cos
 import org.joml.Quaterniond
 import org.joml.Vector3d
-import org.valkyrienskies.core.api.*
+import org.valkyrienskies.core.api.ForcesApplier
+import org.valkyrienskies.core.api.ServerShip
+import org.valkyrienskies.core.api.ServerShipUser
+import org.valkyrienskies.core.api.ShipForcesInducer
+import org.valkyrienskies.core.api.Ticked
+import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.core.game.ships.PhysShip
 import org.valkyrienskies.core.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
@@ -42,6 +48,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     private var angleUntilAligned = 0.0
     val canDisassemble get() = angleUntilAligned < DISASSEMBLE_THRESHOLD
+    var alignedDirection = Direction.NORTH
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
         val mass = physShip.inertia.shipMass

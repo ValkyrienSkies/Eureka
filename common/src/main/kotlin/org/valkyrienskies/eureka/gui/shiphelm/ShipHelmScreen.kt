@@ -14,6 +14,10 @@ import org.valkyrienskies.eureka.EurekaMod
 class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, text: Component) :
     AbstractContainerScreen<ShipHelmScreenMenu>(handler, playerInventory, text) {
 
+    lateinit var assembleButton: ShipHelmButton
+    lateinit var alignButton: ShipHelmButton
+    lateinit var todoButton: ShipHelmButton
+
     init {
         titleLabelX = 120
     }
@@ -22,20 +26,27 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         super.init()
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
-        addButton(
-            ShipHelmButton(x + BUTTON_1_X, y + BUTTON_1_Y, Component.nullToEmpty("Assemble"), font) {
-                minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 0)
+
+        assembleButton = addButton(
+            ShipHelmButton(x + BUTTON_1_X, y + BUTTON_1_Y, ASSEMBLE_TEXT, font) {
+                // Send assemble or dissemble packet
+                if (this.menu.assembled) {
+                    minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 3)
+                } else {
+                    minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 0)
+                }
             }
         )
-        addButton(
-            ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, Component.nullToEmpty("Align"), font) {
-                println("align pressed " + Thread.currentThread().name)
+
+        alignButton = addButton(
+            ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, ALIGN_TEXT, font) {
                 minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 1)
             }
         )
-        addButton(
-            ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, Component.nullToEmpty("Summon Gus"), font) {
-                minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 2)
+
+        todoButton = addButton(
+            ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, TODO_TEXT, font) {
+                minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 3)
             }
         )
     }
@@ -50,6 +61,19 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
 
     override fun renderLabels(matrixStack: PoseStack, i: Int, j: Int) {
         font.draw(matrixStack, title, titleLabelX.toFloat(), titleLabelY.toFloat(), 0x404040)
+
+        if (this.menu.assembled)
+            assembleButton.message = DISSEMBLE_TEXT
+        else
+            assembleButton.message = ASSEMBLE_TEXT
+
+        if (this.menu.aligning) {
+            alignButton.message = ALIGNING_TEXT
+            alignButton.active = false
+        } else {
+            alignButton.message = ALIGN_TEXT
+            alignButton.active = true
+        }
 
         // TODO render stats
     }
@@ -71,5 +95,12 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         private const val BUTTON_2_Y = 103
         private const val BUTTON_3_X = 10
         private const val BUTTON_3_Y = 133
+
+        // TODO make translatable
+        private val ASSEMBLE_TEXT = Component.nullToEmpty("Assemble")
+        private val DISSEMBLE_TEXT = Component.nullToEmpty("Dissemble")
+        private val ALIGN_TEXT = Component.nullToEmpty("Align")
+        private val ALIGNING_TEXT = Component.nullToEmpty("Aligning...")
+        private val TODO_TEXT = Component.nullToEmpty("Sheep old small")
     }
 }
