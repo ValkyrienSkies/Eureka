@@ -15,10 +15,13 @@ object EurekaMod {
         EurekaItems.register()
         EurekaScreens.register()
         EurekaEntities.register()
+        EurekaWeights.register()
         VSConfigClass.registerConfig("vs_eureka", EurekaConfig::class.java)
+
         TickEvent.SERVER_POST.register {
             ShipAssembler.tickAssemblyTasks()
         }
+
         LifecycleEvent.SERVER_STOPPING.register {
             ShipAssembler.clearAssemblyTasks()
         }

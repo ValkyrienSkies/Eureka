@@ -6,6 +6,7 @@ import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
 import org.valkyrienskies.eureka.block.AnchorBlock
+import org.valkyrienskies.eureka.block.BallastBlock
 import org.valkyrienskies.eureka.block.BalloonBlock
 import org.valkyrienskies.eureka.block.EngineBlock
 import org.valkyrienskies.eureka.block.FloaterBlock
@@ -20,6 +21,7 @@ object EurekaBlocks {
     val ENGINE = EngineBlock byName "engine"
     val BALLOON = BalloonBlock byName "balloon"
     val FLOATER = FloaterBlock byName "floater"
+    val BALLAST = BallastBlock byName "ballast"
 
     fun register() {
         BLOCKS.register()
