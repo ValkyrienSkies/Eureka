@@ -48,7 +48,7 @@ object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5
         if (level.isClientSide) return InteractionResult.SUCCESS
         val blockEntity = level.getBlockEntity(pos) as ShipHelmBlockEntity
 
-        return if (player.isCrouching) {
+        return if (player.isSecondaryUseActive) {
             player.openMenu(blockEntity)
             InteractionResult.CONSUME
         } else if (blockEntity.sit(player)) {
