@@ -34,14 +34,14 @@ object AnchorBlock :
     }
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
-        builder.add(FACING).add(BlockStateProperties.LIT)
+        builder.add(FACING).add(BlockStateProperties.POWERED)
     }
 
     override fun getStateForPlacement(ctx: BlockPlaceContext): BlockState? {
         return defaultBlockState()
             .setValue(FACING, ctx.horizontalDirection.opposite)
             .setValue(
-                BlockStateProperties.LIT,
+                BlockStateProperties.POWERED,
                 ctx.level.hasNeighborSignal(ctx.clickedPos)
             )
     }
@@ -67,9 +67,9 @@ object AnchorBlock :
         level as ServerLevel
 
         val bl = level.hasNeighborSignal(pos)
-        val prevBl = state.getValue(BlockStateProperties.LIT)
+        val prevBl = state.getValue(BlockStateProperties.POWERED)
         if (bl != prevBl)
-            level.setBlock(pos, state.setValue(BlockStateProperties.LIT, bl), 11)
+            level.setBlock(pos, state.setValue(BlockStateProperties.POWERED, bl), 11)
 
         super.neighborChanged(state, level, pos, block, fromPos, isMoving)
     }
@@ -80,7 +80,7 @@ object AnchorBlock :
         if (level.isClientSide) return
         level as ServerLevel
 
-        val bl = state.getValue(BlockStateProperties.LIT)
+        val bl = state.getValue(BlockStateProperties.POWERED)
 
         level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.anchors += 1
@@ -94,7 +94,7 @@ object AnchorBlock :
         if (level.isClientSide) return
         level as ServerLevel
 
-        val bl = state.getValue(BlockStateProperties.LIT)
+        val bl = state.getValue(BlockStateProperties.POWERED)
 
         level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.anchors -= 1
