@@ -12,8 +12,8 @@ import net.minecraft.world.level.material.Material
 
 
 object BallastBlock : Block(
-    Properties.of(Material.WOOD)
-        .sound(SoundType.WOOL).strength(1.0f, 2.0f)
+    Properties.of(Material.STONE)
+        .sound(SoundType.STONE).strength(1.0f, 2.0f)
 ) {
 
     init {

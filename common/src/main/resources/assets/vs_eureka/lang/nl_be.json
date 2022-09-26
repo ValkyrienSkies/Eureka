@@ -4,5 +4,6 @@
   "block.vs_eureka.anchor": "Anker",
   "block.vs_eureka.engine": "Schip Motor",
   "block.vs_eureka.floater": "Drijver",
-  "block.vs_eureka.balloon": "Ballon"
+  "block.vs_eureka.balloon": "Ballon",
+  "block.vs_eureka.ballast": "Balast"
 }

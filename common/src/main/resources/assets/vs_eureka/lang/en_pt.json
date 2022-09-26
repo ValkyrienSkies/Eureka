@@ -4,5 +4,6 @@
   "block.vs_eureka.anchor": "Anchor",
   "block.vs_eureka.engine": "Oven Sail",
   "block.vs_eureka.balloon": "Dutchman's Sail",
-  "block.vs_eureka.floater": "Float'r"
+  "block.vs_eureka.floater": "Float'r",
+  "block.vs_eureka.ballast": "Ballast"
 }

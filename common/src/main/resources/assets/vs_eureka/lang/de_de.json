@@ -4,5 +4,6 @@
   "block.vs_eureka.anchor": "Anker",
   "block.vs_eureka.engine": "Schiffsmotor",
   "block.vs_eureka.balloon": "Ballon",
-  "block.vs_eureka.floater": "Schwimmer"
+  "block.vs_eureka.floater": "Schwimmer",
+  "block.vs_eureka.ballast": "Ballast"
 }
