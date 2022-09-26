@@ -76,13 +76,7 @@ class ShipHelmBlockEntity :
         }
         val entity = ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE.create(level)!!.apply {
             val seatEntityPos: Vector3dc = Vector3d(newPos.x + .5, (newPos.y - .5) + height, newPos.z + .5)
-            inShipPosition = seatEntityPos
-            if (ship != null) {
-                val posInWorld = ship!!.shipToWorld.transformPosition(seatEntityPos, Vector3d())
-                moveTo(posInWorld.x, posInWorld.y, posInWorld.z)
-            } else {
-                moveTo(seatEntityPos.x(), seatEntityPos.y(), seatEntityPos.z())
-            }
+            moveTo(seatEntityPos.x(), seatEntityPos.y(), seatEntityPos.z())
 
             lookAt(
                 EntityAnchorArgument.Anchor.EYES,
