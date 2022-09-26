@@ -134,7 +134,7 @@ object EurekaConfig {
         val diagonals = true
         val assembliesPerTick = 1000
 
-        @JsonSchema(description = "Weight of ballast when full redstone power")
+        @JsonSchema(description = "Weight of ballast when lowest redstone power")
         val ballastWeight: Double = 10000.0
     }
 }
