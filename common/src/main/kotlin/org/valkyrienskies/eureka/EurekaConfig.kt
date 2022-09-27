@@ -152,5 +152,8 @@ object EurekaConfig {
 
         @JsonSchema(description = "Weight of ballast when highest redstone power")
         val ballastNoWeight: Double = 1000.0
+
+        @JsonSchema(description = "Movement power per engine")
+        val enginePower: Float = 2000000f
     }
 }

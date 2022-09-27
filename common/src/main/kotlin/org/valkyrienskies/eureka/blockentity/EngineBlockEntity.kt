@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState
 import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.eureka.EurekaBlockEntities
+import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaProperties.HEAT
 import org.valkyrienskies.eureka.gui.engine.EngineScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
@@ -74,7 +75,7 @@ class EngineBlockEntity :
             }
 
             if (heat > 0 && ship != null && eurekaShipControl != null) {
-                eurekaShipControl!!.power += 2000000f
+                eurekaShipControl!!.power += EurekaConfig.SERVER.enginePower
                 if (!skipCost) heat--
             }
         }
