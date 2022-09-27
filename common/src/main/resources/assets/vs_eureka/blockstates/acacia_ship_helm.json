@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "vs_eureka:block/acacia_ship_helm"
+    },
+    "facing=east": {
+      "model": "vs_eureka:block/acacia_ship_helm",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "vs_eureka:block/acacia_ship_helm",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "vs_eureka:block/acacia_ship_helm",
+      "y": 270
+    }
+  }
+}

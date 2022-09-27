@@ -27,7 +27,7 @@ import org.valkyrienskies.eureka.util.RotShapes
 
 private val FACING = HorizontalDirectionalBlock.FACING!!
 
-object ShipHelmBlock : BaseEntityBlock(Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD)) {
+class ShipHelmBlock(properties: Properties) : BaseEntityBlock(properties) {
     val HELM_BASE = RotShapes.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0)
     val HELM_POLE = RotShapes.box(4.0, 1.0, 7.0, 12.0, 12.0, 13.0)
 

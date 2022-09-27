@@ -16,7 +16,7 @@ object EurekaItems {
             EurekaMod.MOD_ID,
             "eureka_tab"
         )
-    ) { ItemStack(EurekaBlocks.SHIP_HELM.get()) }
+    ) { ItemStack(EurekaBlocks.OAK_SHIP_HELM.get()) }
 
     fun register() {
         EurekaBlocks.registerItems(ITEMS)

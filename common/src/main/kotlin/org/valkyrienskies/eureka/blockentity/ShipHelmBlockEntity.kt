@@ -102,7 +102,7 @@ class ShipHelmBlockEntity :
 
         // Check the block state before assembling to avoid creating an empty ship
         val blockState = level.getBlockState(blockPos)
-        if (blockState.block != ShipHelmBlock) {
+        if (blockState.block is ShipHelmBlock) {
             return
         }
 
