@@ -102,9 +102,7 @@ class ShipHelmBlockEntity :
 
         // Check the block state before assembling to avoid creating an empty ship
         val blockState = level.getBlockState(blockPos)
-        if (blockState.block !is ShipHelmBlock) {
-            return
-        }
+        if (blockState.block !is ShipHelmBlock) return
 
         val ship: ShipData =
             level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
