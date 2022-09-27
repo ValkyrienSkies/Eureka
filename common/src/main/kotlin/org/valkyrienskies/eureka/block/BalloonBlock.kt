@@ -17,9 +17,7 @@ import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
-object BalloonBlock : Block(
-    Properties.of(Material.WOOL, MaterialColor.WOOL).sound(SoundType.WOOL)
-) {
+class BalloonBlock(properties: Properties) : Block(properties) {
 
     override fun fallOn(level: Level, blockPos: BlockPos, entity: Entity, f: Float) {
         entity.causeFallDamage(f, 0.2f)
