@@ -1,12 +1,14 @@
 package org.valkyrienskies.eureka.ship
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec
 import net.minecraft.core.Direction
 import org.joml.AxisAngle4d
 import org.joml.Math.clamp
 import org.joml.Math.cos
 import org.joml.Quaterniond
 import org.joml.Vector3d
+import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ForcesApplier
 import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.api.ServerShipUser
@@ -18,6 +20,7 @@ import org.valkyrienskies.core.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
+import java.util.Vector
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -43,7 +46,9 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     var aligning = false
     private var cruiseSpeed = Double.NaN
     private val anchored get() = anchorsActive > 0
+    private val anchorSpeed = EurekaConfig.SERVER.anchorSpeed
     private var wasAnchored = false
+    private var anchorTargetPos = Vector3d()
     private val alleviationPower get() = balloons.toDouble()
 
     private var angleUntilAligned = 0.0
@@ -128,7 +133,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
         // endregion
 
-        if (!anchored) {
             stabilize(
                 physShip,
                 omega,
@@ -232,10 +236,21 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                     forcesApplier.applyInvariantForce(Vector3d(0.0, (impulse + if (stable) 1 else 0) * mass * 10, 0.0))
             }
             // endregion
-        } else if (wasAnchored != anchored) {
-            forcesApplier.setStatic(anchored)
+        if (wasAnchored != anchored) {
+            anchorTargetPos = physShip.poseVel.pos as Vector3d
+            wasAnchored = anchored
         }
-
+        if (anchored && anchorTargetPos.isFinite) { //TODO: Same thing but with rotation; rotate ship to anchor point
+            var x1 = anchorTargetPos.x()
+            var z1 = anchorTargetPos.z()
+            var x2 = physShip.poseVel.pos.x()
+            var z2 = physShip.poseVel.pos.z()
+            var targetVel = Vector3d(x1 - x2, 0.0, z1 - z2)
+            var len = targetVel.length()
+            targetVel.mul(clamp(0.0, anchorSpeed, len * 10.0))
+            targetVel.mul(physShip.inertia.shipMass)
+            forcesApplier.applyInvariantForce(targetVel)
+        }
         // Drag
         // forcesApplier.applyInvariantForce(Vector3d(vel.y()).mul(-mass))
     }

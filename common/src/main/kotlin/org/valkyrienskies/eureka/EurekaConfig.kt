@@ -155,5 +155,8 @@ object EurekaConfig {
 
         @JsonSchema(description = "Movement power per engine")
         val enginePower: Float = 2000000f
+
+        @JsonSchema(description = "Max speed an anchor will pull a ship back to the anchor point")
+        val anchorSpeed: Double = 100000.0
     }
 }
