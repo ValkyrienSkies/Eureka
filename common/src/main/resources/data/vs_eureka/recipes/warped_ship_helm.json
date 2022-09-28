@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "/O/",
+    "OgO",
+    "/_/"
+  ],
+  "key": {
+    "/": {
+      "item": "minecraft:stick"
+    },
+    "O": {
+      "item": "minecraft:warped_fence"
+    },
+    "g": {
+      "item": "minecraft:gold_ingot"
+    },
+    "_": {
+      "item": "minecraft:warped_slab"
+    }
+  },
+  "result": {
+    "item": "vs_eureka:warped_ship_helm",
+    "count": 1
+  }
+}

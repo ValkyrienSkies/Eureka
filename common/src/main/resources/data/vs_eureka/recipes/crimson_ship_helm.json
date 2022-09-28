@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "/O/",
+    "OgO",
+    "/_/"
+  ],
+  "key": {
+    "/": {
+      "item": "minecraft:stick"
+    },
+    "O": {
+      "item": "minecraft:crimson_fence"
+    },
+    "g": {
+      "item": "minecraft:gold_ingot"
+    },
+    "_": {
+      "item": "minecraft:crimson_slab"
+    }
+  },
+  "result": {
+    "item": "vs_eureka:crimson_ship_helm",
+    "count": 1
+  }
+}

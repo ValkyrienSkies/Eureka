@@ -10,17 +10,17 @@
       "item": "minecraft:stick"
     },
     "O": {
-      "item": "minecraft:oak_fence"
+      "item": "minecraft:acacia_fence"
     },
     "g": {
       "item": "minecraft:gold_ingot"
     },
     "_": {
-      "item": "minecraft:oak_slab"
+      "item": "minecraft:acacia_slab"
     }
   },
   "result": {
-    "item": "vs_eureka:ship_helm",
+    "item": "vs_eureka:acacia_ship_helm",
     "count": 1
   }
 }

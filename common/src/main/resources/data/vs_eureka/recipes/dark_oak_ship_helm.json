@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "/O/",
+    "OgO",
+    "/_/"
+  ],
+  "key": {
+    "/": {
+      "item": "minecraft:stick"
+    },
+    "O": {
+      "item": "minecraft:dark_oak_fence"
+    },
+    "g": {
+      "item": "minecraft:gold_ingot"
+    },
+    "_": {
+      "item": "minecraft:dark_oak_slab"
+    }
+  },
+  "result": {
+    "item": "vs_eureka:dark_oak_ship_helm",
+    "count": 1
+  }
+}
