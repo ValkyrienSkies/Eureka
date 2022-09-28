@@ -64,7 +64,7 @@ class ShipHelmBlockEntity :
         val newState = level.getBlockState(newPos)
         val newShape = newState.getShape(level, newPos)
         val newBlock = newState.block
-        var height = 0.0
+        var height = 0.5
         if (!newState.isAir) {
             height = if (
                 newBlock is StairBlock &&

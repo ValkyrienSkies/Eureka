@@ -3,7 +3,8 @@
   "package": "org.valkyrienskies.eureka.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "client.MixinEntityRenderDispatcher"
+    "client.MixinEntityRenderDispatcher",
+    "client.PlayerEntityModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
