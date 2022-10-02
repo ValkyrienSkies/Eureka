@@ -19,10 +19,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.Half
 import org.joml.Vector3d
 import org.joml.Vector3dc
-import org.valkyrienskies.core.api.ServerShip
-import org.valkyrienskies.core.api.getAttachment
-import org.valkyrienskies.core.api.saveAttachment
-import org.valkyrienskies.core.api.shipValue
+import org.valkyrienskies.core.api.*
 import org.valkyrienskies.core.game.ships.ShipData
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
@@ -30,7 +27,6 @@ import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.ShipAssembler
-import org.valkyrienskies.mod.api.ShipBlockEntity
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.entity.ShipMountingEntity
@@ -41,7 +37,7 @@ import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.util.toJOMLD
 
 class ShipHelmBlockEntity :
-    BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider, ShipBlockEntity, TickableBlockEntity {
+    BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider, ServerShipProvider, TickableBlockEntity {
 
     override var ship: ServerShip? = null // TODO ship is not being set in vs2?
         get() = field ?: (level as ServerLevel).getShipObjectManagingPos(this.blockPos)

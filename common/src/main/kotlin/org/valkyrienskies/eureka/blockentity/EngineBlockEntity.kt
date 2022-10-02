@@ -3,6 +3,7 @@ package org.valkyrienskies.eureka.blockentity
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.WorldlyContainer
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
@@ -16,26 +17,27 @@ import net.minecraft.world.level.block.entity.FurnaceBlockEntity
 import net.minecraft.world.level.block.entity.TickableBlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import org.valkyrienskies.core.api.ServerShip
+import org.valkyrienskies.core.api.ServerShipProvider
 import org.valkyrienskies.core.api.shipValue
+import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaProperties.HEAT
 import org.valkyrienskies.eureka.gui.engine.EngineScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.KtContainerData
-import org.valkyrienskies.mod.api.ShipBlockEntity
 import kotlin.math.ceil
 
 const val MAX_HEAT = 2000
 
 class EngineBlockEntity :
     BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get()),
-    ShipBlockEntity,
+    ServerShipProvider,
     TickableBlockEntity,
     StackedContentsCompatible,
     WorldlyContainer {
 
-    override var ship: ServerShip? = null
+    override val ship: ServerShip? get() = (this.level as ServerLevel).getShipManagingPos(this.blockPos)
     private val eurekaShipControl by shipValue<EurekaShipControl>()
     val data = KtContainerData()
     var heatLevel by data
