@@ -28,7 +28,7 @@ import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.KtContainerData
 import kotlin.math.ceil
 
-const val MAX_HEAT = 2000
+const val MAX_HEAT = 2000.0
 
 class EngineBlockEntity :
     BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get()),
@@ -43,6 +43,8 @@ class EngineBlockEntity :
     var heatLevel by data
     var fuelLeft by data
     var fuelTotal by data
+    private val enginePower = EurekaConfig.SERVER.enginePower
+    private val minEnginePower = enginePower / 2.0
     private var fuel: ItemStack = ItemStack.EMPTY
 
     override fun createMenu(containerId: Int, inventory: Inventory): AbstractContainerMenu =
@@ -77,7 +79,7 @@ class EngineBlockEntity :
             }
 
             if (heat > 0 && ship != null && eurekaShipControl != null) {
-                eurekaShipControl!!.power += EurekaConfig.SERVER.enginePower
+                eurekaShipControl!!.power += (minEnginePower + ((heat / MAX_HEAT) * (enginePower - minEnginePower)))
                 if (!skipCost) heat--
             }
         }
