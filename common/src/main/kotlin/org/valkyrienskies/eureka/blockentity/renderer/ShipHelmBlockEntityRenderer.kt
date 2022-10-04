@@ -3,13 +3,13 @@ package org.valkyrienskies.eureka.blockentity.renderer
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Vector3f
 import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.texture.TextureAtlas
 import net.minecraft.client.resources.model.Material
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 
 class ShipHelmBlockEntityRenderer(blockEntityRenderDispatcher: BlockEntityRenderDispatcher) :
@@ -39,8 +39,13 @@ class ShipHelmBlockEntityRenderer(blockEntityRenderDispatcher: BlockEntityRender
         // Rotate the wheel based of the ship omega
         matrixStack.mulPose(Vector3f.ZP.rotation(((blockEntity.level!!.gameTime % 40) + partialTicks) / 20f * Math.PI.toFloat()))
         // Render the wheel
-        val vertexConsumer = WHEEL_TEXTURE.buffer(buffer, RenderType::entitySolid)
-        WheelModel.renderToBuffer(matrixStack, vertexConsumer, combinedLight, combinedOverlay, 1.0f, 1.0f, 1.0f, 1.0f)
+        WheelModel.renderToBuffer(
+            matrixStack,
+            buffer,
+            combinedLight,
+            combinedOverlay,
+            (blockEntity.blockState.block as ShipHelmBlock).woodType,
+        )
 
         matrixStack.popPose()
     }
