@@ -5,7 +5,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.TextComponent
 import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
@@ -24,13 +23,14 @@ import org.valkyrienskies.core.api.*
 import org.valkyrienskies.core.game.ships.ShipData
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
+import org.valkyrienskies.eureka.EurekaMod.EUREKA_SHIP_MOUNTING_ENTITY_TYPE
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.ShipAssembler
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.dimensionId
-import org.valkyrienskies.mod.common.entity.ShipMountingEntity
+import org.valkyrienskies.mod.common.entity.EurekaShipMountingEntity
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toDoubles
@@ -56,7 +56,7 @@ class ShipHelmBlockEntity :
     }
 
     // Needs to get called server-side
-    fun spawnSeat(blockPos: BlockPos, state: BlockState, level: ServerLevel): ShipMountingEntity {
+    fun spawnSeat(blockPos: BlockPos, state: BlockState, level: ServerLevel): EurekaShipMountingEntity {
         val newPos = blockPos.relative(state.getValue(HorizontalDirectionalBlock.FACING))
         val newState = level.getBlockState(newPos)
         val newShape = newState.getShape(level, newPos)
@@ -71,7 +71,7 @@ class ShipHelmBlockEntity :
             else
                 newShape.max(Axis.Y)
         }
-        val entity = ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE.create(level)!!.apply {
+        val entity = EUREKA_SHIP_MOUNTING_ENTITY_TYPE.create(level)!!.apply {
             val seatEntityPos: Vector3dc = Vector3d(newPos.x + .5, (newPos.y - .5) + height, newPos.z + .5)
             moveTo(seatEntityPos.x(), seatEntityPos.y(), seatEntityPos.z())
 
@@ -81,7 +81,7 @@ class ShipHelmBlockEntity :
             )
 
             isController = true
-        }
+        } as EurekaShipMountingEntity
 
         level.addFreshEntityWithPassengers(entity)
         return entity

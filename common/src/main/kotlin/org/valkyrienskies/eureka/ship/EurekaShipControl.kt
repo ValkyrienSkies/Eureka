@@ -3,6 +3,7 @@ package org.valkyrienskies.eureka.ship
 import com.fasterxml.jackson.annotation.JsonIgnore
 import net.fabricmc.loader.impl.lib.sat4j.core.Vec
 import net.minecraft.core.Direction
+import net.minecraft.world.phys.Vec3
 import org.joml.AxisAngle4d
 import org.joml.Math.clamp
 import org.joml.Math.cos
@@ -44,7 +45,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     private var extraForce = 0.0
     private var alleviationTarget = Double.NaN
     var aligning = false
-    private var cruiseSpeed = Double.NaN
+    var cruiseOn = false
     private val anchored get() = anchorsActive > 0
     private val anchorSpeed = EurekaConfig.SERVER.anchorSpeed
     private var wasAnchored = false
@@ -54,6 +55,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     private var angleUntilAligned = 0.0
     val canDisassemble get() = angleUntilAligned < DISASSEMBLE_THRESHOLD
     var alignedDirection = Direction.NORTH
+
+    private var forwardVector = Vector3d(0.0, 0.0, 0.0)
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
 
@@ -179,7 +182,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                 // endregion
 
                 // region Player controlled forward and backward thrust
-                val forwardVector = player.seatInDirection.normal.toJOMLD()
+                forwardVector = player.seatInDirection.normal.toJOMLD()
                 SegmentUtils.transformDirectionWithoutScale(
                     physShip.poseVel,
                     segment,
@@ -245,6 +248,11 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             anchorTargetPos = physShip.poseVel.pos as Vector3d
             wasAnchored = anchored
         }
+
+        if (cruiseOn){
+            println("SEEEXX!!!")
+        }
+
         if (anchored && anchorTargetPos.isFinite) { //TODO: Same thing but with rotation; rotate ship to anchor point
             var x1 = anchorTargetPos.x()
             var z1 = anchorTargetPos.z()
