@@ -15,16 +15,6 @@ import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 object EurekaBlockEntities {
     private val BLOCKENTITIES = DeferredRegister.create(EurekaMod.MOD_ID, Registry.BLOCK_ENTITY_TYPE_REGISTRY)
 
-    private infix fun RegistrySupplier<out Block>.and(supplier: RegistrySupplier<out Block>): Set<() -> Block> =
-        setOf(this::get, supplier::get)
-
-    private infix fun Set<() -> Block>.and(supplier: RegistrySupplier<out Block>): Set<() -> Block> =
-        this.plus(supplier::get)
-
-    private infix fun Set<() -> Block>.withBE(blockEntity: () -> BlockEntity) = Pair(this, blockEntity)
-    private infix fun RegistrySupplier<out Block>.withBE(blockEntity: () -> BlockEntity) =
-        Pair(setOf(this::get), blockEntity)
-
     val SHIP_HELM = EurekaBlocks.OAK_SHIP_HELM withBE ShipHelmBlockEntity.supplier byName "ship_helm"
     val ENGINE = EurekaBlocks.ENGINE withBE EngineBlockEntity.supplier byName "engine"
 
@@ -32,8 +22,18 @@ object EurekaBlockEntities {
         BLOCKENTITIES.register()
     }
 
-    private infix fun Block.withBE(blockEntity: () -> BlockEntity) = Pair(this, blockEntity)
-    private infix fun Pair<Set<() -> Block>, () -> BlockEntity>.byName(name: String) =
+    private infix fun RegistrySupplier<out Block>.and(supplier: RegistrySupplier<out Block>): Set<() -> Block> =
+        setOf(this::get, supplier::get)
+
+    private infix fun Set<() -> Block>.and(supplier: RegistrySupplier<out Block>): Set<() -> Block> =
+        this.plus(supplier::get)
+
+    private infix fun <T : BlockEntity> Set<() -> Block>.withBE(blockEntity: () -> T) = Pair(this, blockEntity)
+    private infix fun <T : BlockEntity> RegistrySupplier<out Block>.withBE(blockEntity: () -> T) =
+        Pair(setOf(this::get), blockEntity)
+
+    private infix fun <T : BlockEntity> Block.withBE(blockEntity: () -> T) = Pair(this, blockEntity)
+    private infix fun <T : BlockEntity> Pair<Set<() -> Block>, () -> T>.byName(name: String): RegistrySupplier<BlockEntityType<T>> =
         BLOCKENTITIES.register(name) {
             val type = Util.fetchChoiceType(References.BLOCK_ENTITY, name)
             BlockEntityType.Builder.of(this.second, *this.first.map { it() }.toTypedArray()).build(type)

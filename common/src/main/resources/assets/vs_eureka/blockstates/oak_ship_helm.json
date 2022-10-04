@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=north": {
-      "model": "vs_eureka:block/oak_ship_helm"
+      "model": "vs_eureka:block/ship_helm_base"
     },
     "facing=east": {
-      "model": "vs_eureka:block/oak_ship_helm",
+      "model": "vs_eureka:block/ship_helm_base",
       "y": 90
     },
     "facing=south": {
-      "model": "vs_eureka:block/oak_ship_helm",
+      "model": "vs_eureka:block/ship_helm_base",
       "y": 180
     },
     "facing=west": {
-      "model": "vs_eureka:block/oak_ship_helm",
+      "model": "vs_eureka:block/ship_helm_base",
       "y": 270
     }
   }

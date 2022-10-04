@@ -5,12 +5,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.valkyrienskies.core.config.VSConfigClass;
+import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaMod;
+import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 
 @Mod(EurekaMod.MOD_ID)
@@ -26,11 +29,17 @@ public class EurekaModForge {
                                 VSConfigClass.Companion.getRegisteredConfig(EurekaConfig.class))
         );
 
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
+
 
         EurekaMod.init();
     }
 
     void clientSetup(final FMLClientSetupEvent event) {
         EurekaMod.initClient();
+        ClientRegistry.bindTileEntityRenderer(
+                EurekaBlockEntities.INSTANCE.getSHIP_HELM().get(),
+                ShipHelmBlockEntityRenderer::new
+        );
     }
 }
