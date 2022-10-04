@@ -27,5 +27,12 @@
   "block.vs_eureka.pink_balloon": "Pink Balloon",
   "block.vs_eureka.brown_balloon": "Brown Balloon",
   "block.vs_eureka.floater": "Float'r",
-  "block.vs_eureka.ballast": "Ballast"
+  "block.vs_eureka.ballast": "Ballast",
+  "gui.vs_eureka.ship_helm": "Ship Helm",
+  "gui.vs_eureka.engine": "Oven Sail",
+  "gui.vs_eureka.assemble": "Cast Off",
+  "gui.vs_eureka.disassemble": "Dock",
+  "gui.vs_eureka.align": "Come About",
+  "gui.vs_eureka.aligning": "Comin' About...",
+  "gui.vs_eureka.todo": "Ye lamb be wretched n' wee"
 }

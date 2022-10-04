@@ -6,6 +6,7 @@ import net.minecraft.core.Direction.Axis
 import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.TextComponent
+import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.entity.player.Inventory
@@ -51,7 +52,7 @@ class ShipHelmBlockEntity :
     }
 
     override fun getDisplayName(): Component {
-        return TextComponent("Ship Helm")
+        return TranslatableComponent("gui.vs_eureka.ship_helm")
     }
 
     // Needs to get called server-side

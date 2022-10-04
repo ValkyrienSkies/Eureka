@@ -3,6 +3,7 @@ package org.valkyrienskies.eureka.blockentity
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.WorldlyContainer
 import net.minecraft.world.entity.player.Inventory
@@ -50,7 +51,7 @@ class EngineBlockEntity :
     override fun createMenu(containerId: Int, inventory: Inventory): AbstractContainerMenu =
         EngineScreenMenu(containerId, inventory, this)
 
-    override fun getDefaultName(): Component = Component.nullToEmpty("Ship Engine")
+    override fun getDefaultName(): Component = TranslatableComponent("gui.vs_eureka.engine")
 
     private var heat = 0
     private var skipCost = false

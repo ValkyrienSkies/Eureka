@@ -27,5 +27,12 @@
   "block.vs_eureka.pink_balloon": "Pink Balloon",
   "block.vs_eureka.brown_balloon": "Brown Balloon",
   "block.vs_eureka.floater": "Floater",
-  "block.vs_eureka.ballast": "Ballast"
+  "block.vs_eureka.ballast": "Ballast",
+  "gui.vs_eureka.ship_helm": "Ship Helm",
+  "gui.vs_eureka.engine": "Engine",
+  "gui.vs_eureka.assemble": "Assemble",
+  "gui.vs_eureka.disassemble": "Disassemble",
+  "gui.vs_eureka.align": "Align",
+  "gui.vs_eureka.aligning": "Aligning...",
+  "gui.vs_eureka.todo": "Sheep old small"
 }

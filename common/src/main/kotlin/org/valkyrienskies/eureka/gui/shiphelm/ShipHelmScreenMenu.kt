@@ -11,7 +11,7 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
 
     constructor(syncId: Int, playerInv: Inventory) : this(syncId, playerInv, null)
 
-    // TODO this isn't synced...
+    //TODO this isn't synced...
     val aligning = blockEntity?.aligning ?: false
     val assembled = blockEntity?.assembled ?: false
 

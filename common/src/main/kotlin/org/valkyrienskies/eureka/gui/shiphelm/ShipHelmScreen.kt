@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import org.valkyrienskies.eureka.EurekaMod
@@ -96,11 +97,10 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         private const val BUTTON_3_X = 10
         private const val BUTTON_3_Y = 133
 
-        // TODO make translatable
-        private val ASSEMBLE_TEXT = Component.nullToEmpty("Assemble")
-        private val DISSEMBLE_TEXT = Component.nullToEmpty("Dissemble")
-        private val ALIGN_TEXT = Component.nullToEmpty("Align")
-        private val ALIGNING_TEXT = Component.nullToEmpty("Aligning...")
-        private val TODO_TEXT = Component.nullToEmpty("Sheep old small")
+        private val ASSEMBLE_TEXT = TranslatableComponent("gui.vs_eureka.assemble")
+        private val DISSEMBLE_TEXT = TranslatableComponent("gui.vs_eureka.disassemble")
+        private val ALIGN_TEXT = TranslatableComponent("gui.vs_eureka.align")
+        private val ALIGNING_TEXT = TranslatableComponent("gui.vs_eureka.aligning")
+        private val TODO_TEXT = TranslatableComponent("gui.vs_eureka.todo")
     }
 }
