@@ -5,16 +5,14 @@ import net.minecraft.core.Registry
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.FireBlock
 import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.material.Material
 import net.minecraft.world.level.material.MaterialColor
-import org.valkyrienskies.eureka.block.AnchorBlock
-import org.valkyrienskies.eureka.block.BallastBlock
-import org.valkyrienskies.eureka.block.BalloonBlock
-import org.valkyrienskies.eureka.block.EngineBlock
-import org.valkyrienskies.eureka.block.FloaterBlock
-import org.valkyrienskies.eureka.block.ShipHelmBlock
+import org.valkyrienskies.eureka.block.*
+import org.valkyrienskies.eureka.mixin.world.level.block.FireBlockInvoker
 
 @Suppress("unused")
 object EurekaBlocks {
@@ -68,6 +66,39 @@ object EurekaBlocks {
 
     fun register() {
         BLOCKS.register()
+        makeFlammables()
+    }
+
+    fun flammableBlock(block: Block?, flameOdds: Int, burnOdds: Int) {
+        val fire = Blocks.FIRE as FireBlock
+        (fire as FireBlockInvoker).invokeSetFlammable(block, flameOdds, burnOdds)
+    }
+
+    fun makeFlammables() {
+        flammableBlock(OAK_SHIP_HELM.get(), 5, 20)
+        flammableBlock(SPRUCE_SHIP_HELM.get(), 5, 20)
+        flammableBlock(BIRCH_SHIP_HELM.get(), 5, 20)
+        flammableBlock(JUNGLE_SHIP_HELM.get(), 5, 20)
+        flammableBlock(ACACIA_SHIP_HELM.get(), 5, 20)
+        flammableBlock(DARK_OAK_SHIP_HELM.get(), 5, 20)
+        flammableBlock(BALLOON.get(), 30, 60)
+        flammableBlock(WHITE_BALLOON.get(), 30, 60)
+        flammableBlock(LIGHT_GRAY_BALLOON.get(), 30, 60)
+        flammableBlock(GRAY_BALLOON.get(), 30, 60)
+        flammableBlock(BLACK_BALLOON.get(), 30, 60)
+        flammableBlock(RED_BALLOON.get(), 30, 60)
+        flammableBlock(ORANGE_BALLOON.get(), 30, 60)
+        flammableBlock(YELLOW_BALLOON.get(), 30, 60)
+        flammableBlock(LIME_BALLOON.get(), 30, 60)
+        flammableBlock(GREEN_BALLOON.get(), 30, 60)
+        flammableBlock(LIGHT_BLUE_BALLOON.get(), 30, 60)
+        flammableBlock(CYAN_BALLOON.get(), 30, 60)
+        flammableBlock(BLUE_BALLOON.get(), 30, 60)
+        flammableBlock(PURPLE_BALLOON.get(), 30, 60)
+        flammableBlock(MAGENTA_BALLOON.get(), 30, 60)
+        flammableBlock(PINK_BALLOON.get(), 30, 60)
+        flammableBlock(BROWN_BALLOON.get(), 30, 60)
+        flammableBlock(FLOATER.get(), 5, 20)
     }
 
     // Blocks should also be registered as items, if you want them to be able to be held

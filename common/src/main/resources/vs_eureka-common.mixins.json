@@ -9,5 +9,8 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "minVersion": "0.8"
+  "minVersion": "0.8",
+  "mixins": [
+    "world.level.block.FireBlockInvoker"
+  ]
 }
