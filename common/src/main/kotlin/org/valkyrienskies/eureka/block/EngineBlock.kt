@@ -25,12 +25,12 @@ import net.minecraft.world.level.material.Material
 import net.minecraft.world.phys.BlockHitResult
 import org.valkyrienskies.eureka.EurekaProperties.HEAT
 import org.valkyrienskies.eureka.blockentity.EngineBlockEntity
-import java.util.Random
+import java.util.*
 
 object EngineBlock : BaseEntityBlock(
     Properties.of(Material.STONE)
         .requiresCorrectToolForDrops()
-        .strength(3.5F, 1200.0f)
+        .strength(3.5F)
         .sound(SoundType.STONE)
         .lightLevel { state -> if (state.getValue(HEAT) > 0) state.getValue(HEAT) + 9 else 0 }
 ) {
@@ -75,6 +75,14 @@ object EngineBlock : BaseEntityBlock(
         return RenderShape.MODEL
     }
 
+    @Environment(EnvType.CLIENT)
+    override fun getShadeBrightness(state: BlockState?, level: BlockGetter?, pos: BlockPos?): Float {
+        if (state?.getValue(HEAT) ?: 0 > 0){
+            return 1.0f
+        } else {
+            return super.getShadeBrightness(state, level, pos)
+        }
+    }
     @Environment(value = EnvType.CLIENT)
     override fun animateTick(state: BlockState, level: Level, pos: BlockPos, random: Random) {
         val heat = state.getValue(HEAT)

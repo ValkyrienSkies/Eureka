@@ -56,6 +56,11 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     var alignedDirection = Direction.NORTH
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
+
+        if (helms < 1) {
+            return;
+        }
+
         val mass = physShip.inertia.shipMass
         val moiTensor = physShip.inertia.momentOfInertiaTensor
         val segment = physShip.segments.segments[0]?.segmentDisplacement!!
@@ -265,6 +270,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     var anchors = 0 // Amount of anchors
     var anchorsActive = 0 // Anchors that are active
     var balloons = 0 // Amount of balloons
+    //Amount of helms
+    var helms = 0
 
     /**
      * Amount of floaters * 15
