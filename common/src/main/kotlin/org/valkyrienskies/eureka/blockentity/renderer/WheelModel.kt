@@ -1,77 +1,72 @@
 package org.valkyrienskies.eureka.blockentity.renderer
 
+import com.google.common.collect.ImmutableMap
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.model.geom.ModelPart
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.texture.TextureAtlas
-import net.minecraft.client.resources.model.Material
+import net.minecraft.client.resources.model.ModelResourceLocation
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.state.StateDefinition
+import net.minecraft.world.level.block.state.StateHolder
+import net.minecraft.world.level.block.state.properties.EnumProperty
+import org.valkyrienskies.eureka.EurekaMod
+import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.block.WoodType
 
-object WheelModel {
-    // 16x16 size of original texture
-    val flatSpokes = ModelPart(16, 16, 0, 0)
-    val rotatedSpokes = ModelPart(16, 16, 0, 0)
-    val rotatedRim = ModelPart(16, 16, 0, 0)
-    val flatRim = ModelPart(16, 16, 0, 0)
-    val middle = ModelPart(16, 16, 0, 0)
+// OK so what dis does im making mc happy about states
+// WheelModels has many states (wood type)
+// WheelModel has 1 woodtype and represents 1 state
+// In the mixin it gets queued and abused
+object WheelModels {
+    val mc by lazy { Minecraft.getInstance() }
+    val property = EnumProperty.create("wood", WoodType::class.java)
 
-    val goldMaterial = Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation("minecraft:block/gold_block"))
+    val models by lazy { property.possibleValues.associateWith { WheelModel(it) } }
+    val definition = object : StateDefinition<WheelModels, WheelModel>(
+        { models.values.first() }, WheelModels,
+        { a, b, c -> WheelModel(b[property!!] as WoodType) },
+        mapOf(Pair("wood", property))
+    ) {}
 
-    init {
-        flatRim.mirror = true
-        flatSpokes.mirror = true
-        rotatedRim.mirror = true
-        rotatedSpokes.mirror = true
 
-        middle.addBox(-1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 2.0f)
+    fun render(
+        matrixStack: PoseStack,
+        blockEntity: BlockEntity,
+        buffer: MultiBufferSource,
+        combinedLight: Int,
+        combinedOverlay: Int
+    ) {
+        val woodType = (blockEntity.blockState.block as ShipHelmBlock).woodType
 
-        flatSpokes.addBox(-9.0f, -10.5f, 4.15f, 10.0f, 1.0f, 1f)
-        flatSpokes.addBox(-4.5f, -15.0f, 4.15f, 1.0f, 10.0f, 1f)
-        flatRim.addBox(-7.0f, -5.0f, 4.0f, 6.0f, 1.0f, 1f)
-        flatRim.addBox(-7.0f, -16.0f, 4.0f, 6.0f, 1.0f, 1f)
-        flatRim.addBox(1.0f, -13.0f, 4.0f, 1.0f, 6.0f, 1f)
-        flatRim.addBox(-10.0f, -13.0f, 4.0f, 1.0f, 6.0f, 1f)
+        matrixStack.pushPose()
+        // Model isn't centered calculated and need to use 0.625 on y and z 0.25
+        matrixStack.translate(-0.5, -0.625, -0.25)
 
-        rotatedSpokes.addBox(-6.0f, -0.5f, -0.25f, 12.0f, 1.0f, 1f)
-        rotatedSpokes.addBox(-0.5f, -6.0f, -0.25f, 1.0f, 12.0f, 1f)
-        rotatedRim.addBox(-6.35f, -2.125f, -0.4f, 1.0f, 4.0f, 1f)
-        rotatedRim.addBox(-2.125f, -6.35f, -0.4f, 4.0f, 1.0f, 1f)
-        rotatedRim.addBox(5.4f, -2.125f, -0.4f, 1.0f, 4.0f, 1f)
-        rotatedRim.addBox(-2.125f, 5.4f, -0.4f, 4.0f, 1.0f, 1f)
+        mc.blockRenderer.modelRenderer.renderModel(
+            matrixStack.last(),
+            buffer.getBuffer(RenderType.cutout()),
+            null,
+            models[woodType]!!.model,
+            1f, 1f, 1f,
+            combinedLight,
+            combinedOverlay
+        )
 
-        flatSpokes.x = 4f
-        flatSpokes.y = 10f
-        flatSpokes.z = -4.4f
-
-        flatRim.x = 4f
-        flatRim.y = 10f
-        flatRim.z = -4.4f
-
-        rotatedSpokes.zRot = 0.7854f // 45 degrees
-        rotatedRim.zRot = 0.7854f
+        matrixStack.popPose()
     }
 
-    fun renderToBuffer(
-        poseStack: PoseStack,
-        buffer: MultiBufferSource,
-        packedLight: Int,
-        packedOverlay: Int,
-        woodType: WoodType
-    ) {
-        woodType.planksMaterial.buffer(buffer, RenderType::entitySolid).let {
-            flatSpokes.render(poseStack, it, packedLight, packedOverlay, 1f, 1f, 1f, 1f)
-            rotatedSpokes.render(poseStack, it, packedLight, packedOverlay, 1f, 1f, 1f, 1f)
-        }
+    class WheelModel(type: WoodType) :
+        StateHolder<WheelModels, WheelModel>(WheelModels, ImmutableMap.of(property, type), null) {
 
-        woodType.logMaterial.buffer(buffer, RenderType::entitySolid).let {
-            flatRim.render(poseStack, it, packedLight, packedOverlay, 1f, 1f, 1f, 1f)
-            rotatedRim.render(poseStack, it, packedLight, packedOverlay, 1f, 1f, 1f, 1f)
-        }
+        val location = ModelResourceLocation(
+            ResourceLocation(EurekaMod.MOD_ID, "ship_helm_wheel"),
+            "wood=${type.resourceName}"
+        )
 
-        goldMaterial.buffer(buffer, RenderType::entitySolid).let {
-            middle.render(poseStack, it, packedLight, packedOverlay, 1f, 1f, 1f, 1f)
+        val model by lazy {
+            mc.blockRenderer.blockModelShaper.modelManager.getModel(location)
         }
     }
 }

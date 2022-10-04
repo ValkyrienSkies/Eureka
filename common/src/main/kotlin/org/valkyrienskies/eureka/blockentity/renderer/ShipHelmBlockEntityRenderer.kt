@@ -9,11 +9,10 @@ import net.minecraft.client.renderer.texture.TextureAtlas
 import net.minecraft.client.resources.model.Material
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
-import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 
-class ShipHelmBlockEntityRenderer(blockEntityRenderDispatcher: BlockEntityRenderDispatcher) :
-    BlockEntityRenderer<ShipHelmBlockEntity>(blockEntityRenderDispatcher) {
+class ShipHelmBlockEntityRenderer(val renderDispatcher: BlockEntityRenderDispatcher) :
+    BlockEntityRenderer<ShipHelmBlockEntity>(renderDispatcher) {
 
     val WHEEL_TEXTURE = Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation("minecraft:block/oak_planks"))
 
@@ -27,7 +26,7 @@ class ShipHelmBlockEntityRenderer(blockEntityRenderDispatcher: BlockEntityRender
     ) {
         matrixStack.pushPose()
         // Wheel offset of the base
-        matrixStack.translate(0.5, 0.65, 0.5)
+        matrixStack.translate(0.5, 0.60, 0.5)
         // Rotate wheel towards the direction its facing
         matrixStack.mulPose(
             Vector3f.YP.rotationDegrees(
@@ -35,17 +34,11 @@ class ShipHelmBlockEntityRenderer(blockEntityRenderDispatcher: BlockEntityRender
             )
         )
         // Add offset of the base based of rotation
-        matrixStack.translate(0.0, 0.0, 0.2)
+        matrixStack.translate(0.0, 0.0, 0.19)
         // Rotate the wheel based of the ship omega
         matrixStack.mulPose(Vector3f.ZP.rotation(((blockEntity.level!!.gameTime % 40) + partialTicks) / 20f * Math.PI.toFloat()))
         // Render the wheel
-        WheelModel.renderToBuffer(
-            matrixStack,
-            buffer,
-            combinedLight,
-            combinedOverlay,
-            (blockEntity.blockState.block as ShipHelmBlock).woodType,
-        )
+        WheelModels.render(matrixStack, blockEntity, buffer, combinedLight, combinedOverlay)
 
         matrixStack.popPose()
     }

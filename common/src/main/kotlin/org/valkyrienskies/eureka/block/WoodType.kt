@@ -1,11 +1,11 @@
 package org.valkyrienskies.eureka.block
 
-import net.minecraft.client.renderer.texture.TextureAtlas
-import net.minecraft.client.resources.model.Material
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.StringRepresentable
 
 // TODO mod compat
-enum class WoodType(val textureName: String) {
+
+enum class WoodType(val resourceName: String) : StringRepresentable {
     OAK("oak"),
     SPRUCE("spruce"),
     BIRCH("birch"),
@@ -15,8 +15,8 @@ enum class WoodType(val textureName: String) {
     WARPED("warped"),
     CRIMSON("crimson");
 
-    val textureLocationPlanks get() = ResourceLocation("minecraft:block/${textureName}_planks")
-    val textureLocationLog get() = ResourceLocation("minecraft:block/${textureName}_log")
-    val planksMaterial = Material(TextureAtlas.LOCATION_BLOCKS, textureLocationPlanks)
-    val logMaterial = Material(TextureAtlas.LOCATION_BLOCKS, textureLocationLog)
+    val textureLocationPlanks get() = ResourceLocation("minecraft:block/${resourceName}_planks")
+    val textureLocationLog get() = ResourceLocation("minecraft:block/${resourceName}_log")
+
+    override fun getSerializedName(): String = resourceName
 }

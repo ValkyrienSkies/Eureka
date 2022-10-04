@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "client.MixinEntityRenderDispatcher",
+    "client.MixinModelBakery",
     "client.PlayerEntityModelMixin"
   ],
   "injectors": {
