@@ -44,14 +44,17 @@ object WheelModels {
         // Model isn't centered calculated and need to use 0.625 on y and z 0.25
         matrixStack.translate(-0.5, -0.625, -0.25)
 
-        mc.blockRenderer.modelRenderer.renderModel(
-            matrixStack.last(),
-            buffer.getBuffer(RenderType.cutout()),
-            null,
-            models[woodType]!!.model,
-            1f, 1f, 1f,
-            combinedLight,
-            combinedOverlay
+        mc.blockRenderer.modelRenderer.tesselateWithoutAO(
+                blockEntity.level,
+                models[woodType]!!.model,
+                blockEntity.blockState,
+                blockEntity.blockPos,
+                matrixStack,
+                buffer.getBuffer(RenderType.cutout()),
+                true,
+                blockEntity.level?.random,
+                42L, //Used in ModelBlockRenderer.class in renderModel, not sure what the right number is but this seems to work
+                combinedOverlay
         )
 
         matrixStack.popPose()
