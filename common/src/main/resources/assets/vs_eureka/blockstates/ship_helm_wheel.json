@@ -5,6 +5,27 @@
     },
     "wood=oak": {
       "model": "vs_eureka:block/ship_helm_wheel"
+    },
+    "wood=acacia": {
+      "model": "vs_eureka:block/acacia_ship_helm_wheel"
+    },
+    "wood=birch": {
+      "model": "vs_eureka:block/birch_ship_helm_wheel"
+    },
+    "wood=crimson": {
+      "model": "vs_eureka:block/crimson_ship_helm_wheel"
+    },
+    "wood=dark_oak": {
+      "model": "vs_eureka:block/dark_oak_ship_helm_wheel"
+    },
+    "wood=jungle": {
+      "model": "vs_eureka:block/jungle_ship_helm_wheel"
+    },
+    "wood=spruce": {
+      "model": "vs_eureka:block/spruce_ship_helm_wheel"
+    },
+    "wood=warped": {
+      "model": "vs_eureka:block/warped_ship_helm_wheel"
     }
   }
 }
