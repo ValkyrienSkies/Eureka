@@ -18,7 +18,13 @@ public abstract class PlayerEntityModelMixin<T extends LivingEntity> extends Hum
 
     @SuppressWarnings("unchecked")
     @Inject(method = "setupAnim", at = @At(value = "HEAD"))
-    public void setupAnim(final T livingEntity, final float swing, final float g, final float tick, final float i, final float j, final CallbackInfo info) {
+    public void setupAnim(final T livingEntity,
+                          final float swing,
+                          final float g,
+                          final float tick,
+                          final float i,
+                          final float j,
+                          final CallbackInfo info) {
         if (livingEntity.getVehicle() instanceof ShipMountingEntity) {
             this.riding = false;
         }

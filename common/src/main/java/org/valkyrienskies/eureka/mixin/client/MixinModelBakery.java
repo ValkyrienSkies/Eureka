@@ -1,6 +1,13 @@
 package org.valkyrienskies.eureka.mixin.client;
 
 import com.mojang.datafixers.util.Pair;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.block.model.BlockModelDefinition;
 import net.minecraft.client.renderer.block.model.MultiVariant;
@@ -17,13 +24,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
 
@@ -50,18 +50,24 @@ public abstract class MixinModelBakery {
     private void addCustomStaticDefinitions(final ResourceManager resourceManager,
                                             final BlockColors blockColors,
                                             final ProfilerFiller profilerFiller,
-                                            final int i, CallbackInfo ci) {
+                                            final int i,
+                                            final CallbackInfo ci) {
         try {
-            List<Pair<String, BlockModelDefinition>> definitions = this.resourceManager.getResources(new ResourceLocation(EurekaMod.MOD_ID, "blockstates/ship_helm_wheel.json")).stream().map(resource -> {
+            final List<Pair<String, BlockModelDefinition>> definitions = this.resourceManager.getResources(
+                    new ResourceLocation(EurekaMod.MOD_ID, "blockstates/ship_helm_wheel.json")).stream().map(resource -> {
                 try (InputStream inputStream = resource.getInputStream()) {
-                    Pair<String, BlockModelDefinition> pair = Pair.of(resource.getSourceName(), BlockModelDefinition.fromStream(this.context, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
+                    final Pair<String, BlockModelDefinition> pair = Pair.of(resource.getSourceName(), BlockModelDefinition.fromStream(this.context, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
                     return pair;
-                } catch (Exception exception) {
-                    throw new RuntimeException(String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getLocation(), resource.getSourceName(), exception.getMessage()));
+                } catch (final Exception exception) {
+                    throw new RuntimeException(
+                            String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s",
+                                    resource.getLocation(),
+                                    resource.getSourceName(),
+                                    exception.getMessage()));
                 }
             }).collect(Collectors.toList());
 
-            List<StateHolder> takenStates = new ArrayList<>();
+            final List<StateHolder> takenStates = new ArrayList<>();
 
             definitions.forEach(p ->
                     p.getSecond().getVariants().forEach((String var, MultiVariant variant) ->
@@ -79,7 +85,7 @@ public abstract class MixinModelBakery {
                 }
             });
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Failed to load ship_helm_wheel", e);
         }
     }

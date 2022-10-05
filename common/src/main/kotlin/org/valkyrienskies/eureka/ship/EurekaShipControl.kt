@@ -197,14 +197,14 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             if (player.upImpulse != 0.0f && balloons > 0)
                 alleviationTarget =
                     pos.y() + (
-                            player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate * max(
-                                alleviationPower * 0.2,
-                                1.5
-                            )
-                            )
+                        player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate * max(
+                            alleviationPower * 0.2,
+                            1.5
+                        )
+                        )
             }
 
-            // region Alleviation
+        // region Alleviation
             if (alleviationTarget.isFinite() && balloons > 0) {
                 val massPenalty =
                     min((alleviationPower / (mass * BALLOON_PER_MASS)) - 1.0, alleviationPower) * NEUTRAL_FLOAT

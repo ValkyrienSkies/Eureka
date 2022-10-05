@@ -1,9 +1,9 @@
 package org.valkyrienskies.eureka.fabric;
 
-import net.fabricmc.loader.api.FabricLoader;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.fabricmc.loader.api.FabricLoader;
 import org.valkyrienskies.dependency_downloader.DependencyDownloader;
 import org.valkyrienskies.dependency_downloader.DependencyMatchResult;
 import org.valkyrienskies.dependency_downloader.ModDependency;
@@ -30,7 +30,9 @@ public class AutoDependenciesFabric {
                 .collect(Collectors.toList());
 
             System.setProperty("java.awt.headless", "false");
-            new DependencyDownloader(FabricLoader.getInstance().getGameDir().resolve("mods"), dependencies).promptToDownload();
+            new DependencyDownloader(
+                    FabricLoader.getInstance().getGameDir().resolve("mods"),
+                    dependencies).promptToDownload();
         } catch (final Throwable t) {
             t.printStackTrace();
         }

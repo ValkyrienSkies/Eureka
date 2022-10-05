@@ -13,11 +13,11 @@ import net.minecraft.world.level.material.Material
 import net.minecraft.world.level.material.MaterialColor
 import org.valkyrienskies.eureka.block.AnchorBlock
 import org.valkyrienskies.eureka.block.BallastBlock
+import org.valkyrienskies.eureka.block.BalloonBlock
 import org.valkyrienskies.eureka.block.EngineBlock
 import org.valkyrienskies.eureka.block.FloaterBlock
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.block.WoodType
-import org.valkyrienskies.eureka.block.BalloonBlock
 import org.valkyrienskies.eureka.mixin.world.level.block.FireBlockInvoker
 
 @Suppress("unused")
