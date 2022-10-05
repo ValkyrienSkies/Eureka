@@ -19,7 +19,7 @@ public class EurekaModFabric implements ModInitializer {
     public void onInitialize() {
         try {
             Class.forName("org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric");
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 

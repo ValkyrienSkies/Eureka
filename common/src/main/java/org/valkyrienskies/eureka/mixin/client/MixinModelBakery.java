@@ -17,9 +17,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.eureka.EurekaMod;
-import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.valkyrienskies.eureka.EurekaMod;
+import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
 
 @Mixin(ModelBakery.class)
 public abstract class MixinModelBakery {
@@ -48,7 +47,10 @@ public abstract class MixinModelBakery {
     private Map<ResourceLocation, UnbakedModel> unbakedCache;
 
     @Inject(method = "<init>", at = @At(value = "TAIL"))
-    private void addCustomStaticDefinitions(ResourceManager resourceManager, BlockColors blockColors, ProfilerFiller profilerFiller, int i, CallbackInfo ci) {
+    private void addCustomStaticDefinitions(final ResourceManager resourceManager,
+                                            final BlockColors blockColors,
+                                            final ProfilerFiller profilerFiller,
+                                            final int i, CallbackInfo ci) {
         try {
             List<Pair<String, BlockModelDefinition>> definitions = this.resourceManager.getResources(new ResourceLocation(EurekaMod.MOD_ID, "blockstates/ship_helm_wheel.json")).stream().map(resource -> {
                 try (InputStream inputStream = resource.getInputStream()) {
