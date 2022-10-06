@@ -7,6 +7,7 @@ import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
+import org.joml.Vector3d
 import org.joml.Vector3i
 import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.game.ships.ShipData
@@ -32,12 +33,12 @@ object ShipAssembler {
         // wait until this ship is loaded to copy blocks
         ShipLoadEvent.once({ it.ship.shipData == ship }) {
             // North is no change in directions
-            val task = AssemblyTask(level, ship, Direction.NORTH, center, predicate) {
+            val task = AssemblyTask(level, ship, center, predicate) {
                 ship.isStatic = false
                 logger.info("Ship assembled!")
             }
 
-            move(level, ship, Direction.NORTH, shipCenter, center) {}
+            move(level, ship, shipCenter, center) {}
             directions(shipCenter, center) { a, b -> task.todo.push(Pair(a, b)) }
 
             tasks += task
@@ -48,20 +49,45 @@ object ShipAssembler {
         ship as ShipObjectServer // TODO fix this
         ship.shipData.isStatic = true
 
-        val task = AssemblyTask(level, ship, direction, shipCenter, { !it.isAir }) {
-            ship.shipData.isStatic = false
-            logger.info("Ship dissembled!")
+        val shipToWorld = ship.shipToWorld
+        val alloc0 = Vector3d()
+        val alloc1 = BlockPos.MutableBlockPos()
+        val alloc2 = BlockPos.MutableBlockPos()
+        ship.shipActiveChunksSet.iterateChunkPos { chunkX, chunkZ ->
+            val chunk = level.getChunk(chunkX, chunkZ)
+            for (section in chunk.sections) {
+                if (section == null) continue
+                for (x in 0..15) {
+                    for (y in 0..15) {
+                        for (z in 0..15) {
+                            val state = section.getBlockState(x, y, z)
+                            if (state.isAir) continue
+
+                            val realX = (chunkX shl 4) + x
+                            val realY = section.bottomBlockY() + y
+                            val realZ = (chunkZ shl 4) + z
+
+
+                            val inWorldPos = shipToWorld.transformPosition(
+                                alloc0.set(realX.toDouble(), realY.toDouble(), realZ.toDouble())
+                            ).round()
+
+                            val inWorldBlockPos =
+                                alloc1.set(inWorldPos.x.toInt(), inWorldPos.y.toInt(), inWorldPos.z.toInt())
+                            val inShipPos =
+                                alloc2.set(realX, realY, realZ)
+
+                            level.relocateBlock(inShipPos, inWorldBlockPos, null, direction)
+                        }
+                    }
+                }
+            }
         }
-
-        directions(center, shipCenter) { a, b -> task.todo.push(Pair(a, b)) }
-
-        tasks += task
     }
 
     private fun bfs(
         level: ServerLevel,
         ship: ServerShip?,
-        direction: Direction,
         new: BlockPos,
         old: BlockPos,
         stack: Stack<Pair<BlockPos, BlockPos>>,
@@ -70,7 +96,7 @@ object ShipAssembler {
     ) {
 
         if (predicate(level.getBlockState(old))) {
-            move(level, ship, direction, new, old, modifications::add)
+            move(level, ship, new, old, modifications::add)
 
             directions(new, old) { a, b -> stack.push(Pair(a, b)) }
         }
@@ -92,7 +118,6 @@ object ShipAssembler {
     private fun move(
         level: ServerLevel,
         ship: ServerShip?,
-        direction: Direction, // TODO
         new: BlockPos,
         old: BlockPos,
         modifications: (Pair<Level, BlockPos>) -> Unit
@@ -100,7 +125,7 @@ object ShipAssembler {
         modifications(Pair(level, new))
         modifications(Pair(level, old))
 
-        level.relocateBlock(old, new, ship)
+        level.relocateBlock(old, new, ship, Direction.NORTH)
     }
 
     fun tickAssemblyTasks() {
@@ -118,7 +143,7 @@ object ShipAssembler {
                 val (to, from) = task.todo.pop()
 
                 if (from.distSqr(task.center) > (MAX_SIZE * MAX_SIZE)) continue
-                bfs(task.level, task.ship, task.direction, to, from, task.todo, task.predicate, changed)
+                bfs(task.level, task.ship, to, from, task.todo, task.predicate, changed)
                 tAmount++
             }
 
@@ -144,7 +169,6 @@ object ShipAssembler {
     private class AssemblyTask(
         val level: ServerLevel,
         val ship: ServerShip?,
-        val direction: Direction,
         val center: BlockPos,
         val predicate: (BlockState) -> Boolean,
         val onDone: () -> Unit
