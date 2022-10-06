@@ -40,14 +40,14 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     val controllingPlayer by shipValue<SeatedControllingPlayer>()
 
     private var extraForce = 0.0
-    private var alleviationTarget = Double.NaN
+    private var elevationTarget = Double.NaN
     var aligning = false
     private var cruiseSpeed = Double.NaN
     private val anchored get() = anchorsActive > 0
     private val anchorSpeed = EurekaConfig.SERVER.anchorSpeed
     private var wasAnchored = false
     private var anchorTargetPos = Vector3d()
-    private val alleviationPower get() = balloons.toDouble()
+    private val elevationPower get() = balloons.toDouble()
 
     private var angleUntilAligned = 0.0
     private var alignTarget = 0
@@ -80,7 +80,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // [x] Revisit player controlled linear force
         // [x] Anchor freezing
         // [ ] Rewrite Alignment code
-        // [x] Revisit Alleviation code
+        // [x] Revisit Elevation code
         // [x] Balloon limiter
         // [ ] Add Cruise code
 
@@ -187,25 +187,25 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             forcesApplier.applyInvariantForce(forwardVelInc)
             // endregion
 
-            // Player controlled alleviation
+            // Player controlled elevation
             if (player.upImpulse != 0.0f && balloons > 0)
-                alleviationTarget =
+                elevationTarget =
                     pos.y() + (
-                            player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate * max(
-                                alleviationPower * 0.2,
+                            player.upImpulse * EurekaConfig.SERVER.impulseElevationRate * max(
+                                elevationPower * 0.2,
                                 1.5
                             )
                             )
         }
 
-        // region Alleviation
-        if (alleviationTarget.isFinite() && balloons > 0) {
+        // region Elevation
+        if (elevationTarget.isFinite() && balloons > 0) {
             val massPenalty =
-                min((alleviationPower / (mass * BALLOON_PER_MASS)) - 1.0, alleviationPower) * NEUTRAL_FLOAT
+                min((elevationPower / (mass * BALLOON_PER_MASS)) - 1.0, elevationPower) * NEUTRAL_FLOAT
             val limit = (NEUTRAL_LIMIT + massPenalty)
             var stable = true
 
-            val alleviationPower = if (pos.y() > limit) {
+            val elevationPower = if (pos.y() > limit) {
                 if ((pos.y() - limit) > 20.0) {
                     stable = false
                     0.0
@@ -214,15 +214,15 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                     if ((pos.y() - limit) > 10.0) {
                         stable = false
                         (1 - mod) * 0.1 + 0.1
-                    } else alleviationPower * mod
+                    } else elevationPower * mod
                 }
-            } else alleviationPower
+            } else elevationPower
 
-            val diff = (alleviationTarget - pos.y())
+            val diff = (elevationTarget - pos.y())
                 .let { if (abs(it) < 0.05) 0.0 else it }
 
-            val penalisedVel = if (alleviationPower < 0.1) 0.0 else
-                (MAX_RISE_VEL * alleviationPower)
+            val penalisedVel = if (elevationPower < 0.1) 0.0 else
+                (MAX_RISE_VEL * elevationPower)
 
             val shipRiseVelo = vel.y()
             val idealRiseVelo = clamp(-MAX_RISE_VEL, penalisedVel, diff)

@@ -28,7 +28,7 @@ object EurekaConfig {
         // Sensitivity of the up/down impulse buttons.
         // TODO maybe should be moved to VS2 client-side config?
         @JsonSchema(description = "Vertical sensitivity up ascend/descend")
-        var impulseAlleviationRate = 0.5
+        var impulseElevationRate = 0.5
 
         // If a ship with weight 0 and 0 balloons would exist in the world, it would have this max attitude.
         @JsonSchema(description = "The Y level that a ship with 0 mass would naturally float to")
