@@ -1,10 +1,14 @@
 package org.valkyrienskies.mod.common.config
 
 import com.mojang.blaze3d.platform.InputConstants
+import me.shedaniel.architectury.event.events.client.ClientTickEvent
 import me.shedaniel.architectury.registry.KeyBindings
 import net.minecraft.client.KeyMapping
-import java.util.function.Consumer
-import java.util.function.Supplier
+import net.minecraft.client.Minecraft
+import org.joml.Vector3f
+import org.valkyrienskies.core.networking.simple.sendToServer
+import org.valkyrienskies.mod.common.networking.PacketPlayerCruise
+import org.valkyrienskies.mod.common.networking.PacketPlayerDriving
 
 object EurekaKeyBindings {
     val CRUISE_MAPPING = KeyMapping(
@@ -16,6 +20,11 @@ object EurekaKeyBindings {
 
     fun register(){
         KeyBindings.registerKeyBinding(CRUISE_MAPPING);
+        ClientTickEvent.CLIENT_POST.register { minecraft ->
+            while (CRUISE_MAPPING.consumeClick()) {
+                PacketPlayerCruise(true).sendToServer()
+            }
+        }
     }
 
 }

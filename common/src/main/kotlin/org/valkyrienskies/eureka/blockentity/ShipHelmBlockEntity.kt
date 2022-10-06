@@ -34,7 +34,7 @@ import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.ShipAssembler
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.dimensionId
-import org.valkyrienskies.mod.common.entity.EurekaShipMountingEntity
+import org.valkyrienskies.mod.common.entity.ShipMountingEntity
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toDoubles
@@ -60,7 +60,7 @@ class ShipHelmBlockEntity :
     }
 
     // Needs to get called server-side
-    fun spawnSeat(blockPos: BlockPos, state: BlockState, level: ServerLevel): EurekaShipMountingEntity {
+    fun spawnSeat(blockPos: BlockPos, state: BlockState, level: ServerLevel): ShipMountingEntity {
         val newPos = blockPos.relative(state.getValue(HorizontalDirectionalBlock.FACING))
         val newState = level.getBlockState(newPos)
         val newShape = newState.getShape(level, newPos)
@@ -75,7 +75,7 @@ class ShipHelmBlockEntity :
             else
                 newShape.max(Axis.Y)
         }
-        val entity = EUREKA_SHIP_MOUNTING_ENTITY_TYPE.create(level)!!.apply {
+        val entity = ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE.create(level)!!.apply {
             val seatEntityPos: Vector3dc = Vector3d(newPos.x + .5, (newPos.y - .5) + height, newPos.z + .5)
             moveTo(seatEntityPos.x(), seatEntityPos.y(), seatEntityPos.z())
 
@@ -85,7 +85,7 @@ class ShipHelmBlockEntity :
             )
 
             isController = true
-        } as EurekaShipMountingEntity
+        } as ShipMountingEntity
 
         level.addFreshEntityWithPassengers(entity)
         return entity

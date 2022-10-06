@@ -2,11 +2,13 @@ package org.valkyrienskies.eureka.ship
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import net.minecraft.core.Direction
+import net.minecraft.world.phys.Vec3
 import org.joml.AxisAngle4d
 import org.joml.Math.clamp
 import org.joml.Math.cos
 import org.joml.Quaterniond
 import org.joml.Vector3d
+import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ForcesApplier
 import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.api.ServerShipUser
@@ -41,7 +43,11 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     private var extraForce = 0.0
     private var alleviationTarget = Double.NaN
     var aligning = false
-    private var cruiseSpeed = Double.NaN
+    var cruiseOn = false
+    var lastCruiseOn = false
+
+    var cruiseVelocity = Vector3d()
+
     private val anchored get() = anchorsActive > 0
     private val anchorSpeed = EurekaConfig.SERVER.anchorSpeed
     private var wasAnchored = false
@@ -183,12 +189,20 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                 forwardVector,
                 forwardVector
             )
+            if (player.forwardImpulse < 0.0f) {
+                cruiseOn = false;
+            }
             forwardVector.mul(player.forwardImpulse.toDouble())
             val idealForwardVel = Vector3d(forwardVector)
             idealForwardVel.mul(EurekaConfig.SERVER.baseSpeed)
             val forwardVelInc = idealForwardVel.sub(vel.x(), 0.0, vel.z())
             forwardVelInc.mul(mass * 10)
             forwardVelInc.add(forwardVector.mul(extraForce))
+
+            if (cruiseOn && (lastCruiseOn != cruiseOn)) {
+                cruiseVelocity = forwardVelInc
+                println(cruiseVelocity)
+            }
 
             forcesApplier.applyInvariantForce(forwardVelInc)
             // endregion
@@ -238,6 +252,10 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                     forcesApplier.applyInvariantForce(Vector3d(0.0, (impulse + if (stable) 1 else 0) * mass * 10, 0.0))
             }
             // endregion
+        if (cruiseOn) {
+            forcesApplier.applyInvariantForce(cruiseVelocity)
+        }
+        lastCruiseOn = cruiseOn
         if (wasAnchored != anchored) {
             anchorTargetPos = physShip.poseVel.pos as Vector3d
             wasAnchored = anchored
