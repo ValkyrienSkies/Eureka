@@ -147,7 +147,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
         controllingPlayer?.let { player ->
             // region Player controlled rotation
-            val rotationVector = Vector3d(
+            var rotationVector = Vector3d(
                 0.0,
                 if (player.leftImpulse != 0.0f)
                     (player.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed)
@@ -155,8 +155,35 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                     -omega.y() * EurekaConfig.SERVER.turnSpeed,
                 0.0
             )
+            //rotationVector.add(player.seatInDirection.normal.toJOMLD().mul(player.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed))
 
             rotationVector.sub(0.0, omega.y(), 0.0)
+
+            SegmentUtils.transformDirectionWithScale(
+                physShip.poseVel,
+                segment,
+                moiTensor.transform(
+                    SegmentUtils.invTransformDirectionWithScale(
+                        physShip.poseVel,
+                        segment,
+                        rotationVector,
+                        rotationVector
+                    )
+                ),
+                rotationVector
+            )
+
+            forcesApplier.applyInvariantTorque(rotationVector)
+            // endregion
+
+            // region Player controlled banking
+            rotationVector = player.seatInDirection.normal.toJOMLD()
+
+            physShip.poseVel.transformDirection(rotationVector)
+
+            rotationVector.y = 0.0
+
+            rotationVector.mul(player.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed * -1.5)
 
             SegmentUtils.transformDirectionWithScale(
                 physShip.poseVel,
