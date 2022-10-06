@@ -28,7 +28,7 @@ private val BALLOON_PER_MASS = 1 / EurekaConfig.SERVER.massPerBalloon
 private val NEUTRAL_FLOAT = EurekaConfig.SERVER.neutralLimit
 private val NEUTRAL_LIMIT get() = NEUTRAL_FLOAT - 10
 
-class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
+class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, ServerShipUser, Ticked {
 
     companion object {
         private const val ALIGN_THRESHOLD = 0.01
@@ -40,13 +40,13 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     val controllingPlayer by shipValue<SeatedControllingPlayer>()
 
     private var extraForce = 0.0
-    private var elevationTarget = Double.NaN
     var aligning = false
     private var cruiseSpeed = Double.NaN
     private val anchored get() = anchorsActive > 0
     private val anchorSpeed = EurekaConfig.SERVER.anchorSpeed
     private var wasAnchored = false
     private var anchorTargetPos = Vector3d()
+    private var anchorTargetRot = Quaterniond()
     private val elevationPower get() = balloons.toDouble()
 
     private var angleUntilAligned = 0.0
@@ -234,6 +234,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // endregion
         if (wasAnchored != anchored) {
             anchorTargetPos = physShip.poseVel.pos as Vector3d
+            anchorTargetRot = physShip.poseVel.rot as Quaterniond
             wasAnchored = anchored
         }
         if (anchored && anchorTargetPos.isFinite) { // TODO: Same thing but with rotation; rotate ship to anchor point
@@ -246,6 +247,19 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             targetVel.mul(clamp(0.0, anchorSpeed, len * 10.0))
             targetVel.mul(physShip.inertia.shipMass)
             forcesApplier.applyInvariantForce(targetVel)
+
+            val invRotation = physShip.poseVel.rot.invert(Quaterniond())
+            val invRotationAxisAngle = AxisAngle4d(invRotation)
+
+            val alignTarget = (anchorTargetRot.angle() / (0.5 * Math.PI))
+            val angleUntilAligned = abs((alignTarget * (0.5 * Math.PI)) - invRotationAxisAngle.angle)
+            val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z)
+                    .mul(angleUntilAligned)
+                    .mul(EurekaConfig.SERVER.stabilizationSpeed)
+
+            val idealTorque = moiTensor.transform(idealOmega)
+
+            forcesApplier.applyInvariantTorque(idealTorque)
         }
         // Drag
         // forcesApplier.applyInvariantForce(Vector3d(vel.y()).mul(-mass))

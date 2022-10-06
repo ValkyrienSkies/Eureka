@@ -106,7 +106,7 @@ class ShipHelmBlockEntity :
 
         val ship: ShipData =
             level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
-        ship.saveAttachment(EurekaShipControl())
+        ship.saveAttachment(EurekaShipControl(ship.shipTransform.shipPositionInWorldCoordinates.y()))
         ShipAssembler.fillShip(
             level,
             ship,
