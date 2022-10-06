@@ -19,7 +19,11 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.Half
 import org.joml.Vector3d
 import org.joml.Vector3dc
-import org.valkyrienskies.core.api.*
+import org.valkyrienskies.core.api.ServerShipProvider
+import org.valkyrienskies.core.api.ServerShip
+import org.valkyrienskies.core.api.saveAttachment
+import org.valkyrienskies.core.api.shipValue
+import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.core.game.ships.ShipData
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig

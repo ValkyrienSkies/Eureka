@@ -25,7 +25,7 @@ import net.minecraft.world.level.material.Material
 import net.minecraft.world.phys.BlockHitResult
 import org.valkyrienskies.eureka.EurekaProperties.HEAT
 import org.valkyrienskies.eureka.blockentity.EngineBlockEntity
-import java.util.*
+import java.util.Random
 
 object EngineBlock : BaseEntityBlock(
     Properties.of(Material.STONE)
@@ -77,7 +77,7 @@ object EngineBlock : BaseEntityBlock(
 
     @Environment(EnvType.CLIENT)
     override fun getShadeBrightness(state: BlockState?, level: BlockGetter?, pos: BlockPos?): Float {
-        if (state?.getValue(HEAT) ?: 0 > 0){
+        if (state?.getValue(HEAT) ?: 0 > 0) {
             return 1.0f
         } else {
             return super.getShadeBrightness(state, level, pos)

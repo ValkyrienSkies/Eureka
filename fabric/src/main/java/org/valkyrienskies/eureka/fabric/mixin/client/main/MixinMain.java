@@ -14,7 +14,7 @@ public class MixinMain {
         at = @At("HEAD"),
         method = "main"
     )
-    private static void beforeMain(String[] args, CallbackInfo ci) {
+    private static void beforeMain(final String[] args, final CallbackInfo ci) {
         AutoDependenciesFabric.checkDependencies();
     }
 
