@@ -8,10 +8,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.texture.TextureAtlas
 import net.minecraft.client.resources.model.Material
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
-import org.valkyrienskies.core.api.ServerShip
-import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 import org.valkyrienskies.mod.common.getShipManagingPos
 

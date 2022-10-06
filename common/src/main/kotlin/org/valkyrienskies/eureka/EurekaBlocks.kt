@@ -28,7 +28,7 @@ object EurekaBlocks {
     val ENGINE = EngineBlock byName "engine"
     val FLOATER = FloaterBlock byName "floater"
     val BALLAST = BallastBlock byName "ballast"
-    
+
     // region Ship Helms
     val OAK_SHIP_HELM = ShipHelmBlock(
         BlockBehaviour.Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD),

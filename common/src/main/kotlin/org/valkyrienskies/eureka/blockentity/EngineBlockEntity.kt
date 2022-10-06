@@ -20,13 +20,13 @@ import net.minecraft.world.level.block.state.BlockState
 import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.api.ServerShipProvider
 import org.valkyrienskies.core.api.shipValue
-import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaProperties.HEAT
 import org.valkyrienskies.eureka.gui.engine.EngineScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.KtContainerData
+import org.valkyrienskies.mod.common.getShipManagingPos
 import kotlin.math.ceil
 
 const val MAX_HEAT = 2000.0

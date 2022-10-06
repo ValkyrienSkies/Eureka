@@ -19,6 +19,7 @@ import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
 import kotlin.math.abs
+import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 
@@ -49,8 +50,9 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     private val alleviationPower get() = balloons.toDouble()
 
     private var angleUntilAligned = 0.0
+    private var alignTarget = 0
     val canDisassemble get() = angleUntilAligned < DISASSEMBLE_THRESHOLD
-    var alignedDirection = Direction.NORTH
+    val aligningTo get() = Direction.from2DDataValue(alignTarget)
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
 
@@ -83,14 +85,13 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // [ ] Add Cruise code
 
         // region Aligning
+
         val invRotation = physShip.poseVel.rot.invert(Quaterniond())
         val invRotationAxisAngle = AxisAngle4d(invRotation)
-        angleUntilAligned = invRotationAxisAngle.angle
-        if (aligning) {
-            if (angleUntilAligned < ALIGN_THRESHOLD) {
-                return
-            }
-
+        // Floor makes a number 0 to 3, wich corresponds to direction
+        alignTarget = floor(invRotationAxisAngle.angle / (0.5 * Math.PI)).toInt()
+        angleUntilAligned = abs((alignTarget.toDouble() * (0.5 * Math.PI)) - invRotationAxisAngle.angle)
+        if (aligning && angleUntilAligned > ALIGN_THRESHOLD) {
             val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z)
                 .mul(max(angleUntilAligned, 0.03))
                 .mul(EurekaConfig.SERVER.stabilizationSpeed)
@@ -99,40 +100,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
             forcesApplier.applyInvariantTorque(idealTorque)
         }
-        /*
-        if (aligning > 0) {
-
-
-
-            val linearDiff = Vector3d(physShip.position)
-                .sub(
-                    Vector3d(physShip.position)
-                        .add(0.5, 0.5, 0.5)
-                        .floor()
-                        .add(0.5, 0.5, 0.0)
-                )
-
-            // Were gonna use a direction as sole input, cus this would work well with dissasembly
-            val alignFront = alignTo.normal.toJOMLD()
-            val angleAlign = shipFront.angle(alignFront)
-            if (angleAlign < 0.01 && linearDiff.lengthSquared() < 0.1)
-                aligning--
-            else {
-                // Torque
-
-
-                // Linear
-                linearStabilize = false
-
-                val idealVelocity = linearDiff
-                idealVelocity.sub(physShip.velocity)
-                idealVelocity.mul(mass * 10)
-
-                forcesApplier.applyInvariantForce(idealVelocity)
-            }
-        }
-        */
-
         // endregion
 
         stabilize(
@@ -155,7 +122,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                     -omega.y() * EurekaConfig.SERVER.turnSpeed,
                 0.0
             )
-            //rotationVector.add(player.seatInDirection.normal.toJOMLD().mul(player.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed))
+            // rotationVector.add(player.seatInDirection.normal.toJOMLD().mul(player.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed))
 
             rotationVector.sub(0.0, omega.y(), 0.0)
 
@@ -224,52 +191,52 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             if (player.upImpulse != 0.0f && balloons > 0)
                 alleviationTarget =
                     pos.y() + (
-                        player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate * max(
-                            alleviationPower * 0.2,
-                            1.5
-                        )
-                        )
-            }
+                            player.upImpulse * EurekaConfig.SERVER.impulseAlleviationRate * max(
+                                alleviationPower * 0.2,
+                                1.5
+                            )
+                            )
+        }
 
         // region Alleviation
-            if (alleviationTarget.isFinite() && balloons > 0) {
-                val massPenalty =
-                    min((alleviationPower / (mass * BALLOON_PER_MASS)) - 1.0, alleviationPower) * NEUTRAL_FLOAT
-                val limit = (NEUTRAL_LIMIT + massPenalty)
-                var stable = true
+        if (alleviationTarget.isFinite() && balloons > 0) {
+            val massPenalty =
+                min((alleviationPower / (mass * BALLOON_PER_MASS)) - 1.0, alleviationPower) * NEUTRAL_FLOAT
+            val limit = (NEUTRAL_LIMIT + massPenalty)
+            var stable = true
 
-                val alleviationPower = if (pos.y() > limit) {
-                    if ((pos.y() - limit) > 20.0) {
+            val alleviationPower = if (pos.y() > limit) {
+                if ((pos.y() - limit) > 20.0) {
+                    stable = false
+                    0.0
+                } else {
+                    val mod = 1 + cos(((pos.y() - limit) / 10.0) * (Math.PI / 2) + (Math.PI / 2))
+                    if ((pos.y() - limit) > 10.0) {
                         stable = false
-                        0.0
-                    } else {
-                        val mod = 1 + cos(((pos.y() - limit) / 10.0) * (Math.PI / 2) + (Math.PI / 2))
-                        if ((pos.y() - limit) > 10.0) {
-                            stable = false
-                            (1 - mod) * 0.1 + 0.1
-                        } else alleviationPower * mod
-                    }
-                } else alleviationPower
+                        (1 - mod) * 0.1 + 0.1
+                    } else alleviationPower * mod
+                }
+            } else alleviationPower
 
-                val diff = (alleviationTarget - pos.y())
-                    .let { if (abs(it) < 0.05) 0.0 else it }
+            val diff = (alleviationTarget - pos.y())
+                .let { if (abs(it) < 0.05) 0.0 else it }
 
-                val penalisedVel = if (alleviationPower < 0.1) 0.0 else
-                    (MAX_RISE_VEL * alleviationPower)
+            val penalisedVel = if (alleviationPower < 0.1) 0.0 else
+                (MAX_RISE_VEL * alleviationPower)
 
-                val shipRiseVelo = vel.y()
-                val idealRiseVelo = clamp(-MAX_RISE_VEL, penalisedVel, diff)
-                val impulse = idealRiseVelo - shipRiseVelo
+            val shipRiseVelo = vel.y()
+            val idealRiseVelo = clamp(-MAX_RISE_VEL, penalisedVel, diff)
+            val impulse = idealRiseVelo - shipRiseVelo
 
-                if (idealRiseVelo > 0.1 || stable)
-                    forcesApplier.applyInvariantForce(Vector3d(0.0, (impulse + if (stable) 1 else 0) * mass * 10, 0.0))
-            }
-            // endregion
+            if (idealRiseVelo > 0.1 || stable)
+                forcesApplier.applyInvariantForce(Vector3d(0.0, (impulse + if (stable) 1 else 0) * mass * 10, 0.0))
+        }
+        // endregion
         if (wasAnchored != anchored) {
             anchorTargetPos = physShip.poseVel.pos as Vector3d
             wasAnchored = anchored
         }
-        if (anchored && anchorTargetPos.isFinite) { //TODO: Same thing but with rotation; rotate ship to anchor point
+        if (anchored && anchorTargetPos.isFinite) { // TODO: Same thing but with rotation; rotate ship to anchor point
             var x1 = anchorTargetPos.x()
             var z1 = anchorTargetPos.z()
             var x2 = physShip.poseVel.pos.x()
@@ -285,20 +252,15 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     }
 
     var power = 0.0
+    var anchors = 0 // Amount of anchors
+    var anchorsActive = 0 // Anchors that are active
+    var balloons = 0 // Amount of balloons
+
+    var helms = 0 // Amount of helms
+    var floaters = 0 // Amount of floaters * 15
 
     override fun tick() {
         extraForce = power
         power = 0.0
     }
-
-    var anchors = 0 // Amount of anchors
-    var anchorsActive = 0 // Anchors that are active
-    var balloons = 0 // Amount of balloons
-    //Amount of helms
-    var helms = 0
-
-    /**
-     * Amount of floaters * 15
-     */
-    var floaters = 0
 }
