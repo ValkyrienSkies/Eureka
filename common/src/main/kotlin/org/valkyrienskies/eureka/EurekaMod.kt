@@ -7,6 +7,7 @@ import org.valkyrienskies.eureka.util.ShipAssembler
 
 object EurekaMod {
     const val MOD_ID = "vs_eureka"
+    val nextTick = mutableListOf<() -> Unit>()
 
     @JvmStatic
     fun init() {
@@ -20,6 +21,8 @@ object EurekaMod {
 
         TickEvent.SERVER_POST.register {
             ShipAssembler.tickAssemblyTasks()
+            nextTick.forEach { it() }
+            nextTick.clear()
         }
 
         LifecycleEvent.SERVER_STOPPING.register {
