@@ -18,6 +18,7 @@ import org.valkyrienskies.core.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
@@ -89,11 +90,14 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
         val invRotation = physShip.poseVel.rot.invert(Quaterniond())
         val invRotationAxisAngle = AxisAngle4d(invRotation)
         // Floor makes a number 0 to 3, wich corresponds to direction
-        alignTarget = floor(invRotationAxisAngle.angle / (0.5 * Math.PI)).toInt()
-        angleUntilAligned = abs((alignTarget.toDouble() * (0.5 * Math.PI)) - invRotationAxisAngle.angle)
-        if (aligning && angleUntilAligned > ALIGN_THRESHOLD) {
+        alignTarget = floor((invRotationAxisAngle.angle / (PI * 0.5)) + 4.5).toInt() % 4
+        angleUntilAligned = (alignTarget.toDouble() * (0.5 * Math.PI)) - invRotationAxisAngle.angle
+        if (aligning && abs(angleUntilAligned) > ALIGN_THRESHOLD) {
+            if (angleUntilAligned < 0.3 && angleUntilAligned > 0.0) angleUntilAligned = 0.3
+            if (angleUntilAligned > -0.3 && angleUntilAligned < 0.0) angleUntilAligned = -0.3
+
             val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z)
-                .mul(max(angleUntilAligned, 0.03))
+                .mul(-angleUntilAligned)
                 .mul(EurekaConfig.SERVER.stabilizationSpeed)
 
             val idealTorque = moiTensor.transform(idealOmega)
