@@ -238,12 +238,12 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
             wasAnchored = anchored
         }
         if (anchored && anchorTargetPos.isFinite) { // TODO: Same thing but with rotation; rotate ship to anchor point
-            var x1 = anchorTargetPos.x()
-            var z1 = anchorTargetPos.z()
-            var x2 = physShip.poseVel.pos.x()
-            var z2 = physShip.poseVel.pos.z()
-            var targetVel = Vector3d(x1 - x2, 0.0, z1 - z2)
-            var len = targetVel.length()
+            val x1 = anchorTargetPos.x()
+            val z1 = anchorTargetPos.z()
+            val x2 = physShip.poseVel.pos.x()
+            val z2 = physShip.poseVel.pos.z()
+            val targetVel = Vector3d(x1 - x2, 0.0, z1 - z2)
+            val len = targetVel.length()
             targetVel.mul(clamp(0.0, anchorSpeed, len * 10.0))
             targetVel.mul(physShip.inertia.shipMass)
             forcesApplier.applyInvariantForce(targetVel)
@@ -254,8 +254,8 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
             val alignTarget = (anchorTargetRot.angle() / (0.5 * Math.PI))
             val angleUntilAligned = abs((alignTarget * (0.5 * Math.PI)) - invRotationAxisAngle.angle)
             val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z)
-                    .mul(angleUntilAligned)
-                    .mul(EurekaConfig.SERVER.stabilizationSpeed)
+                .mul(angleUntilAligned)
+                .mul(EurekaConfig.SERVER.stabilizationSpeed)
 
             val idealTorque = moiTensor.transform(idealOmega)
 

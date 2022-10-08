@@ -67,7 +67,6 @@ object ShipAssembler {
                             val realY = section.bottomBlockY() + y
                             val realZ = (chunkZ shl 4) + z
 
-
                             val inWorldPos = shipToWorld.transformPosition(
                                 alloc0.set(realX.toDouble(), realY.toDouble(), realZ.toDouble())
                             ).round()
