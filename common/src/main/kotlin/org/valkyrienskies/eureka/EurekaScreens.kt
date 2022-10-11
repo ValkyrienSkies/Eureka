@@ -16,6 +16,7 @@ object EurekaScreens {
 
     val SHIP_HELM = ShipHelmScreenMenu.factory withName "ship_helm"
     val ENGINE = EngineScreenMenu.factory withName "engine"
+
     fun register() {
         SCREENS.register()
     }

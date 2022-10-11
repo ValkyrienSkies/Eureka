@@ -35,7 +35,12 @@ public class EurekaModForge {
         EurekaMod.init();
     }
 
+    boolean happendClientSetup = false;
+
     void clientSetup(final FMLClientSetupEvent event) {
+        if (happendClientSetup) return;
+        happendClientSetup = true;
+
         EurekaMod.initClient();
         ClientRegistry.bindTileEntityRenderer(
                 EurekaBlockEntities.INSTANCE.getSHIP_HELM().get(),
