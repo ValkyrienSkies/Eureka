@@ -18,7 +18,6 @@ import org.valkyrienskies.eureka.block.EngineBlock
 import org.valkyrienskies.eureka.block.FloaterBlock
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.block.WoodType
-import org.valkyrienskies.eureka.mixin.world.level.block.FireBlockInvoker
 import org.valkyrienskies.mod.event.RegistryEvents
 
 @Suppress("unused")
@@ -131,7 +130,7 @@ object EurekaBlocks {
     // TODO make this part of the registration sequence
     fun flammableBlock(block: Block?, flameOdds: Int, burnOdds: Int) {
         val fire = Blocks.FIRE as FireBlock
-        (fire as FireBlockInvoker).invokeSetFlammable(block, flameOdds, burnOdds)
+        fire.setFlammable(block, flameOdds, burnOdds)
     }
 
     fun makeFlammables() {

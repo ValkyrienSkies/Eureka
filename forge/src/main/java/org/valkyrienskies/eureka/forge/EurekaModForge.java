@@ -18,6 +18,8 @@ import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 
 @Mod(EurekaMod.MOD_ID)
 public class EurekaModForge {
+    boolean happendClientSetup = false;
+
     public EurekaModForge() {
         // Submit our event bus to let architectury register our content on the right time
         EventBuses.registerModEventBus(EurekaMod.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
@@ -34,8 +36,6 @@ public class EurekaModForge {
 
         EurekaMod.init();
     }
-
-    boolean happendClientSetup = false;
 
     void clientSetup(final FMLClientSetupEvent event) {
         if (happendClientSetup) return;

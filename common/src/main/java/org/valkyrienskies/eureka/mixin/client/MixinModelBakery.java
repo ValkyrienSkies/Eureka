@@ -1,13 +1,6 @@
 package org.valkyrienskies.eureka.mixin.client;
 
 import com.mojang.datafixers.util.Pair;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.block.model.BlockModelDefinition;
 import net.minecraft.client.renderer.block.model.MultiVariant;
@@ -26,6 +19,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Mixin(ModelBakery.class)
 public abstract class MixinModelBakery {

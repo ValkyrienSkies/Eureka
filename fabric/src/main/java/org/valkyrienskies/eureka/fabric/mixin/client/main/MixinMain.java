@@ -11,8 +11,8 @@ import org.valkyrienskies.eureka.fabric.AutoDependenciesFabric;
 public class MixinMain {
 
     @Inject(
-        at = @At("HEAD"),
-        method = "main"
+            at = @At("HEAD"),
+            method = "main"
     )
     private static void beforeMain(final String[] args, final CallbackInfo ci) {
         AutoDependenciesFabric.checkDependencies();

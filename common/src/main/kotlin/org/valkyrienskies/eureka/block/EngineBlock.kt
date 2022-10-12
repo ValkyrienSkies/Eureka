@@ -83,6 +83,7 @@ object EngineBlock : BaseEntityBlock(
             return super.getShadeBrightness(state, level, pos)
         }
     }
+
     @Environment(value = EnvType.CLIENT)
     override fun animateTick(state: BlockState, level: Level, pos: BlockPos, random: Random) {
         val heat = state.getValue(HEAT)

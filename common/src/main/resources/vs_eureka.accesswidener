@@ -4,3 +4,4 @@ accessible method net/minecraft/client/gui/screens/MenuScreens register (Lnet/mi
 accessible class  net/minecraft/world/entity/EntityType$Builder
 accessible method net/minecraft/client/renderer/entity/EntityRenderDispatcher register (Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/client/renderer/entity/EntityRenderer;)V
 accessible class  net/minecraft/client/resources/model/ModelBakery$ModelGroupKey
+accessible method net/minecraft/world/level/block/FireBlock setFlammable (Lnet/minecraft/world/level/block/Block;II)V
