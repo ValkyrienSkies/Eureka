@@ -43,6 +43,7 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
     private var extraForce = 0.0
     var aligning = false
     private var cruiseSpeed = Double.NaN
+    private var physConsumption = 0f
     private val anchored get() = anchorsActive > 0
     private val anchorSpeed = EurekaConfig.SERVER.anchorSpeed
     private var wasAnchored = false
@@ -54,6 +55,8 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
     private var alignTarget = 0
     val canDisassemble get() = angleUntilAligned < DISASSEMBLE_THRESHOLD
     val aligningTo get() = Direction.from2DDataValue(alignTarget)
+    var consumed = 0f
+        private set
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
 
@@ -80,10 +83,13 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
         // [x] Revisit player controlled torque
         // [x] Revisit player controlled linear force
         // [x] Anchor freezing
-        // [ ] Rewrite Alignment code
+        // [x] Rewrite Alignment code
         // [x] Revisit Elevation code
         // [x] Balloon limiter
         // [ ] Add Cruise code
+        // [ ] Rotation based of shipsize
+        // [x] Engine consumption
+        // [ ] Fix elevation sensititvity
 
         // region Aligning
 
@@ -184,9 +190,18 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
             forwardVector.mul(player.forwardImpulse.toDouble())
             val idealForwardVel = Vector3d(forwardVector)
             idealForwardVel.mul(EurekaConfig.SERVER.baseSpeed)
+            val idealCasualForwardVelInc = Vector3d(forwardVector).mul(EurekaConfig.SERVER.maxCasualSpeed.toDouble())
+            idealCasualForwardVelInc.sub(vel.x(), 0.0, vel.z())
             val forwardVelInc = idealForwardVel.sub(vel.x(), 0.0, vel.z())
             forwardVelInc.mul(mass * 10)
-            forwardVelInc.add(forwardVector.mul(extraForce))
+            idealCasualForwardVelInc.mul(mass * 10)
+
+            val extraForceNeeded = idealCasualForwardVelInc.min(forwardVelInc)
+            val usage = min(extraForceNeeded.length() / extraForce, 1.0)
+
+            physConsumption += usage.toFloat()
+
+            forwardVelInc.add(forwardVector.mul(extraForce).mul(usage))
 
             forcesApplier.applyInvariantForce(forwardVelInc)
             // endregion
@@ -236,6 +251,8 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
                 forcesApplier.applyInvariantForce(Vector3d(0.0, (impulse + if (stable) 1 else 0) * mass * 10, 0.0))
         }
         // endregion
+
+        // region Anchor
         if (wasAnchored != anchored) {
             anchorTargetPos = physShip.poseVel.pos as Vector3d
             anchorTargetRot = physShip.poseVel.rot as Quaterniond
@@ -265,6 +282,8 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
 
             forcesApplier.applyInvariantTorque(idealTorque)
         }
+        // endregion
+
         // Drag
         // forcesApplier.applyInvariantForce(Vector3d(vel.y()).mul(-mass))
     }
@@ -280,5 +299,7 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
     override fun tick() {
         extraForce = power
         power = 0.0
+        consumed = physConsumption * /* should be phyics ticks based*/ 0.1f
+        physConsumption = 0.0f
     }
 }

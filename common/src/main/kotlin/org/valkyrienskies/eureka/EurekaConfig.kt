@@ -12,6 +12,22 @@ object EurekaConfig {
     class Client
 
     class Server {
+
+        @JsonSchema(description = "Movement power per engine heated fully")
+        val enginePower: Float = 2000000f
+
+        @JsonSchema(description = "Movement power per engine with minimal heat")
+        val minEnginePower: Float = 700000f
+
+        @JsonSchema(description = "The amount of heat a engine loses per tick")
+        val engineHeatLoss = 0.0005f
+
+        @JsonSchema(description = "The amount of heat a gain per tick (when burning)")
+        val engineHeatGain = 0.002f
+
+        @JsonSchema(description = "Max speed of a ship without boosting")
+        val maxCasualSpeed = 20f
+
         @JsonSchema(description = "The speed at which the ship stabilizes")
         var stabilizationSpeed = 10.0
 
@@ -152,9 +168,6 @@ object EurekaConfig {
 
         @JsonSchema(description = "Weight of ballast when highest redstone power")
         val ballastNoWeight: Double = 1000.0
-
-        @JsonSchema(description = "Movement power per engine")
-        val enginePower: Float = 2000000f
 
         @JsonSchema(description = "Max speed an anchor will pull a ship back to the anchor point")
         val anchorSpeed: Double = 100000.0

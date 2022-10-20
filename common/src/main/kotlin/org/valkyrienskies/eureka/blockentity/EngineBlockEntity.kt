@@ -17,6 +17,8 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity
 import net.minecraft.world.level.block.entity.TickableBlockEntity
 import net.minecraft.world.level.block.state.BlockState
+import org.joml.Math.lerp
+import org.joml.Math.min
 import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.api.ServerShipProvider
 import org.valkyrienskies.core.api.shipValue
@@ -28,8 +30,6 @@ import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.KtContainerData
 import org.valkyrienskies.mod.common.getShipManagingPos
 import kotlin.math.ceil
-
-const val MAX_HEAT = 2000.0
 
 class EngineBlockEntity :
     BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get()),
@@ -44,8 +44,6 @@ class EngineBlockEntity :
     var heatLevel by data
     var fuelLeft by data
     var fuelTotal by data
-    private val enginePower = EurekaConfig.SERVER.enginePower
-    private val minEnginePower = enginePower / 2.0
     private var fuel: ItemStack = ItemStack.EMPTY
 
     override fun createMenu(containerId: Int, inventory: Inventory): AbstractContainerMenu =
@@ -53,20 +51,17 @@ class EngineBlockEntity :
 
     override fun getDefaultName(): Component = TranslatableComponent("gui.vs_eureka.engine")
 
-    private var heat = 0
-    private var skipCost = false
-
+    private var heat = 0f
     override fun tick() {
         if (!this.level!!.isClientSide) {
-            skipCost = !skipCost
 
             if (this.fuelLeft > 0) {
                 this.fuelLeft--
 
-                if (this.heat < MAX_HEAT) {
-                    this.heat++
+                if (this.heat < 100f) {
+                    this.heat += EurekaConfig.SERVER.engineHeatGain
                 }
-            } else if (!fuel.isEmpty && this.heat < MAX_HEAT) {
+            } else if (!fuel.isEmpty && this.heat < 100f) {
                 fuelTotal = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
                 fuelLeft = fuelTotal
                 removeItem(0, 1)
@@ -74,14 +69,23 @@ class EngineBlockEntity :
             }
 
             val prevHeatLevel = heatLevel
-            heatLevel = ceil(heat * 4f / MAX_HEAT).toInt()
+            heatLevel = min(ceil(heat * 4f / 100f).toInt(), 4)
             if (prevHeatLevel != heatLevel) {
                 level!!.setBlock(blockPos, this.blockState.setValue(HEAT, heatLevel), 11)
             }
 
             if (heat > 0 && ship != null && eurekaShipControl != null) {
-                eurekaShipControl!!.power += (minEnginePower + ((heat / MAX_HEAT) * (enginePower - minEnginePower)))
-                if (!skipCost) heat--
+                eurekaShipControl!!.power += lerp(
+                    heat / 100f,
+                    EurekaConfig.SERVER.minEnginePower,
+                    EurekaConfig.SERVER.enginePower
+                )
+
+                heat -= eurekaShipControl!!.consumed
+            }
+
+            if (heat > 0) {
+                heat -= min(EurekaConfig.SERVER.engineHeatLoss, heat)
             }
         }
     }
@@ -92,7 +96,7 @@ class EngineBlockEntity :
         tag.put("FuelSlot", fuel.save(CompoundTag()))
         tag.putInt("FuelLeft", fuelLeft)
         tag.putInt("PrevFuelTotal", fuelTotal)
-        tag.putInt("Heat", heat)
+        tag.putFloat("Heat", heat)
         return super.save(tag)
     }
 
@@ -100,7 +104,7 @@ class EngineBlockEntity :
         fuel = ItemStack.of(compoundTag.getCompound("FuelSlot"))
         fuelLeft = compoundTag.getInt("FuelLeft")
         fuelTotal = compoundTag.getInt("PrevFuelTotal")
-        heat = compoundTag.getInt("Heat")
+        heat = compoundTag.getFloat("Heat")
         super.load(blockState, compoundTag)
     }
 
