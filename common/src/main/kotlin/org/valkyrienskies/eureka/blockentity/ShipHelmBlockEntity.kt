@@ -24,7 +24,6 @@ import org.valkyrienskies.core.api.ServerShipProvider
 import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.core.api.saveAttachment
 import org.valkyrienskies.core.api.shipValue
-import org.valkyrienskies.core.game.ships.ShipData
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.block.ShipHelmBlock
@@ -32,12 +31,9 @@ import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.ShipAssembler
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
-import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.entity.ShipMountingEntity
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
-import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toDoubles
-import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.util.toJOMLD
 
 class ShipHelmBlockEntity :
@@ -104,14 +100,12 @@ class ShipHelmBlockEntity :
         val blockState = level.getBlockState(blockPos)
         if (blockState.block !is ShipHelmBlock) return
 
-        val ship: ShipData =
-            level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
-        ship.saveAttachment(EurekaShipControl(ship.shipTransform.shipPositionInWorldCoordinates.y()))
-        ShipAssembler.fillShip(
+        val ship = ShipAssembler.collectBlocks(
             level,
-            ship,
             blockPos
         ) { !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
+
+        ship.saveAttachment(EurekaShipControl(ship.shipTransform.shipPositionInWorldCoordinates.y()))
     }
 
     fun disassemble() {
