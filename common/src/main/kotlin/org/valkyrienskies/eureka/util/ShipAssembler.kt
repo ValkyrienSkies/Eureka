@@ -72,6 +72,7 @@ object ShipAssembler {
         predicate: (BlockState) -> Boolean
     ) {
 
+        val blacklist = DenseBlockPosSet()
         val stack = ObjectArrayList<BlockPos>()
 
         directions(start) { stack.push(it) }
@@ -82,8 +83,10 @@ object ShipAssembler {
             if (predicate(level.getBlockState(pos))) {
                 blocks.add(pos.x, pos.y, pos.z)
                 directions(pos) {
-                    if (!blocks.contains(it.x, it.y, it.z))
+                    if (!blacklist.contains(it.x, it.y, it.z)) {
+                        blacklist.add(it.x, it.y, it.z)
                         stack.push(it)
+                    }
                 }
             }
         }
