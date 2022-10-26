@@ -21,7 +21,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
 import org.valkyrienskies.core.api.getAttachment
-import org.valkyrienskies.core.api.saveAttachment
 import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.DirectionalShape
@@ -47,13 +46,8 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         level as ServerLevel
 
         val ship = level.getShipManagingPos(pos) ?: return
-        val attachment = ship.getAttachment<EurekaShipControl>()
-            ?: run {
-                ship.saveAttachment(EurekaShipControl(ship.shipTransform.shipPositionInWorldCoordinates.y()))
-                ship.getAttachment<EurekaShipControl>()!!
-            }
 
-        attachment.helms += 1
+        EurekaShipControl.getOrCreate(ship).helms += 1
     }
 
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
@@ -64,9 +58,6 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
 
         level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.helms -= 1
-            if (it.helms <= 0) {
-                level.getShipManagingPos(pos)?.saveAttachment<EurekaShipControl>(null)
-            }
         }
     }
 

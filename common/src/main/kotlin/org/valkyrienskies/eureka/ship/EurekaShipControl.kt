@@ -12,6 +12,8 @@ import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.api.ServerShipUser
 import org.valkyrienskies.core.api.ShipForcesInducer
 import org.valkyrienskies.core.api.Ticked
+import org.valkyrienskies.core.api.getAttachment
+import org.valkyrienskies.core.api.saveAttachment
 import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.core.game.ships.PhysShip
 import org.valkyrienskies.core.pipelines.SegmentUtils
@@ -24,17 +26,7 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 
-private const val MAX_RISE_VEL = 3.0
-private val BALLOON_PER_MASS = 1 / EurekaConfig.SERVER.massPerBalloon
-private val NEUTRAL_FLOAT = EurekaConfig.SERVER.neutralLimit
-private val NEUTRAL_LIMIT get() = NEUTRAL_FLOAT - 10
-
 class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, ServerShipUser, Ticked {
-
-    companion object {
-        private const val ALIGN_THRESHOLD = 0.01
-        private const val DISASSEMBLE_THRESHOLD = 0.02
-    }
 
     @JsonIgnore
     override var ship: ServerShip? = null
@@ -290,16 +282,54 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
 
     var power = 0.0
     var anchors = 0 // Amount of anchors
+        set(v) {
+            field = v; deleteIfEmpty()
+        }
+
     var anchorsActive = 0 // Anchors that are active
     var balloons = 0 // Amount of balloons
+        set(v) {
+            field = v; deleteIfEmpty()
+        }
 
     var helms = 0 // Amount of helms
+        set(v) {
+            field = v; deleteIfEmpty()
+        }
+
     var floaters = 0 // Amount of floaters * 15
+        set(v) {
+            field = v; deleteIfEmpty()
+        }
 
     override fun tick() {
         extraForce = power
         power = 0.0
         consumed = physConsumption * /* should be phyics ticks based*/ 0.1f
         physConsumption = 0.0f
+    }
+
+    fun deleteIfEmpty() {
+        if (helms == 0 && floaters == 0 && anchors == 0 && balloons == 0) {
+            ship?.saveAttachment<EurekaShipControl>(null)
+        }
+    }
+
+    companion object {
+        fun getOrCreate(ship: ServerShip): EurekaShipControl {
+            return ship.getAttachment<EurekaShipControl>()
+                ?: EurekaShipControl(ship.shipTransform.shipPositionInWorldCoordinates.y()).also {
+                    ship.saveAttachment(
+                        it
+                    )
+                }
+        }
+
+        private const val ALIGN_THRESHOLD = 0.01
+        private const val DISASSEMBLE_THRESHOLD = 0.02
+        private const val MAX_RISE_VEL = 3.0
+        private val BALLOON_PER_MASS = 1 / EurekaConfig.SERVER.massPerBalloon
+        private val NEUTRAL_FLOAT = EurekaConfig.SERVER.neutralLimit
+        private val NEUTRAL_LIMIT get() = NEUTRAL_FLOAT - 10
     }
 }

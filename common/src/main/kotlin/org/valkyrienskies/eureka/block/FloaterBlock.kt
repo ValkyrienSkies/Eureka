@@ -34,9 +34,7 @@ object FloaterBlock : Block(
 
         val floaterPower = 15 - state.getValue(POWER)
 
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.floaters += floaterPower
-        }
+        EurekaShipControl.getOrCreate(level.getShipManagingPos(pos) ?: return).floaters += floaterPower
     }
 
     override fun neighborChanged(

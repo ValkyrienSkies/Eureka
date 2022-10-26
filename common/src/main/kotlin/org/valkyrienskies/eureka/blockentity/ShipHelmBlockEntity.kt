@@ -22,7 +22,6 @@ import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.api.ServerShipProvider
 import org.valkyrienskies.core.api.getAttachment
-import org.valkyrienskies.core.api.saveAttachment
 import org.valkyrienskies.core.api.shipValue
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
@@ -104,8 +103,6 @@ class ShipHelmBlockEntity :
             level,
             blockPos
         ) { !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
-
-        ship.saveAttachment(EurekaShipControl(ship.shipTransform.shipPositionInWorldCoordinates.y()))
     }
 
     fun disassemble() {

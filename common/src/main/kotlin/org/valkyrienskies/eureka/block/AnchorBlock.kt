@@ -82,10 +82,10 @@ object AnchorBlock :
 
         val bl = state.getValue(BlockStateProperties.POWERED)
 
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.anchors += 1
-            it.anchorsActive += if (bl) 1 else 0
-        }
+        val attachment = EurekaShipControl.getOrCreate(level.getShipManagingPos(pos) ?: return)
+
+        attachment.anchors += 1
+        attachment.anchorsActive += if (bl) 1 else 0
     }
 
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
