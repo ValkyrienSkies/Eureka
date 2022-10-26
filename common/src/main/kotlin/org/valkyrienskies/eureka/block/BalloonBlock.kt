@@ -12,7 +12,7 @@ import net.minecraft.world.phys.BlockHitResult
 import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.ship.EurekaShipControl
-import org.valkyrienskies.mod.common.getShipObjectManagingPos
+import org.valkyrienskies.mod.common.getShipManagingPos
 
 class BalloonBlock(properties: Properties) : Block(properties) {
 
@@ -26,7 +26,7 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         if (level.isClientSide) return
         level as ServerLevel
 
-        level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
+        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.balloons += 1
         }
     }
@@ -37,7 +37,7 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         if (level.isClientSide) return
         level as ServerLevel
 
-        level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
+        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.balloons -= 1
         }
     }

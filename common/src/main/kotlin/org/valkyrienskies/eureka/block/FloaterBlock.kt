@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties.POW
 import net.minecraft.world.level.material.Material
 import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.eureka.ship.EurekaShipControl
-import org.valkyrienskies.mod.common.getShipObjectManagingPos
+import org.valkyrienskies.mod.common.getShipManagingPos
 
 object FloaterBlock : Block(
     Properties.of(Material.WOOD)
@@ -34,7 +34,7 @@ object FloaterBlock : Block(
 
         val floaterPower = 15 - state.getValue(POWER)
 
-        level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
+        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.floaters += floaterPower
         }
     }
@@ -54,7 +54,7 @@ object FloaterBlock : Block(
         val signal = level.getBestNeighborSignal(pos)
         val currentPower = state.getValue(POWER)
 
-        level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
+        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.floaters += (currentPower - signal)
         }
 
@@ -69,7 +69,7 @@ object FloaterBlock : Block(
 
         val floaterPower = 15 - state.getValue(POWER)
 
-        level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
+        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.floaters -= floaterPower
         }
     }

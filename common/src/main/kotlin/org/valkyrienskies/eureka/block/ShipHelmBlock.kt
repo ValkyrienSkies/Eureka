@@ -26,7 +26,7 @@ import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
-import org.valkyrienskies.mod.common.getShipObjectManagingPos
+import org.valkyrienskies.mod.common.getShipManagingPos
 
 private val FACING = HorizontalDirectionalBlock.FACING!!
 
@@ -46,7 +46,7 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         if (level.isClientSide) return
         level as ServerLevel
 
-        val ship = level.getShipObjectManagingPos(pos) ?: return
+        val ship = level.getShipManagingPos(pos) ?: return
         val attachment = ship.getAttachment<EurekaShipControl>()
             ?: run {
                 ship.saveAttachment(EurekaShipControl(ship.shipTransform.shipPositionInWorldCoordinates.y()))
@@ -62,10 +62,10 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         if (level.isClientSide) return
         level as ServerLevel
 
-        level.getShipObjectManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
+        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.helms -= 1
             if (it.helms <= 0) {
-                level.getShipObjectManagingPos(pos)?.saveAttachment<EurekaShipControl>(null)
+                level.getShipManagingPos(pos)?.saveAttachment<EurekaShipControl>(null)
             }
         }
     }
