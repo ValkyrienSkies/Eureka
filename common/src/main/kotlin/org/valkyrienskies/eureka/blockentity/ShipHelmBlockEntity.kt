@@ -99,10 +99,10 @@ class ShipHelmBlockEntity :
         val blockState = level.getBlockState(blockPos)
         if (blockState.block !is ShipHelmBlock) return
 
-        val ship = ShipAssembler.collectBlocks(
+        ShipAssembler.collectBlocks(
             level,
             blockPos
-        ) { !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
+        ) { !it.isAir && !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
     }
 
     fun disassemble() {
