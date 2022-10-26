@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
-import net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING
+import net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING
 import net.minecraft.world.level.material.Material
 import net.minecraft.world.phys.BlockHitResult
 import org.valkyrienskies.eureka.EurekaProperties.HEAT
@@ -37,7 +37,7 @@ object EngineBlock : BaseEntityBlock(
     init {
         registerDefaultState(
             this.stateDefinition.any()
-                .setValue(FACING, Direction.NORTH)
+                .setValue(HORIZONTAL_FACING, Direction.NORTH)
                 .setValue(HEAT, 0)
         )
     }
@@ -62,13 +62,13 @@ object EngineBlock : BaseEntityBlock(
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         builder
-            .add(FACING)
+            .add(HORIZONTAL_FACING)
             .add(HEAT)
     }
 
     override fun getStateForPlacement(ctx: BlockPlaceContext): BlockState? {
         return defaultBlockState()
-            .setValue(FACING, ctx.horizontalDirection.opposite)
+            .setValue(HORIZONTAL_FACING, ctx.horizontalDirection.opposite)
     }
 
     override fun getRenderShape(blockState: BlockState): RenderShape {
@@ -100,7 +100,7 @@ object EngineBlock : BaseEntityBlock(
         // Make the amount of particles based of the heat
         if (random.nextDouble() > (0.2 * heat)) return
 
-        val direction = state.getValue(FACING)
+        val direction = state.getValue(HORIZONTAL_FACING)
         val axis = direction.axis
         val h = random.nextDouble() * 0.6 - 0.3
         val i = if (axis === Direction.Axis.X) direction.stepX.toDouble() * 0.52 else h

@@ -11,11 +11,11 @@ import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.RenderShape
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
+import net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING
 import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.CollisionContext
@@ -27,8 +27,6 @@ import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
 import org.valkyrienskies.mod.common.getShipManagingPos
 
-private val FACING = HorizontalDirectionalBlock.FACING!!
-
 class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntityBlock(properties) {
     val HELM_BASE = RotShapes.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0)
     val HELM_POLE = RotShapes.box(4.0, 1.0, 7.0, 12.0, 12.0, 13.0)
@@ -36,7 +34,7 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
     val HELM_SHAPE = DirectionalShape(RotShapes.or(HELM_BASE, HELM_POLE))
 
     init {
-        registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH))
+        registerDefaultState(this.stateDefinition.any().setValue(HORIZONTAL_FACING, Direction.NORTH))
     }
 
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
@@ -86,11 +84,11 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
 
     override fun getStateForPlacement(ctx: BlockPlaceContext): BlockState? {
         return defaultBlockState()
-            .setValue(FACING, ctx.horizontalDirection.opposite)
+            .setValue(HORIZONTAL_FACING, ctx.horizontalDirection.opposite)
     }
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
-        builder.add(FACING)
+        builder.add(HORIZONTAL_FACING)
     }
 
     override fun newBlockEntity(blockGetter: BlockGetter): BlockEntity {
@@ -103,7 +101,7 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         blockPos: BlockPos,
         collisionContext: CollisionContext
     ): VoxelShape {
-        return HELM_SHAPE[blockState.getValue(FACING)]
+        return HELM_SHAPE[blockState.getValue(HORIZONTAL_FACING)]
     }
 
     override fun useShapeForLightOcclusion(blockState: BlockState): Boolean {

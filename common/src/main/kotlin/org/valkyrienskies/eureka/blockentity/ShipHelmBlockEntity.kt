@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.TickableBlockEntity
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING
 import net.minecraft.world.level.block.state.properties.Half
 import org.joml.Vector3d
 import org.joml.Vector3dc
@@ -75,7 +76,7 @@ class ShipHelmBlockEntity :
 
             lookAt(
                 EntityAnchorArgument.Anchor.EYES,
-                state.getValue(HorizontalDirectionalBlock.FACING).normal.toDoubles().add(position())
+                state.getValue(HORIZONTAL_FACING).normal.toDoubles().add(position())
             )
 
             isController = true

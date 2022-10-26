@@ -5,15 +5,14 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.resources.model.ModelResourceLocation
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.client.resources.model.BakedModel
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.StateHolder
 import net.minecraft.world.level.block.state.properties.EnumProperty
-import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.block.WoodType
+import java.util.function.Function
 
 // OK so what dis does im making mc happy about states
 // WheelModels has many states (wood type)
@@ -59,16 +58,15 @@ object WheelModels {
         matrixStack.popPose()
     }
 
+    fun setModelGetter(getter: Function<WoodType, BakedModel>) {
+        models.values.forEach { it.getter = getter::apply }
+    }
+
     class WheelModel(type: WoodType) :
         StateHolder<WheelModels, WheelModel>(WheelModels, ImmutableMap.of(property, type), null) {
 
-        val location = ModelResourceLocation(
-            ResourceLocation(EurekaMod.MOD_ID, "ship_helm_wheel"),
-            "wood=${type.resourceName}"
-        )
+        var getter: (WoodType) -> BakedModel = { throw IllegalStateException("Getter not set") }
 
-        val model by lazy {
-            mc.blockRenderer.blockModelShaper.modelManager.getModel(location)
-        }
+        val model by lazy { getter(type) }
     }
 }

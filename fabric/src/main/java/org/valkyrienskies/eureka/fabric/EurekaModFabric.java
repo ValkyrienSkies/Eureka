@@ -7,11 +7,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import org.valkyrienskies.core.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
+import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 
 public class EurekaModFabric implements ModInitializer {
@@ -36,6 +40,12 @@ public class EurekaModFabric implements ModInitializer {
                     EurekaBlockEntities.INSTANCE.getSHIP_HELM().get(),
                     ShipHelmBlockEntityRenderer::new
             );
+            WheelModels.INSTANCE.setModelGetter(woodType ->
+                    Minecraft.getInstance().getModelManager().getModel(
+                            new ModelResourceLocation(
+                                    new ResourceLocation(EurekaMod.MOD_ID, "ship_helm_wheel"),
+                                    "wood=${type.resourceName}"
+                            )));
         }
     }
 
