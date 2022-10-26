@@ -210,7 +210,7 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
             if (player.upImpulse != 0.0f && balloons > 0)
                 elevationTarget =
                     pos.y() + (
-                            player.upImpulse * EurekaConfig.SERVER.impulseElevationRate * max(
+                            player.upImpulse * EurekaConfig.SERVER.impulseElevationRate * min(
                                 elevationPower * 0.2,
                                 1.5
                             )
