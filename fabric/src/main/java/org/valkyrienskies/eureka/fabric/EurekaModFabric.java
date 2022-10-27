@@ -44,7 +44,7 @@ public class EurekaModFabric implements ModInitializer {
                     Minecraft.getInstance().getModelManager().getModel(
                             new ModelResourceLocation(
                                     new ResourceLocation(EurekaMod.MOD_ID, "ship_helm_wheel"),
-                                    "wood=${type.resourceName}"
+                                    "wood=" + woodType.getResourceName()
                             )));
         }
     }
