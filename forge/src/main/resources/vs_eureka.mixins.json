@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "org.valkyrienskies.eureka.forge.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "plugin": "org.valkyrienskies.eureka.forge.mixin.ValkyrienForgeMixinConfigPlugin",
+  "mixins": [],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

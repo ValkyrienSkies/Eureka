@@ -16,6 +16,8 @@ loom {
 
     forge {
         convertAccessWideners = true
+        mixinConfig "vs_eureka.mixins.json"
+        mixinConfig "vs_eureka-common.mixins.json"
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
     }
 }
@@ -43,6 +45,9 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    implementation("org.valkyrienskies:valkyrien-dependency-downloader:3.6")
+    shadowCommon("org.valkyrienskies:valkyrien-dependency-downloader:3.6")
 }
 
 processResources {

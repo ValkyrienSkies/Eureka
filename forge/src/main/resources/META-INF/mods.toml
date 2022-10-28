@@ -11,39 +11,39 @@ authors = ["Tri0de", "ewoudje", "VS2 Discord Artists"]
 description = '''
 Basically Archimedes Ships, but with VS2 as the backend!
 '''
-logoFile = "assets/vs_eureka/icon.png"
+logoFile = "icon.png"
 
 [[dependencies.vs_eureka]]
 modId = "forge"
-mandatory = true
+mandatory = false
 versionRange = "[36,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.vs_eureka]]
 modId = "valkyrienskies"
-mandatory = true
+mandatory = false
 versionRange = "[1,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.vs_eureka]]
 modId = "minecraft"
-mandatory = true
+mandatory = false
 versionRange = "[1.16.5,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.vs_eureka]]
 modId = "minecraft"
-mandatory = true
+mandatory = false
 versionRange = "[1.16.5,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.vs_eureka]]
 modId = "architectury"
-mandatory = true
+mandatory = false
 versionRange = "[1.31.61,)"
 ordering = "AFTER"
 side = "BOTH"
