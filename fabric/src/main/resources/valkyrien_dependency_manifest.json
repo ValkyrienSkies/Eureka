@@ -3,9 +3,9 @@
     "loader": "fabric",
     "name": "Valkyrien Skies",
     "modId": "valkyrienskies",
-    "versionRange": ">=2.0.0",
+    "minVersion": "2.0.0-alpha1+ff1af0860f",
     "optional": false,
-    "downloadUrl": "https://maven.valkyrienskies.org/org/valkyrienskies/valkyrienskies-116-fabric/2.0.0+2f3d531230/valkyrienskies-116-fabric-2.0.0+2f3d531230.jar"
+    "downloadUrl": "https://maven.valkyrienskies.org/org/valkyrienskies/valkyrienskies-116-fabric/2.0.0-alpha1+ff1af0860f/valkyrienskies-116-fabric-2.0.0-alpha1+ff1af0860f.jar"
   },
   {
     "loader": "fabric",
