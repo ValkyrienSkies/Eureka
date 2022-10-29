@@ -20,6 +20,7 @@ import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
 import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
 object AnchorBlock :
     HorizontalDirectionalBlock(Properties.of(Material.METAL).strength(5.0f, 1200.0f).sound(SoundType.ANVIL)) {
@@ -82,7 +83,8 @@ object AnchorBlock :
 
         val bl = state.getValue(BlockStateProperties.POWERED)
 
-        val attachment = EurekaShipControl.getOrCreate(level.getShipManagingPos(pos) ?: return)
+        val ship = level.getShipObjectManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
+        val attachment = EurekaShipControl.getOrCreate(ship)
 
         attachment.anchors += 1
         attachment.anchorsActive += if (bl) 1 else 0

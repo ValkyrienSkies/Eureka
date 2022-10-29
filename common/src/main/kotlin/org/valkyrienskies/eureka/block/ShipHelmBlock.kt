@@ -26,6 +26,7 @@ import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
 import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
 class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntityBlock(properties) {
     val HELM_BASE = RotShapes.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0)
@@ -43,8 +44,7 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         if (level.isClientSide) return
         level as ServerLevel
 
-        val ship = level.getShipManagingPos(pos) ?: return
-
+        val ship = level.getShipObjectManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
         EurekaShipControl.getOrCreate(ship).helms += 1
     }
 

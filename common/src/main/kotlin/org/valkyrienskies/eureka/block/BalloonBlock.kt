@@ -13,6 +13,7 @@ import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
 class BalloonBlock(properties: Properties) : Block(properties) {
 
@@ -26,7 +27,8 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         if (level.isClientSide) return
         level as ServerLevel
 
-        level.getShipManagingPos(pos)?.let { EurekaShipControl.getOrCreate(it).balloons += 1 }
+        val ship = level.getShipObjectManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
+        EurekaShipControl.getOrCreate(ship).balloons += 1
     }
 
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {

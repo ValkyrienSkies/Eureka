@@ -12,6 +12,7 @@ import net.minecraft.world.level.material.Material
 import org.valkyrienskies.core.api.getAttachment
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
 object FloaterBlock : Block(
     Properties.of(Material.WOOD)
@@ -34,7 +35,8 @@ object FloaterBlock : Block(
 
         val floaterPower = 15 - state.getValue(POWER)
 
-        EurekaShipControl.getOrCreate(level.getShipManagingPos(pos) ?: return).floaters += floaterPower
+        val ship = level.getShipObjectManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
+        EurekaShipControl.getOrCreate(ship).floaters += floaterPower
     }
 
     override fun neighborChanged(
