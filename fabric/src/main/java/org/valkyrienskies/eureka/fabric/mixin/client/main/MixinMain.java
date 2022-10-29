@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.mod.fabric.AutoDependenciesFabric;
+import org.valkyrienskies.eureka.fabric.AutoDependenciesFabric;
 
 @Mixin(Main.class)
 public class MixinMain {
@@ -15,7 +15,7 @@ public class MixinMain {
             method = "main"
     )
     private static void beforeMain(final String[] args, final CallbackInfo ci) {
-        AutoDependenciesFabric.checkDependencies();
+        AutoDependenciesFabric.runUpdater();
     }
 
 }

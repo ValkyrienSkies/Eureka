@@ -34,9 +34,9 @@ class ShipHelmButton(x: Int, y: Int, text: Component, private val font: Font, on
             } else if (this.isHovered()) {
                 this.blit(poseStack, x, y, BUTTON_H_X, BUTTON_H_Y, width, height)
             }
-            if (!this.active) {
-                println("Wierd")
-            }
+//            if (!this.active) {
+//                println("Wierd")
+//            }
         }
 
         val color = 0x404040

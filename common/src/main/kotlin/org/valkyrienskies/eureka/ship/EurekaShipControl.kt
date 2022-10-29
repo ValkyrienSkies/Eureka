@@ -189,11 +189,12 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
             idealCasualForwardVelInc.mul(mass * 10)
 
             val extraForceNeeded = idealCasualForwardVelInc.min(forwardVelInc)
-            val usage = min(extraForceNeeded.length() / extraForce, 1.0)
 
-            physConsumption += usage.toFloat()
-
-            forwardVelInc.add(forwardVector.mul(extraForce).mul(usage))
+            if (extraForce != 0.0) {
+                val usage = min(extraForceNeeded.length() / extraForce, 1.0)
+                physConsumption += usage.toFloat()
+                forwardVelInc.add(forwardVector.mul(extraForce).mul(usage))
+            }
 
             forcesApplier.applyInvariantForce(forwardVelInc)
             // endregion
