@@ -3,6 +3,7 @@ package org.valkyrienskies.eureka.gui.shiphelm
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
+import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaScreens
 import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 
@@ -30,7 +31,7 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
             return true
         }
 
-        if (id == 3 && assembled && !player.level.isClientSide) {
+        if (id == 3 && assembled && !player.level.isClientSide && EurekaConfig.SERVER.enableDisassembly) {
             blockEntity.disassemble()
             return true
         }

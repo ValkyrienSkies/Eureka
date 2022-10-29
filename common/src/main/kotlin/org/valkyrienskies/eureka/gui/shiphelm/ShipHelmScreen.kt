@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
+import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
 
 @Environment(EnvType.CLIENT)
@@ -32,12 +33,15 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
             ShipHelmButton(x + BUTTON_1_X, y + BUTTON_1_Y, ASSEMBLE_TEXT, font) {
                 // Send assemble or dissemble packet
                 if (this.menu.assembled) {
+                    assembleButton.active = EurekaConfig.SERVER.enableDisassembly
                     minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 3)
                 } else {
                     minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 0)
                 }
             }
         )
+
+
 
         alignButton = addButton(
             ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, ALIGN_TEXT, font) {
@@ -50,6 +54,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
                 minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 3)
             }
         )
+        todoButton.active = EurekaConfig.SERVER.enableDisassembly
     }
 
     override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
