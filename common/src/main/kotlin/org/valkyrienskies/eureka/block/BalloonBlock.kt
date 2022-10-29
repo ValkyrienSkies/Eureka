@@ -26,9 +26,7 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         if (level.isClientSide) return
         level as ServerLevel
 
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.balloons += 1
-        }
+        level.getShipManagingPos(pos)?.let { EurekaShipControl.getOrCreate(it).balloons += 1 }
     }
 
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
