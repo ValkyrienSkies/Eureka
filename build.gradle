@@ -20,7 +20,7 @@ if (project.hasProperty("CustomReleaseVersion")) {
 } else {
     String gitRevision = "git rev-parse HEAD".execute().text.trim()
 
-    version = "1.0.0+" + gitRevision.substring(0, 10)
+    version = "1.0.0-alpha1+" + gitRevision.substring(0, 10)
 }
 
 architectury {
