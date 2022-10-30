@@ -329,8 +329,8 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
         private const val ALIGN_THRESHOLD = 0.01
         private const val DISASSEMBLE_THRESHOLD = 0.02
         private const val MAX_RISE_VEL = 3.0
-        private val BALLOON_PER_MASS = 1 / EurekaConfig.SERVER.massPerBalloon
-        private val NEUTRAL_FLOAT = EurekaConfig.SERVER.neutralLimit
+        private val BALLOON_PER_MASS get() = 1 / EurekaConfig.SERVER.massPerBalloon
+        private val NEUTRAL_FLOAT get() = EurekaConfig.SERVER.neutralLimit
         private val NEUTRAL_LIMIT get() = NEUTRAL_FLOAT - 10
     }
 }
