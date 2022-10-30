@@ -4,6 +4,7 @@ import me.shedaniel.architectury.platform.forge.EventBuses;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -36,6 +37,7 @@ public class EurekaModForge {
                                 VSConfigClass.Companion.getRegisteredConfig(EurekaConfig.class))
         );
 
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelRegistry);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
 
         EurekaMod.init();
@@ -44,10 +46,6 @@ public class EurekaModForge {
     void clientSetup(final FMLClientSetupEvent event) {
         if (happendClientSetup) return;
         happendClientSetup = true;
-
-        for (WoodType woodType : WoodType.values()) {
-            ModelLoader.addSpecialModel(new ResourceLocation(EurekaMod.MOD_ID, "block/" + woodType.getResourceName() + "_ship_helm_wheel"));
-        }
 
         EurekaMod.initClient();
         ClientRegistry.bindTileEntityRenderer(
@@ -60,5 +58,11 @@ public class EurekaModForge {
                         new ResourceLocation(EurekaMod.MOD_ID, "block/" + woodType.getResourceName() + "_ship_helm_wheel"),
                         Minecraft.getInstance().getModelManager().getMissingModel()
                 ));
+    }
+
+    void onModelRegistry(final ModelRegistryEvent event) {
+        for (WoodType woodType : WoodType.values()) {
+            ModelLoader.addSpecialModel(new ResourceLocation(EurekaMod.MOD_ID, "block/" + woodType.getResourceName() + "_ship_helm_wheel"));
+        }
     }
 }
