@@ -19,9 +19,9 @@
     "loader": "forge",
     "name": "Valkyrien Skies",
     "modId": "valkyrienskies",
-    "minVersion": "2.0.0-alpha2",
+    "minVersion": "${vs2_plain_version}",
     "optional": false,
-    "downloadUrl": "https://maven.valkyrienskies.org/org/valkyrienskies/valkyrienskies-116-forge/2.0.0-alpha2+5ed35549d8/valkyrienskies-116-forge-2.0.0-alpha2+5ed35549d8.jar"
+    "downloadUrl": "https://maven.valkyrienskies.org/org/valkyrienskies/valkyrienskies-116-forge/${vs2_version}/valkyrienskies-116-forge-${vs2_version}.jar"
   },
   {
     "loader": "forge",
