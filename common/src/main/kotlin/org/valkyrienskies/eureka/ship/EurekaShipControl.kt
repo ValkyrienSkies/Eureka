@@ -179,37 +179,34 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
                 forwardVector
             )
             forwardVector.mul(player.forwardImpulse.toDouble())
-            val idealCasualForwardVelInc =
-                Vector3d(forwardVector)
-                    .mul(EurekaConfig.SERVER.maxCasualSpeed.toDouble())
-                    .sub(vel.x(), 0.0, vel.z())
-                    .mul(mass * 10)
 
-            val forwardVelInc = Vector3d(forwardVector)
-                .mul(EurekaConfig.SERVER.baseSpeed)
-                .sub(vel.x(), 0.0, vel.z())
-                .mul(mass * 10)
 
-            val extraForceNeeded = idealCasualForwardVelInc.min(forwardVelInc)
+            // This is the speed that the ship is always allowed to go out, without engines
+            val baseForwardVel = Vector3d(forwardVector).mul(EurekaConfig.SERVER.baseSpeed)
+            val baseForwardForce = Vector3d(baseForwardVel).sub(vel.x(), 0.0, vel.z()).mul(mass * 10)
+
+            // This is the maximum speed we want to go in any scenario
+            val idealForwardVel = Vector3d(forwardVector).mul(EurekaConfig.SERVER.maxCasualSpeed.toDouble())
+            val idealForwardForce = Vector3d(idealForwardVel).sub(vel.x(), 0.0, vel.z()).mul(mass * 10)
+
+            val extraForceNeeded = Vector3d(idealForwardForce).sub(baseForwardForce)
+            val actualExtraForce = Vector3d(forwardVector).add(baseForwardForce)
 
             if (extraForce != 0.0) {
+                // extraForce gives the amount of force available to us, so this gives us the proportion of the
+                // force provided by engines that we're using
                 val usage = min(extraForceNeeded.length() / extraForce, 1.0)
                 physConsumption += usage.toFloat()
-                forwardVelInc.add(forwardVector.mul(extraForce * usage))
+                actualExtraForce.fma(extraForce * usage, forwardVector)
             }
 
-            forcesApplier.applyInvariantForce(forwardVelInc)
+            forcesApplier.applyInvariantForce(actualExtraForce)
             // endregion
 
             // Player controlled elevation
             if (player.upImpulse != 0.0f && balloons > 0)
-                elevationTarget =
-                    pos.y() + (
-                            player.upImpulse * EurekaConfig.SERVER.impulseElevationRate * min(
-                                elevationPower * 0.2,
-                                1.5
-                            )
-                            )
+                elevationTarget = pos.y() + (player.upImpulse *
+                        EurekaConfig.SERVER.impulseElevationRate * min(elevationPower * 0.2, 1.5))
         }
 
         // region Elevation
