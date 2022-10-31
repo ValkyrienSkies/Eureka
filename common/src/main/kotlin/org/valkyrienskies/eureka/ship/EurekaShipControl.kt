@@ -185,7 +185,7 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
             val baseForwardVel = Vector3d(forwardVector).mul(EurekaConfig.SERVER.baseSpeed)
             val baseForwardForce = Vector3d(baseForwardVel).sub(vel.x(), 0.0, vel.z()).mul(mass * 10)
 
-            // This is the maximum speed we want to go in any scenario
+            // This is the maximum speed we want to go in any scenario (when not sprinting)
             val idealForwardVel = Vector3d(forwardVector).mul(EurekaConfig.SERVER.maxCasualSpeed.toDouble())
             val idealForwardForce = Vector3d(idealForwardVel).sub(vel.x(), 0.0, vel.z()).mul(mass * 10)
 
@@ -194,8 +194,8 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
 
             if (extraForce != 0.0) {
                 // extraForce gives the amount of force available to us, so this gives us the proportion of the
-                // force provided by engines that we're using
-                val usage = min(extraForceNeeded.length() / extraForce, 1.0)
+                // force provided by engines that we're using - we always use 100% if the player is sprinting.
+                val usage = if (player.sprintOn) 1.0 else min(extraForceNeeded.length() / extraForce, 1.0)
                 physConsumption += usage.toFloat()
                 actualExtraForce.fma(extraForce * usage, forwardVector)
             }
