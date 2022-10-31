@@ -23,7 +23,6 @@ import org.valkyrienskies.mod.common.util.toJOMLD
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.floor
-import kotlin.math.max
 import kotlin.math.min
 
 class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, ServerShipUser, Ticked {
@@ -180,20 +179,23 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
                 forwardVector
             )
             forwardVector.mul(player.forwardImpulse.toDouble())
-            val idealForwardVel = Vector3d(forwardVector)
-            idealForwardVel.mul(EurekaConfig.SERVER.baseSpeed)
-            val idealCasualForwardVelInc = Vector3d(forwardVector).mul(EurekaConfig.SERVER.maxCasualSpeed.toDouble())
-            idealCasualForwardVelInc.sub(vel.x(), 0.0, vel.z())
-            val forwardVelInc = idealForwardVel.sub(vel.x(), 0.0, vel.z())
-            forwardVelInc.mul(mass * 10)
-            idealCasualForwardVelInc.mul(mass * 10)
+            val idealCasualForwardVelInc =
+                Vector3d(forwardVector)
+                    .mul(EurekaConfig.SERVER.maxCasualSpeed.toDouble())
+                    .sub(vel.x(), 0.0, vel.z())
+                    .mul(mass * 10)
+
+            val forwardVelInc = Vector3d(forwardVector)
+                .mul(EurekaConfig.SERVER.baseSpeed)
+                .sub(vel.x(), 0.0, vel.z())
+                .mul(mass * 10)
 
             val extraForceNeeded = idealCasualForwardVelInc.min(forwardVelInc)
 
             if (extraForce != 0.0) {
                 val usage = min(extraForceNeeded.length() / extraForce, 1.0)
                 physConsumption += usage.toFloat()
-                forwardVelInc.add(forwardVector.mul(extraForce).mul(usage))
+                forwardVelInc.add(forwardVector.mul(extraForce * usage))
             }
 
             forcesApplier.applyInvariantForce(forwardVelInc)
