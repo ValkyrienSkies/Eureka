@@ -4,17 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import net.minecraft.core.Direction
 import org.joml.AxisAngle4d
 import org.joml.Math.clamp
-import org.joml.Math.cos
 import org.joml.Quaterniond
 import org.joml.Vector3d
-import org.valkyrienskies.core.api.ForcesApplier
-import org.valkyrienskies.core.api.ServerShip
-import org.valkyrienskies.core.api.ServerShipUser
-import org.valkyrienskies.core.api.ShipForcesInducer
-import org.valkyrienskies.core.api.Ticked
-import org.valkyrienskies.core.api.getAttachment
-import org.valkyrienskies.core.api.saveAttachment
-import org.valkyrienskies.core.api.shipValue
+import org.valkyrienskies.core.api.*
 import org.valkyrienskies.core.game.ships.PhysShip
 import org.valkyrienskies.core.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
@@ -25,7 +17,7 @@ import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.min
 
-class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, ServerShipUser, Ticked {
+class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     @JsonIgnore
     override var ship: ServerShip? = null
@@ -33,14 +25,12 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
 
     private var extraForce = 0.0
     var aligning = false
-    private var cruiseSpeed = Double.NaN
     private var physConsumption = 0f
     private val anchored get() = anchorsActive > 0
     private val anchorSpeed = EurekaConfig.SERVER.anchorSpeed
     private var wasAnchored = false
     private var anchorTargetPos = Vector3d()
     private var anchorTargetRot = Quaterniond()
-    private val elevationPower get() = balloons.toDouble()
 
     private var angleUntilAligned = 0.0
     private var alignTarget = 0
@@ -48,6 +38,30 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
     val aligningTo get() = Direction.from2DDataValue(alignTarget)
     var consumed = 0f
         private set
+
+    private var wasCruisePressed = false
+    private var cruise = false
+    private var controlData: ControlData? = null
+
+    private data class ControlData(
+        val seatInDirection: Direction,
+        var forwardImpulse: Float = 0.0f,
+        var leftImpulse: Float = 0.0f,
+        var upImpulse: Float = 0.0f,
+        var sprintOn: Boolean = false
+    ) {
+        companion object {
+            fun create(player: SeatedControllingPlayer): ControlData {
+                return ControlData(
+                    player.seatInDirection,
+                    player.forwardImpulse,
+                    player.leftImpulse,
+                    player.upImpulse,
+                    player.sprintOn
+                )
+            }
+        }
+    }
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
 
@@ -86,7 +100,7 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
 
         val invRotation = physShip.poseVel.rot.invert(Quaterniond())
         val invRotationAxisAngle = AxisAngle4d(invRotation)
-        // Floor makes a number 0 to 3, wich corresponds to direction
+        // Floor makes a number 0 to 3, which corresponds to direction
         alignTarget = floor((invRotationAxisAngle.angle / (PI * 0.5)) + 4.5).toInt() % 4
         angleUntilAligned = (alignTarget.toDouble() * (0.5 * Math.PI)) - invRotationAxisAngle.angle
         if (aligning && abs(angleUntilAligned) > ALIGN_THRESHOLD) {
@@ -113,7 +127,31 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
             controllingPlayer == null
         )
 
-        controllingPlayer?.let { player ->
+        var idealUpwardVel = Vector3d(0.0, 0.0, 0.0)
+
+
+        val player = controllingPlayer
+
+        if (player != null) {
+            // If the player is currently controlling the ship
+            if (!wasCruisePressed && player.cruise) {
+                // the player pressed the cruise button
+                cruise = !cruise
+            }
+
+            if (!cruise) {
+                // only take the latest control data if the player is not cruising
+                controlData = ControlData.create(player)
+            }
+
+            wasCruisePressed = player.cruise
+        } else if (!cruise) {
+            // If the player isn't controlling the ship, and not cruising, reset the control data
+            controlData = null
+        }
+
+
+        controlData?.let { player ->
             // region Player controlled rotation
             var rotationVector = Vector3d(
                 0.0,
@@ -123,7 +161,6 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
                     -omega.y() * EurekaConfig.SERVER.turnSpeed,
                 0.0
             )
-            // rotationVector.add(player.seatInDirection.normal.toJOMLD().mul(player.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed))
 
             rotationVector.sub(0.0, omega.y(), 0.0)
 
@@ -204,44 +241,23 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
             // endregion
 
             // Player controlled elevation
-            if (player.upImpulse != 0.0f && balloons > 0)
-                elevationTarget = pos.y() + (player.upImpulse *
-                        EurekaConfig.SERVER.impulseElevationRate * min(elevationPower * 0.2, 1.5))
+            if (player.upImpulse != 0.0f && balloons > 0) {
+                idealUpwardVel = Vector3d(0.0, 1.0, 0.0)
+                    .mul(player.upImpulse.toDouble())
+                    .mul(EurekaConfig.SERVER.impulseElevationRate.toDouble())
+            }
         }
 
         // region Elevation
-        if (elevationTarget.isFinite() && balloons > 0) {
-            val massPenalty =
-                min((elevationPower / (mass * BALLOON_PER_MASS)) - 1.0, elevationPower) * NEUTRAL_FLOAT
-            val limit = (NEUTRAL_LIMIT + massPenalty)
-            var stable = true
+        val idealUpwardForce = Vector3d(idealUpwardVel)
+            .add(0.0, -vel.y() - GRAVITY, 0.0)
+            .mul(mass)
 
-            val elevationPower = if (pos.y() > limit) {
-                if ((pos.y() - limit) > 20.0) {
-                    stable = false
-                    0.0
-                } else {
-                    val mod = 1 + cos(((pos.y() - limit) / 10.0) * (Math.PI / 2) + (Math.PI / 2))
-                    if ((pos.y() - limit) > 10.0) {
-                        stable = false
-                        (1 - mod) * 0.1 + 0.1
-                    } else elevationPower * mod
-                }
-            } else elevationPower
+        val balloonForceNeeded = idealUpwardForce.length()
+        val balloonForceProvided = balloons * forcePerBalloon
 
-            val diff = (elevationTarget - pos.y())
-                .let { if (abs(it) < 0.05) 0.0 else it }
-
-            val penalisedVel = if (elevationPower < 0.1) 0.0 else
-                (MAX_RISE_VEL * elevationPower)
-
-            val shipRiseVelo = vel.y()
-            val idealRiseVelo = clamp(-MAX_RISE_VEL, penalisedVel, diff)
-            val impulse = idealRiseVelo - shipRiseVelo
-
-            if (idealRiseVelo > 0.1 || stable)
-                forcesApplier.applyInvariantForce(Vector3d(0.0, (impulse + if (stable) 1 else 0) * mass * 10, 0.0))
-        }
+        val actualUpwardForce = Vector3d(0.0, min(balloonForceNeeded, balloonForceProvided), 0.0)
+        forcesApplier.applyInvariantForce(actualUpwardForce)
         // endregion
 
         // region Anchor
@@ -318,7 +334,7 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
     companion object {
         fun getOrCreate(ship: ServerShip): EurekaShipControl {
             return ship.getAttachment<EurekaShipControl>()
-                ?: EurekaShipControl(ship.shipTransform.shipPositionInWorldCoordinates.y()).also {
+                ?: EurekaShipControl().also {
                     ship.saveAttachment(
                         it
                     )
@@ -327,9 +343,9 @@ class EurekaShipControl(var elevationTarget: Double) : ShipForcesInducer, Server
 
         private const val ALIGN_THRESHOLD = 0.01
         private const val DISASSEMBLE_THRESHOLD = 0.02
-        private const val MAX_RISE_VEL = 3.0
-        private val BALLOON_PER_MASS get() = 1 / EurekaConfig.SERVER.massPerBalloon
+        private val forcePerBalloon get() = EurekaConfig.SERVER.massPerBalloon * -GRAVITY
         private val NEUTRAL_FLOAT get() = EurekaConfig.SERVER.neutralLimit
-        private val NEUTRAL_LIMIT get() = NEUTRAL_FLOAT - 10
+
+        private val GRAVITY = -10.0
     }
 }
