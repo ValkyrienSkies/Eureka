@@ -2,6 +2,7 @@ package org.valkyrienskies.eureka.block
 
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.network.chat.TextComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -72,6 +73,9 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
 
         return if (player.isSecondaryUseActive) {
             player.openMenu(blockEntity)
+            InteractionResult.CONSUME
+        } else if (level.getShipManagingPos(pos) == null) {
+            player.sendMessage(TextComponent("Sneak to open the ship helm"), null)
             InteractionResult.CONSUME
         } else if (blockEntity.sit(player)) {
             InteractionResult.CONSUME
