@@ -68,11 +68,6 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
     override fun renderLabels(matrixStack: PoseStack, i: Int, j: Int) {
         font.draw(matrixStack, title, titleLabelX.toFloat(), titleLabelY.toFloat(), 0x404040)
 
-        if (this.menu.assembled)
-            assembleButton.message = DISSEMBLE_TEXT
-        else
-            assembleButton.message = ASSEMBLE_TEXT
-
         if (this.menu.aligning) {
             alignButton.message = ALIGNING_TEXT
             alignButton.active = false

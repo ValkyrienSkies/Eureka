@@ -28,15 +28,10 @@ class ShipHelmButton(x: Int, y: Int, text: Component, private val font: Font, on
         RenderSystem.defaultBlendFunc()
         RenderSystem.enableDepthTest()
 
-        if (!this.active || this.isHovered()) {
-            if (this.isPressed) {
-                this.blit(poseStack, x, y, BUTTON_P_X, BUTTON_P_Y, width, height)
-            } else if (this.isHovered()) {
-                this.blit(poseStack, x, y, BUTTON_H_X, BUTTON_H_Y, width, height)
-            }
-//            if (!this.active) {
-//                println("Wierd")
-//            }
+        if (this.isPressed || !this.active) {
+            this.blit(poseStack, x, y, BUTTON_P_X, BUTTON_P_Y, width, height)
+        } else if (this.isHovered()) {
+            this.blit(poseStack, x, y, BUTTON_H_X, BUTTON_H_Y, width, height)
         }
 
         val color = 0x404040
