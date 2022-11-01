@@ -21,7 +21,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     @JsonIgnore
     override var ship: ServerShip? = null
-    val controllingPlayer by shipValue<SeatedControllingPlayer>()
+    private val controllingPlayer by shipValue<SeatedControllingPlayer>()
 
     private var extraForce = 0.0
     var aligning = false
@@ -35,7 +35,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     private var angleUntilAligned = 0.0
     private var alignTarget = 0
     val canDisassemble get() = angleUntilAligned < DISASSEMBLE_THRESHOLD
-    val aligningTo get() = Direction.from2DDataValue(alignTarget)
+    val aligningTo: Direction get() = Direction.from2DDataValue(alignTarget)
     var consumed = 0f
         private set
 
@@ -64,7 +64,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     }
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
-
         if (helms < 1) {
             return
         }
@@ -74,7 +73,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         val segment = physShip.segments.segments[0]?.segmentDisplacement!!
         val omega = SegmentUtils.getOmega(physShip.poseVel, segment, Vector3d())
         val vel = SegmentUtils.getVelocity(physShip.poseVel, segment, Vector3d())
-        val pos = physShip.poseVel.pos
 
         val buoyantFactorPerFloater = min(
             EurekaConfig.SERVER.floaterBuoyantFactorPerKg / 15 / mass,
@@ -325,7 +323,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         physConsumption = 0.0f
     }
 
-    fun deleteIfEmpty() {
+    private fun deleteIfEmpty() {
         if (helms == 0 && floaters == 0 && anchors == 0 && balloons == 0) {
             ship?.saveAttachment<EurekaShipControl>(null)
         }
@@ -334,18 +332,13 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     companion object {
         fun getOrCreate(ship: ServerShip): EurekaShipControl {
             return ship.getAttachment<EurekaShipControl>()
-                ?: EurekaShipControl().also {
-                    ship.saveAttachment(
-                        it
-                    )
-                }
+                ?: EurekaShipControl().also { ship.saveAttachment(it) }
         }
 
         private const val ALIGN_THRESHOLD = 0.01
         private const val DISASSEMBLE_THRESHOLD = 0.02
         private val forcePerBalloon get() = EurekaConfig.SERVER.massPerBalloon * -GRAVITY
-        private val NEUTRAL_FLOAT get() = EurekaConfig.SERVER.neutralLimit
 
-        private val GRAVITY = -10.0
+        private const val GRAVITY = -10.0
     }
 }
