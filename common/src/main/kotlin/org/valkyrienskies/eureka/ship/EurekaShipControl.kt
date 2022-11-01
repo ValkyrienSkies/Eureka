@@ -149,12 +149,12 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         }
 
 
-        controlData?.let { player ->
+        controlData?.let { control ->
             // region Player controlled rotation
             var rotationVector = Vector3d(
                 0.0,
-                if (player.leftImpulse != 0.0f)
-                    (player.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed)
+                if (control.leftImpulse != 0.0f)
+                    (control.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed)
                 else
                     -omega.y() * EurekaConfig.SERVER.turnSpeed,
                 0.0
@@ -180,13 +180,13 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             // endregion
 
             // region Player controlled banking
-            rotationVector = player.seatInDirection.normal.toJOMLD()
+            rotationVector = control.seatInDirection.normal.toJOMLD()
 
             physShip.poseVel.transformDirection(rotationVector)
 
             rotationVector.y = 0.0
 
-            rotationVector.mul(player.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed * -1.5)
+            rotationVector.mul(control.leftImpulse.toDouble() * EurekaConfig.SERVER.turnSpeed * -1.5)
 
             SegmentUtils.transformDirectionWithScale(
                 physShip.poseVel,
@@ -206,14 +206,14 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             // endregion
 
             // region Player controlled forward and backward thrust
-            val forwardVector = player.seatInDirection.normal.toJOMLD()
+            val forwardVector = control.seatInDirection.normal.toJOMLD()
             SegmentUtils.transformDirectionWithoutScale(
                 physShip.poseVel,
                 segment,
                 forwardVector,
                 forwardVector
             )
-            forwardVector.mul(player.forwardImpulse.toDouble())
+            forwardVector.mul(control.forwardImpulse.toDouble())
 
 
             // This is the speed that the ship is always allowed to go out, without engines
@@ -230,7 +230,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             if (extraForce != 0.0) {
                 // extraForce gives the amount of force available to us, so this gives us the proportion of the
                 // force provided by engines that we're using - we always use 100% if the player is sprinting.
-                val usage = if (player.sprintOn) 1.0 else min(extraForceNeeded.length() / extraForce, 1.0)
+                val usage = if (control.sprintOn) 1.0 else min(extraForceNeeded.length() / extraForce, 1.0)
                 physConsumption += usage.toFloat()
                 actualExtraForce.fma(extraForce * usage, forwardVector)
             }
@@ -239,9 +239,9 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             // endregion
 
             // Player controlled elevation
-            if (player.upImpulse != 0.0f && balloons > 0) {
+            if (control.upImpulse != 0.0f && balloons > 0) {
                 idealUpwardVel = Vector3d(0.0, 1.0, 0.0)
-                    .mul(player.upImpulse.toDouble())
+                    .mul(control.upImpulse.toDouble())
                     .mul(EurekaConfig.SERVER.impulseElevationRate.toDouble())
             }
         }
