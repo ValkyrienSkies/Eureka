@@ -12,10 +12,7 @@ import org.valkyrienskies.core.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.floor
-import kotlin.math.min
+import kotlin.math.*
 
 class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
@@ -254,7 +251,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         val balloonForceNeeded = idealUpwardForce.length()
         val balloonForceProvided = balloons * forcePerBalloon
 
-        val actualUpwardForce = Vector3d(0.0, min(balloonForceNeeded, balloonForceProvided), 0.0)
+        // max with 0 so that balloons cannot provide downward force
+        val actualUpwardForce = Vector3d(0.0, max(0.0, min(balloonForceNeeded, balloonForceProvided)), 0.0)
         forcesApplier.applyInvariantForce(actualUpwardForce)
         // endregion
 
