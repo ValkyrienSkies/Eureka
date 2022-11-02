@@ -75,7 +75,7 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
             player.openMenu(blockEntity)
             InteractionResult.CONSUME
         } else if (level.getShipManagingPos(pos) == null) {
-            player.sendMessage(TextComponent("Sneak to open the ship helm"), null)
+            player.displayClientMessage(TextComponent("Sneak to open the ship helm!"), true)
             InteractionResult.CONSUME
         } else if (blockEntity.sit(player)) {
             InteractionResult.CONSUME
