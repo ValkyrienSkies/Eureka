@@ -15,6 +15,7 @@ import org.valkyrienskies.mod.common.util.toJOMLD
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.floor
+import kotlin.math.max
 import kotlin.math.min
 
 class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
@@ -251,7 +252,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             .add(0.0, -vel.y() - GRAVITY, 0.0)
             .mul(mass)
 
-        val balloonForceNeeded = idealUpwardForce.length()
+        // Don't let this be negative, or we will fly up forever!!!
+        val balloonForceNeeded = max(idealUpwardForce.y(), 0.0)
         val balloonForceProvided = balloons * forcePerBalloon
 
         val actualUpwardForce = Vector3d(0.0, min(balloonForceNeeded, balloonForceProvided), 0.0)
