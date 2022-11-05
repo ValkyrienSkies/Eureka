@@ -55,6 +55,12 @@ class EngineBlockEntity :
     private var heat = 0f
     override fun tick() {
         if (!this.level!!.isClientSide) {
+            // Disable engines when they are receiving a redstone signal
+            if (level!!.hasNeighborSignal(blockPos)) {
+                heatLevel = 0
+                level!!.setBlock(blockPos, this.blockState.setValue(HEAT, 0), 11)
+                return
+            }
 
             if (this.fuelLeft > 0) {
                 this.fuelLeft--
