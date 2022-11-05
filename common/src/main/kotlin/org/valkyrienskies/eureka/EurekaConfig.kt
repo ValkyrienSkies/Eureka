@@ -20,10 +20,10 @@ object EurekaConfig {
         val minEnginePower: Float = 700000f
 
         @JsonSchema(description = "The amount of heat a engine loses per tick")
-        val engineHeatLoss = 0.0005f
+        val engineHeatLoss = 0.01f
 
         @JsonSchema(description = "The amount of heat a gain per tick (when burning)")
-        val engineHeatGain = 0.002f
+        val engineHeatGain = 0.03f
 
         @JsonSchema(description = "Max speed of a ship without boosting")
         val maxCasualSpeed = 20f
