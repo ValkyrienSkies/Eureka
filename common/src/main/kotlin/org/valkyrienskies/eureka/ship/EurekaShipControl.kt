@@ -216,31 +216,29 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             )
             forwardVector.mul(control.forwardImpulse.toDouble())
 
+            val playerUpDirection = physShip.poseVel.transformDirection(Vector3d(0.0, 1.0, 0.0))
+            val velOrthogonalToPlayerUp = vel.sub(playerUpDirection.mul(playerUpDirection.dot(vel), Vector3d()), Vector3d())
 
             // This is the speed that the ship is always allowed to go out, without engines
             val baseForwardVel = Vector3d(forwardVector).mul(EurekaConfig.SERVER.baseSpeed)
-            val baseForwardForce = Vector3d(baseForwardVel).sub(vel.x(), 0.0, vel.z()).mul(mass * 10)
+            val baseForwardForce = Vector3d(baseForwardVel).sub(velOrthogonalToPlayerUp).mul(mass * 10)
 
             // This is the maximum speed we want to go in any scenario (when not sprinting)
             val idealForwardVel = Vector3d(forwardVector).mul(EurekaConfig.SERVER.maxCasualSpeed.toDouble())
-            val idealForwardForce = Vector3d(idealForwardVel).sub(vel.x(), 0.0, vel.z()).mul(mass * 10)
+            val idealForwardForce = Vector3d(idealForwardVel).sub(velOrthogonalToPlayerUp).mul(mass * 10)
 
             val extraForceNeeded = Vector3d(idealForwardForce).sub(baseForwardForce)
-            val actualExtraForce = Vector3d(forwardVector).add(baseForwardForce)
+            val actualExtraForce = Vector3d(baseForwardForce)
 
             if (extraForce != 0.0) {
-                // extraForce gives the amount of force available to us, so this gives us the proportion of the
-                // force provided by engines that we're using - we always use 100% if the player is sprinting.
-                val usage = if (control.sprintOn) 1.0 else min(extraForceNeeded.length() / extraForce, 1.0)
-                physConsumption += usage.toFloat()
-                actualExtraForce.fma(extraForce * usage, forwardVector)
+                actualExtraForce.fma(min(extraForce / extraForceNeeded.length(), 1.0), extraForceNeeded)
             }
 
             forcesApplier.applyInvariantForce(actualExtraForce)
             // endregion
 
             // Player controlled elevation
-            if (control.upImpulse != 0.0f && balloons > 0) {
+            if (control.upImpulse != 0.0f) {
                 idealUpwardVel = Vector3d(0.0, 1.0, 0.0)
                     .mul(control.upImpulse.toDouble())
                     .mul(EurekaConfig.SERVER.impulseElevationRate.toDouble())
@@ -248,15 +246,13 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         }
 
         // region Elevation
-        val idealUpwardForce = Vector3d(idealUpwardVel)
-            .add(0.0, -vel.y() - GRAVITY, 0.0)
-            .mul(mass)
+        // Higher numbers make the ship accelerate to max speed faster
+        val elevationSnappiness = 10.0
+        val idealUpwardForce = Vector3d(0.0, idealUpwardVel.y() - vel.y() - (GRAVITY / elevationSnappiness), 0.0).mul(mass * elevationSnappiness)
 
-        // Don't let this be negative, or we will fly up forever!!!
-        val balloonForceNeeded = max(idealUpwardForce.y(), 0.0)
         val balloonForceProvided = balloons * forcePerBalloon
 
-        val actualUpwardForce = Vector3d(0.0, min(balloonForceNeeded, balloonForceProvided), 0.0)
+        val actualUpwardForce = Vector3d(0.0, min(balloonForceProvided, max(idealUpwardForce.y(), 0.0)), 0.0)
         forcesApplier.applyInvariantForce(actualUpwardForce)
         // endregion
 
