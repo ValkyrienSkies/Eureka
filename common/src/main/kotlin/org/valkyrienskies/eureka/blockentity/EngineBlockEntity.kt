@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.ContainerHelper
 import net.minecraft.world.WorldlyContainer
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
@@ -120,14 +121,9 @@ class EngineBlockEntity :
     override fun getItem(slot: Int): ItemStack =
         if (slot == 0) fuel else ItemStack.EMPTY
 
-    override fun removeItem(slot: Int, amount: Int): ItemStack =
-        if (slot == 0) {
-            if (fuel.count > amount) {
-                fuel.count = fuel.count - amount
-            } else fuel = ItemStack.EMPTY
-
-            fuel
-        } else ItemStack.EMPTY
+    override fun removeItem(slot: Int, amount: Int): ItemStack {
+        return ContainerHelper.removeItem(listOf(fuel), slot, amount)
+    }
 
     override fun removeItemNoUpdate(slot: Int): ItemStack {
         if (slot == 0) fuel = ItemStack.EMPTY

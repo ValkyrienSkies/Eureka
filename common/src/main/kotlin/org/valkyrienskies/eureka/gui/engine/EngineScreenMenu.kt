@@ -43,7 +43,6 @@ class EngineScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Engin
             if (index != 0) {
                 this.moveItemStackTo(slot.item, 0, 1, false)
                 slot.setChanged()
-                return slot.item
             } else {
                 slot.onTake(player, slot.item)
                 this.moveItemStackTo(slot.item, 1, 37, true)
