@@ -3,6 +3,7 @@ package org.valkyrienskies.eureka.block
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.level.Level
@@ -17,8 +18,8 @@ import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
 class BalloonBlock(properties: Properties) : Block(properties) {
 
-    override fun fallOn(level: Level, blockPos: BlockPos, entity: Entity, f: Float) {
-        entity.causeFallDamage(f, 0.2f)
+    override fun fallOn(level: Level, state: BlockState, blockPos: BlockPos, entity: Entity, f: Float) {
+        entity.causeFallDamage(f, 0.2f, DamageSource.FALL)
     }
 
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {

@@ -1,12 +1,12 @@
 package org.valkyrienskies.eureka
 
-import me.shedaniel.architectury.registry.CreativeTabs
-import me.shedaniel.architectury.registry.DeferredRegister
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import org.valkyrienskies.eureka.registry.CreativeTabs
+import org.valkyrienskies.eureka.registry.DeferredRegister
 
 @Suppress("unused")
 object EurekaItems {
@@ -20,7 +20,7 @@ object EurekaItems {
 
     fun register() {
         EurekaBlocks.registerItems(ITEMS)
-        ITEMS.register()
+        ITEMS.applyAll()
     }
 
     private infix fun Item.byName(name: String) = ITEMS.register(name) { this }

@@ -2,9 +2,8 @@ package org.valkyrienskies.eureka.gui.shiphelm
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
-import net.fabricmc.api.EnvType
-import net.fabricmc.api.Environment
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.resources.ResourceLocation
@@ -12,7 +11,6 @@ import net.minecraft.world.entity.player.Inventory
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
 
-@Environment(EnvType.CLIENT)
 class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, text: Component) :
     AbstractContainerScreen<ShipHelmScreenMenu>(handler, playerInventory, text) {
 
@@ -29,7 +27,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
 
-        assembleButton = addButton(
+        assembleButton = addWidget(
             ShipHelmButton(x + BUTTON_1_X, y + BUTTON_1_Y, ASSEMBLE_TEXT, font) {
                 // Send assemble or dissemble packet
                 if (this.menu.assembled) {
@@ -43,13 +41,13 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
 
 
 
-        alignButton = addButton(
+        alignButton = addWidget(
             ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, ALIGN_TEXT, font) {
                 minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 1)
             }
         )
 
-        todoButton = addButton(
+        todoButton = addWidget(
             ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, TODO_TEXT, font) {
                 minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 3)
             }
@@ -58,8 +56,9 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
     }
 
     override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f)
-        minecraft!!.textureManager.bind(TEXTURE)
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
+        RenderSystem.setShaderTexture(0, TEXTURE)
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
         blit(matrixStack, x, y, 0, 0, imageWidth, imageHeight)

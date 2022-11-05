@@ -2,6 +2,7 @@ package org.valkyrienskies.eureka.mixin.client;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,8 +13,8 @@ import org.valkyrienskies.mod.common.entity.ShipMountingEntity;
 @Mixin(PlayerModel.class)
 public abstract class PlayerEntityModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
 
-    protected PlayerEntityModelMixin(final float scale) {
-        super(scale);
+    public PlayerEntityModelMixin(ModelPart $$0) {
+        super($$0);
     }
 
     @SuppressWarnings("unchecked")

@@ -1,8 +1,5 @@
 package org.valkyrienskies.eureka
 
-import me.shedaniel.architectury.registry.RegistrySupplier
-import net.fabricmc.api.EnvType
-import net.fabricmc.api.Environment
 import net.minecraft.client.gui.screens.MenuScreens
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
@@ -13,6 +10,7 @@ import org.valkyrienskies.eureka.EurekaScreens.ENGINE
 import org.valkyrienskies.eureka.EurekaScreens.SHIP_HELM
 import org.valkyrienskies.eureka.gui.engine.EngineScreen
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreen
+import org.valkyrienskies.eureka.registry.RegistrySupplier
 
 private typealias SFactory<T> = (handler: T, playerInv: Inventory, text: Component) -> AbstractContainerScreen<T>
 
@@ -23,7 +21,6 @@ private data class ClientScreenRegistar<T : AbstractContainerMenu>(
     fun register() = MenuScreens.register(type.get(), factory)
 }
 
-@Environment(EnvType.CLIENT)
 object EurekaClientScreens {
     private val SCREENS_CLIENT = mutableListOf<ClientScreenRegistar<*>>()
 

@@ -1,7 +1,5 @@
 package org.valkyrienskies.eureka.block
 
-import net.fabricmc.api.EnvType
-import net.fabricmc.api.Environment
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
@@ -18,6 +16,8 @@ import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.RenderShape
 import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.entity.BlockEntityTicker
+import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING
@@ -42,7 +42,8 @@ object EngineBlock : BaseEntityBlock(
         )
     }
 
-    override fun newBlockEntity(blockGetter: BlockGetter): BlockEntity = EngineBlockEntity()
+    override fun newBlockEntity(blockPos: BlockPos, state: BlockState): BlockEntity =
+        EngineBlockEntity(blockPos, state)
 
     override fun use(
         state: BlockState,
@@ -75,7 +76,6 @@ object EngineBlock : BaseEntityBlock(
         return RenderShape.MODEL
     }
 
-    @Environment(EnvType.CLIENT)
     override fun getShadeBrightness(state: BlockState?, level: BlockGetter?, pos: BlockPos?): Float {
         if (state?.getValue(HEAT) ?: 0 > 0) {
             return 1.0f
@@ -84,7 +84,6 @@ object EngineBlock : BaseEntityBlock(
         }
     }
 
-    @Environment(value = EnvType.CLIENT)
     override fun animateTick(state: BlockState, level: Level, pos: BlockPos, random: Random) {
         val heat = state.getValue(HEAT)
         if (heat == 0) return
@@ -108,5 +107,16 @@ object EngineBlock : BaseEntityBlock(
         val k = if (axis === Direction.Axis.Z) direction.stepZ.toDouble() * 0.52 else h
         level.addParticle(ParticleTypes.SMOKE, d + i, e + j, f + k, 0.0, 0.0, 0.0)
         level.addParticle(ParticleTypes.FLAME, d + i, e + j, f + k, 0.0, 0.0, 0.0)
+    }
+
+    override fun <T : BlockEntity?> getTicker(
+        level: Level,
+        state: BlockState,
+        type: BlockEntityType<T>
+    ): BlockEntityTicker<T> = BlockEntityTicker { level, pos, state, blockEntity ->
+        if (level.isClientSide) return@BlockEntityTicker
+        if (blockEntity is EngineBlockEntity) {
+            blockEntity.tick()
+        }
     }
 }

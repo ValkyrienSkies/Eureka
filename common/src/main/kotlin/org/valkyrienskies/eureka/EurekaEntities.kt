@@ -1,25 +1,24 @@
 package org.valkyrienskies.eureka
 
-import me.shedaniel.architectury.registry.DeferredRegister
-import me.shedaniel.architectury.registry.RegistrySupplier
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher
-import net.minecraft.client.renderer.entity.EntityRenderer
-import net.minecraft.client.renderer.entity.ItemRenderer
+import net.minecraft.client.renderer.entity.EntityRendererProvider
+import net.minecraft.client.renderer.entity.EntityRenderers
 import net.minecraft.core.Registry
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.MobCategory
 import net.minecraft.world.level.Level
+import org.valkyrienskies.eureka.registry.DeferredRegister
+import org.valkyrienskies.eureka.registry.RegistrySupplier
 
 private typealias EFactory<T> = (EntityType<T>, Level) -> T
-private typealias RFactory<T> = EntityRenderDispatcher.(ItemRenderer) -> EntityRenderer<T>
+private typealias RFactory<T> = EntityRendererProvider<T>
 
 private data class ToRegEntityRenderer<T : Entity>(
     val type: RegistrySupplier<EntityType<T>>,
     val renderer: RFactory<in T>
 ) {
-    fun register(dispatcher: EntityRenderDispatcher, itemRenderer: ItemRenderer) =
-        dispatcher.register(type.get(), renderer(dispatcher, itemRenderer))
+    fun register() =
+        EntityRenderers.register(type.get(), renderer)
 }
 
 object EurekaEntities {
@@ -29,7 +28,7 @@ object EurekaEntities {
     // val SEAT = ::SeatEntity category MobCategory.MISC byName "seat" registerRenderer ::EmptyRenderer
 
     fun register() {
-        ENTITIES.register()
+        ENTITIES.applyAll()
     }
 
     private infix fun <T : Entity> EFactory<T>.category(category: MobCategory) =
@@ -45,6 +44,6 @@ object EurekaEntities {
         ENTITIES.register(name) { this.build(name) }
 
     @JvmStatic
-    fun registerRenderers(dispatcher: EntityRenderDispatcher, itemRenderer: ItemRenderer) =
-        ENTITY_RENDERERS.forEach { it.register(dispatcher, itemRenderer) }
+    fun registerRenderers() =
+        ENTITY_RENDERERS.forEach { it.register() }
 }

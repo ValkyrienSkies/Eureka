@@ -1,5 +1,6 @@
 package org.valkyrienskies.eureka.blockentity
 
+import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
@@ -16,7 +17,6 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity
-import net.minecraft.world.level.block.entity.TickableBlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import org.joml.Math.lerp
 import org.joml.Math.min
@@ -32,10 +32,9 @@ import org.valkyrienskies.eureka.util.KtContainerData
 import org.valkyrienskies.mod.common.getShipManagingPos
 import kotlin.math.ceil
 
-class EngineBlockEntity :
-    BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get()),
+class EngineBlockEntity(pos: BlockPos, state: BlockState) :
+    BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get(), pos, state),
     ServerShipProvider,
-    TickableBlockEntity,
     StackedContentsCompatible,
     WorldlyContainer {
 
@@ -53,7 +52,7 @@ class EngineBlockEntity :
     override fun getDefaultName(): Component = TranslatableComponent("gui.vs_eureka.engine")
 
     private var heat = 0f
-    override fun tick() {
+    fun tick() {
         if (!this.level!!.isClientSide) {
             // Disable engines when they are receiving a redstone signal
             if (level!!.hasNeighborSignal(blockPos)) {
@@ -99,20 +98,20 @@ class EngineBlockEntity :
 
     fun isBurning() = fuelLeft > 0
 
-    override fun save(tag: CompoundTag): CompoundTag {
+    override fun saveAdditional(tag: CompoundTag) {
         tag.put("FuelSlot", fuel.save(CompoundTag()))
         tag.putInt("FuelLeft", fuelLeft)
         tag.putInt("PrevFuelTotal", fuelTotal)
         tag.putFloat("Heat", heat)
-        return super.save(tag)
+        super.saveAdditional(tag)
     }
 
-    override fun load(blockState: BlockState, compoundTag: CompoundTag) {
+    override fun load(compoundTag: CompoundTag) {
         fuel = ItemStack.of(compoundTag.getCompound("FuelSlot"))
         fuelLeft = compoundTag.getInt("FuelLeft")
         fuelTotal = compoundTag.getInt("PrevFuelTotal")
         heat = compoundTag.getFloat("Heat")
-        super.load(blockState, compoundTag)
+        super.load(compoundTag)
     }
 
     // region Container Stuff
@@ -163,8 +162,4 @@ class EngineBlockEntity :
 
     override fun fillStackedContents(helper: StackedContents) = helper.accountStack(fuel)
     // endregion Container Stuff
-
-    companion object {
-        val supplier = { EngineBlockEntity() }
-    }
 }

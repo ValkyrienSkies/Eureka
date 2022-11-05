@@ -14,7 +14,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.level.block.entity.TickableBlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING
 import net.minecraft.world.level.block.state.properties.Half
@@ -36,8 +35,8 @@ import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOMLD
 
-class ShipHelmBlockEntity :
-    BlockEntity(EurekaBlockEntities.SHIP_HELM.get()), MenuProvider, ServerShipProvider, TickableBlockEntity {
+class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
+    BlockEntity(EurekaBlockEntities.SHIP_HELM.get(), pos, state), MenuProvider, ServerShipProvider {
 
     override var ship: ServerShip? = null // TODO ship is not being set in vs2?
         get() = field ?: (level as ServerLevel).getShipObjectManagingPos(this.blockPos)
@@ -86,7 +85,7 @@ class ShipHelmBlockEntity :
         return entity
     }
 
-    override fun tick() {
+    fun tick() {
         if (shouldDisassembleWhenPossible && ship?.getAttachment<EurekaShipControl>()?.canDisassemble == true) {
             this.disassemble()
         }
@@ -138,8 +137,4 @@ class ShipHelmBlockEntity :
 
     fun sit(player: Player, force: Boolean = false): Boolean =
         player.startRiding(spawnSeat(blockPos, blockState, level as ServerLevel), force)
-
-    companion object {
-        val supplier = { ShipHelmBlockEntity() }
-    }
 }
