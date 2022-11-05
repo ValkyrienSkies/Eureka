@@ -214,10 +214,14 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                 forwardVector,
                 forwardVector
             )
+            forwardVector.y *= 0.1 // Reduce vertical thrust
+            forwardVector.normalize()
+
             forwardVector.mul(control.forwardImpulse.toDouble())
 
             val playerUpDirection = physShip.poseVel.transformDirection(Vector3d(0.0, 1.0, 0.0))
-            val velOrthogonalToPlayerUp = vel.sub(playerUpDirection.mul(playerUpDirection.dot(vel), Vector3d()), Vector3d())
+            val velOrthogonalToPlayerUp =
+                vel.sub(playerUpDirection.mul(playerUpDirection.dot(vel), Vector3d()), Vector3d())
 
             // This is the speed that the ship is always allowed to go out, without engines
             val baseForwardVel = Vector3d(forwardVector).mul(EurekaConfig.SERVER.baseSpeed)
@@ -248,7 +252,11 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // region Elevation
         // Higher numbers make the ship accelerate to max speed faster
         val elevationSnappiness = 10.0
-        val idealUpwardForce = Vector3d(0.0, idealUpwardVel.y() - vel.y() - (GRAVITY / elevationSnappiness), 0.0).mul(mass * elevationSnappiness)
+        val idealUpwardForce = Vector3d(
+            0.0,
+            idealUpwardVel.y() - vel.y() - (GRAVITY / elevationSnappiness),
+            0.0
+        ).mul(mass * elevationSnappiness)
 
         val balloonForceProvided = balloons * forcePerBalloon
 
