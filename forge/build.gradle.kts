@@ -103,21 +103,11 @@ minecraft.runs.all {
     }
 }
 
-val forgeKotlinVersion: String by project
-val kotlinVersion: String by project
 dependencies {
     minecraft("net.minecraftforge:forge:${minecraft_version}-${forge_version}")
     implementation("thedarkcolour:kotlinforforge:${forge_kotlin_version}")
     compileOnly(project(":common"))
     compileOnly("org.valkyrienskies:valkyrien-dependency-downloader:4.2")
-
-    val library = configurations["library"]
-    library("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}") {
-        exclude(group = "org.jetbrains", module = "annotations")
-    }
-    library("org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}") {
-        exclude(group = "org.jetbrains", module = "annotations")
-    }
 
     api(fg.deobf("me.shedaniel.cloth:cloth-config:${cloth_config_version}"))
     implementation(fg.deobf("org.valkyrienskies:valkyrienskies-118-forge:${vs2_version}"))
@@ -126,9 +116,23 @@ dependencies {
 
 tasks {
 
-
     processResources {
         from(project(":common").sourceSets.main.get().resources)
+        inputs.property("version", project.version)
+
+        val expands = mapOf(
+            Pair("version", project.version),
+            Pair("vs2_version", vs2_version),
+            Pair("vs2_plain_version", vs2_version.substring(0, vs2_version.indexOf('+')))
+        )
+
+        filesMatching("META-INF/mods.toml") {
+            expand(expands)
+        }
+
+        filesMatching("valkyrien_dependency_manifest.json") {
+            expand(expands)
+        }
     }
 
     jar {

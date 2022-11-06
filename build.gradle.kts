@@ -3,6 +3,7 @@ import java.util.Date
 
 val minecraft_version: String by project
 val mod_name: String by project
+val eureka_version: String by project
 
 plugins {
     idea
@@ -26,6 +27,16 @@ allprojects {
             name = "Valkyrien Skies"
         }
         mavenLocal()
+    }
+
+    // Determine the version
+    version = if (project.hasProperty("CustomReleaseVersion")) {
+        project.property("CustomReleaseVersion") as String
+    } else {
+        // Yes, I know there is a gradle plugin to detect git version.
+        // But its made by Palantir 0_0.
+        val gitRevision = "git rev-parse HEAD".execute()
+        eureka_version + gitRevision.substring(0, 10)
     }
 
     tasks.withType<GenerateModuleMetadata> {
@@ -67,16 +78,6 @@ subprojects {
         options.encoding = "UTF-8"
         options.release.set(17)
     }
-}
-
-// Determine the version
-version = if (project.hasProperty("CustomReleaseVersion")) {
-    project.property("CustomReleaseVersion") as String
-} else {
-    // Yes, I know there is a gradle plugin to detect git version.
-    // But its made by Palantir 0_0.
-    val gitRevision = "git rev-parse HEAD".execute()
-    "1.0.0+" + gitRevision.substring(0, 10)
 }
 
 // region Util functions
