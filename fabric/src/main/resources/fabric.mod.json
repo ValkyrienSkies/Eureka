@@ -28,6 +28,9 @@
     "client": [
       "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}Client"
     ],
+    "preLaunch": [
+      "org.valkyrienskies.eureka.fabric.ValkyrienPreLaunch"
+    ],
     "modmenu": [
       "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}ModMenu"
     ]
@@ -37,6 +40,6 @@
     "vs_eureka.mixins.json"
   ],
   "depends": {
-    "minecraft": ">=1.16.5"
+    "minecraft": ">=1.18.2"
   }
 }

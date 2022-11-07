@@ -4,7 +4,7 @@ plugins {
     idea
     kotlin("jvm")
     `maven-publish`
-    id("fabric-loom") version "0.10-SNAPSHOT"
+    id("fabric-loom") version "1.0-SNAPSHOT"
     //id "com.matthewprenger.cursegradle"
     //id "com.modrinth.minotaur"
 }
@@ -56,10 +56,10 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
-    modImplementation("net.fabricmc:fabric-language-kotlin:1.8.3+kotlin.1.7.10")
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.8.5+kotlin.1.7.20")
 
     // Mod menu
-    modImplementation("com.terraformersmc:modmenu:1.16.23")
+    modImplementation("com.terraformersmc:modmenu:3.2.3")
     modApi("me.shedaniel.cloth:cloth-config:${cloth_config_version}") {
         exclude(group = "net.fabricmc.fabric-api")
     }

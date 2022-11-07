@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "org.valkyrienskies.eureka.forge.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "plugin": "org.valkyrienskies.eureka.forge.mixin.ValkyrienForgeMixinConfigPlugin",
   "mixins": [],
   "client": [],

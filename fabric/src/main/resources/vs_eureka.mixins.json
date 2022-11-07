@@ -1,8 +1,7 @@
 {
   "required": true,
   "package": "org.valkyrienskies.eureka.fabric.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "plugin": "org.valkyrienskies.eureka.fabric.mixin.client.ValkyrienFabricMixinConfigPlugin",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],
   "client": [
