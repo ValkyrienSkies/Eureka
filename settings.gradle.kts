@@ -25,6 +25,9 @@ pluginManagement {
         maven("https://maven.minecraftforge.net") {
             name = "Forge"
         }
+        maven("https://maven.architectury.dev/") {
+            name = "Architectury"
+        }
     }
 
     resolutionStrategy {

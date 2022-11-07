@@ -19,7 +19,7 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
 
     public DeferredRegisterImpl(String modId, ResourceKey<Registry<T>> registry) {
         this.modId = modId;
-        this.registry = (Registry<T>) Registry.REGISTRY.get(registry.registry());
+        this.registry = (Registry<T>) Registry.REGISTRY.get(registry.location());
     }
 
     @NotNull

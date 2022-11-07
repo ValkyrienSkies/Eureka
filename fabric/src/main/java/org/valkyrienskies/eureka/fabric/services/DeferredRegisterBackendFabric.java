@@ -1,11 +1,13 @@
-package org.valkyrienskies.eureka.fabric;
+package org.valkyrienskies.eureka.fabric.services;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.NotNull;
+import org.valkyrienskies.eureka.fabric.DeferredRegisterImpl;
 import org.valkyrienskies.eureka.registry.DeferredRegister;
+import org.valkyrienskies.eureka.services.DeferredRegisterBackend;
 
-public class DeferredRegisterBackend implements DeferredRegister.DeferredRegisterBackend {
+public class DeferredRegisterBackendFabric implements DeferredRegisterBackend {
 
     @NotNull
     @Override

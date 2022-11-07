@@ -30,14 +30,14 @@ side = "BOTH"
 [[dependencies.vs_eureka]]
 modId = "minecraft"
 mandatory = false
-versionRange = "[1.16.5,)"
+versionRange = "[1.18.2,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.vs_eureka]]
 modId = "minecraft"
 mandatory = false
-versionRange = "[1.16.5,)"
+versionRange = "[1.18.2,)"
 ordering = "NONE"
 side = "BOTH"
 

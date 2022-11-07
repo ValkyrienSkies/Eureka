@@ -2,6 +2,7 @@ package org.valkyrienskies.eureka.registry
 
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceKey
+import org.valkyrienskies.eureka.services.DeferredRegisterBackend
 import java.util.ServiceLoader
 
 interface DeferredRegister<T> : Iterable<RegistrySupplier<T>> {
@@ -19,9 +20,5 @@ interface DeferredRegister<T> : Iterable<RegistrySupplier<T>> {
             ServiceLoader.load(DeferredRegisterBackend::class.java)
                 .findFirst()
                 .orElseThrow { NullPointerException("Failed to load service for DeferredRegisterBackend") }
-    }
-
-    interface DeferredRegisterBackend {
-        fun <T> makeDeferredRegister(id: String, registry: ResourceKey<Registry<T>>): DeferredRegister<T>
     }
 }

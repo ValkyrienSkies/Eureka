@@ -37,7 +37,7 @@ object RotShapes {
         RotShape {
         override fun rotate90(): RotShape = Box(16 - z1, y1, x1, 16 - z2, y2, x2)
 
-        override fun makeMcShape(): VoxelShape = Shapes.box(x1 / 16, y1 / 16, z1 / 16, x2 / 16, y2 / 16, z2 / 16)
+        override fun makeMcShape(): VoxelShape = Shapes.box(0.0, y1 / 16, 0.0, x2 / 16, y2 / 16, z2 / 16)
     }
 
     private class Union(val shapes: List<RotShape>) : RotShape {
