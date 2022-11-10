@@ -1,6 +1,10 @@
 package org.valkyrienskies.eureka
 
 import com.github.imifou.jsonschema.module.addon.annotation.JsonSchema
+import net.minecraft.world.item.FireworkRocketItem
+import net.minecraft.world.level.Explosion
+import org.valkyrienskies.eureka.combat.StarConfig
+import java.util.*
 
 object EurekaConfig {
     @JvmField
@@ -174,5 +178,14 @@ object EurekaConfig {
 
         @JsonSchema(description = "Disassembly is broken ATM, enable at ur own risk.")
         val enableDisassembly = false
+
+        @JsonSchema(description = "Configuration for firework star effects")
+        val fireworks = mapOf(
+                FireworkRocketItem.Shape.SMALL_BALL to StarConfig(2f, false, 1.0, false, 0.0, 1.0, Explosion.BlockInteraction.BREAK),
+                FireworkRocketItem.Shape.LARGE_BALL to StarConfig(3f, false, 1.0, false, 0.0, 1.0, Explosion.BlockInteraction.BREAK),
+                FireworkRocketItem.Shape.STAR to StarConfig(1f, false, 400.0, false, 0.0, 1.0, Explosion.BlockInteraction.BREAK),
+                FireworkRocketItem.Shape.CREEPER to StarConfig(5f, false, 80.0, false, 0.0, 1.0, Explosion.BlockInteraction.BREAK),
+                FireworkRocketItem.Shape.BURST to StarConfig(5f, false, 1.0, true, 0.45, 1.0, Explosion.BlockInteraction.DESTROY)
+        )
     }
 }
