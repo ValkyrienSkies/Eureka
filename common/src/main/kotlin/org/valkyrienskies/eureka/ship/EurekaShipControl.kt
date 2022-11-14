@@ -26,6 +26,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     private var extraForce = 0.0
     var aligning = false
+    var disassembling = false // Disassembling also affects position
     private var physConsumption = 0f
     private val anchored get() = anchorsActive > 0
     private val anchorSpeed = EurekaConfig.SERVER.anchorSpeed
@@ -34,8 +35,12 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     private var anchorTargetRot = Quaterniond()
 
     private var angleUntilAligned = 0.0
+    private var positionUntilAligned = Vector3d()
     private var alignTarget = 0
-    val canDisassemble get() = angleUntilAligned < DISASSEMBLE_THRESHOLD
+    val canDisassemble get() = ship != null &&
+        disassembling &&
+        abs(angleUntilAligned) < DISASSEMBLE_THRESHOLD &&
+        positionUntilAligned.distanceSquared(this.ship!!.shipTransform.shipPositionInWorldCoordinates) < 4.0
     val aligningTo: Direction get() = Direction.from2DDataValue(alignTarget)
     var consumed = 0f
         private set
@@ -102,7 +107,13 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // Floor makes a number 0 to 3, which corresponds to direction
         alignTarget = floor((invRotationAxisAngle.angle / (PI * 0.5)) + 4.5).toInt() % 4
         angleUntilAligned = (alignTarget.toDouble() * (0.5 * Math.PI)) - invRotationAxisAngle.angle
-        if (aligning && abs(angleUntilAligned) > ALIGN_THRESHOLD) {
+        if (disassembling && ship != null) {
+            val pos = this.ship!!.shipTransform.shipPositionInWorldCoordinates
+            positionUntilAligned = pos.floor(Vector3d())
+            val direction = pos.sub(positionUntilAligned, Vector3d())
+            forcesApplier.applyInvariantForce(direction)
+        }
+        if ((aligning) && abs(angleUntilAligned) > ALIGN_THRESHOLD) {
             if (angleUntilAligned < 0.3 && angleUntilAligned > 0.0) angleUntilAligned = 0.3
             if (angleUntilAligned > -0.3 && angleUntilAligned < 0.0) angleUntilAligned = -0.3
 
@@ -128,7 +139,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
         var idealUpwardVel = Vector3d(0.0, 0.0, 0.0)
 
-
         val player = controllingPlayer
 
         if (player != null) {
@@ -148,7 +158,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             // If the player isn't controlling the ship, and not cruising, reset the control data
             controlData = null
         }
-
 
         controlData?.let { control ->
             // region Player controlled rotation

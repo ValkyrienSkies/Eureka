@@ -113,6 +113,7 @@ class ShipHelmBlockEntity :
 
         if (!control.canDisassemble) {
             shouldDisassembleWhenPossible = true
+            control.disassembling = true
             control.aligning = true
             return
         }
