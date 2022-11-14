@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.RenderShape
+import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityTicker
 import net.minecraft.world.level.block.entity.BlockEntityType
@@ -127,10 +128,15 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         level: Level,
         state: BlockState,
         type: BlockEntityType<T>
-    ): BlockEntityTicker<T> = BlockEntityTicker { level, pos, state, blockEntity ->
-        if (level.isClientSide) return@BlockEntityTicker
-        if (blockEntity is ShipHelmBlockEntity) {
-            blockEntity.tick()
+    ): BlockEntityTicker<T> = BlockEntityTicker { levelLambda, _, _, blockEntityLambda ->
+        if (levelLambda.isClientSide) return@BlockEntityTicker
+        if (blockEntityLambda is ShipHelmBlockEntity) {
+            blockEntityLambda.tick()
         }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun rotate(state: BlockState, rotation: Rotation): BlockState {
+        return state.setValue(HORIZONTAL_FACING, rotation.rotate(state.getValue(HORIZONTAL_FACING) as Direction)) as BlockState
     }
 }
