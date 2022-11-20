@@ -53,13 +53,13 @@ dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
     // Remove the next line if you don't want to depend on the API
 //    modApi "me.shedaniel:architectury-forge:${rootProject.architectury_version}"
-    modApi("org.valkyrienskies:valkyrienskies-118-forge:${rootProject.vs2_version}")
+    modApi("org.valkyrienskies:valkyrienskies-118-forge:${rootProject.vs2_version}") { transitive = false }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    implementation("org.valkyrienskies:valkyrien-dependency-downloader:4.2")
-    include("org.valkyrienskies:valkyrien-dependency-downloader:4.2:all")
+//    implementation("org.valkyrienskies:valkyrien-dependency-downloader:4.2")
+//    include("org.valkyrienskies:valkyrien-dependency-downloader:4.2:all")
 }
 
 processResources {
