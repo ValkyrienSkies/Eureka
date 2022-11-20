@@ -25,9 +25,9 @@ import net.minecraft.world.level.material.Material
 import net.minecraft.world.phys.BlockHitResult
 import org.valkyrienskies.eureka.EurekaProperties.HEAT
 import org.valkyrienskies.eureka.blockentity.EngineBlockEntity
-import java.util.Random
+import java.util.*
 
-object EngineBlock : BaseEntityBlock(
+class EngineBlock : BaseEntityBlock(
     Properties.of(Material.STONE)
         .requiresCorrectToolForDrops()
         .strength(3.5F)

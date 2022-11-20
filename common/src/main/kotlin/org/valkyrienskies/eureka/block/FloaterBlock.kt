@@ -14,7 +14,7 @@ import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
-object FloaterBlock : Block(
+class FloaterBlock : Block(
     Properties.of(Material.WOOD)
         .sound(SoundType.WOOL).strength(1.0f, 2.0f)
 ) {
