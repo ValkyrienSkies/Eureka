@@ -71,8 +71,12 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
         if (helms < 1) {
+            // Enable fluid drag if all the helms have been destroyed
+            physShip.doFluidDrag = true
             return
         }
+        // Disable fluid drag when helms are present, because it makes ships hard to drive
+        physShip.doFluidDrag = false
 
         val mass = physShip.inertia.shipMass
         val moiTensor = physShip.inertia.momentOfInertiaTensor
