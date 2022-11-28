@@ -40,6 +40,10 @@ object EurekaConfig {
         @JsonSchema(description = "Vertical sensitivity up ascend/descend")
         var impulseElevationRate = 7
 
+        // Allow Eureka controlled ships to be affected by fluid drag
+        @JsonSchema(description = "Allow Eureka controlled ships to be affected by fluid drag")
+        var doFluidDrag = false
+
 
         // Do i need to explain? the mass 1 baloon gets to float
         @JsonSchema(description = "Amount of mass in kg a balloon can lift")
