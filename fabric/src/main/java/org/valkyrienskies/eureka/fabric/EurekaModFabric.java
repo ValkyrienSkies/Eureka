@@ -17,15 +17,13 @@ import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
+import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
 public class EurekaModFabric implements ModInitializer {
     @Override
     public void onInitialize() {
-        try {
-            Class.forName("org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric");
-        } catch (final ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        // force VS2 to load before eureka
+        new ValkyrienSkiesModFabric().onInitialize();
 
         EurekaMod.init();
     }

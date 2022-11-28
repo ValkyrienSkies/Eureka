@@ -1,18 +1,18 @@
 package org.valkyrienskies.eureka.ship
 
 import org.joml.Vector3d
-import org.valkyrienskies.core.api.ForcesApplier
-import org.valkyrienskies.core.game.ships.PhysShip
+import org.valkyrienskies.core.api.ships.PhysShip
+import org.valkyrienskies.core.game.ships.PhysShipImpl
 import org.valkyrienskies.core.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.physics_api.SegmentDisplacement
 
 fun stabilize(
-    ship: PhysShip,
+    ship: PhysShipImpl,
     omega: Vector3d,
     vel: Vector3d,
     segment: SegmentDisplacement,
-    forces: ForcesApplier,
+    forces: PhysShip,
     linear: Boolean,
     yaw: Boolean
 ) {

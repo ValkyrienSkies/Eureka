@@ -20,9 +20,9 @@ import net.minecraft.world.level.block.entity.FurnaceBlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import org.joml.Math.lerp
 import org.joml.Math.min
-import org.valkyrienskies.core.api.ServerShip
 import org.valkyrienskies.core.api.ServerShipProvider
 import org.valkyrienskies.core.api.shipValue
+import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaProperties.HEAT

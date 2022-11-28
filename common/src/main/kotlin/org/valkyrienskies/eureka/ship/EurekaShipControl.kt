@@ -1,23 +1,28 @@
 package org.valkyrienskies.eureka.ship
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonIgnore
 import net.minecraft.core.Direction
 import org.joml.AxisAngle4d
 import org.joml.Math.clamp
 import org.joml.Quaterniond
 import org.joml.Vector3d
-import org.valkyrienskies.core.api.*
-import org.valkyrienskies.core.game.ships.PhysShip
+import org.valkyrienskies.core.api.ServerShipUser
+import org.valkyrienskies.core.api.ShipForcesInducer
+import org.valkyrienskies.core.api.Ticked
+import org.valkyrienskies.core.api.shipValue
+import org.valkyrienskies.core.api.ships.PhysShip
+import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.api.ships.getAttachment
+import org.valkyrienskies.core.api.ships.saveAttachment
+import org.valkyrienskies.core.game.ships.PhysShipImpl
 import org.valkyrienskies.core.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.*
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     @JsonIgnore
@@ -64,10 +69,14 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         }
     }
 
-    override fun applyForces(forcesApplier: ForcesApplier, physShip: PhysShip) {
+    override fun applyForces(physShip: PhysShip) {
         if (helms < 1) {
             return
         }
+
+        val forcesApplier = physShip
+
+        physShip as PhysShipImpl
 
         val mass = physShip.inertia.shipMass
         val moiTensor = physShip.inertia.momentOfInertiaTensor
@@ -266,8 +275,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
         // region Anchor
         if (wasAnchored != anchored) {
-            anchorTargetPos = physShip.poseVel.pos as Vector3d
-            anchorTargetRot = physShip.poseVel.rot as Quaterniond
+            anchorTargetPos = Vector3d(physShip.poseVel.pos)
+            anchorTargetRot = Quaterniond(physShip.poseVel.rot)
             wasAnchored = anchored
         }
         if (anchored && anchorTargetPos.isFinite) { // TODO: Same thing but with rotation; rotate ship to anchor point
