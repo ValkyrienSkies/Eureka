@@ -31,12 +31,6 @@ object EurekaConfig {
         @JsonSchema(description = "The speed at which the ship stabilizes")
         var stabilizationSpeed = 10.0
 
-        @JsonSchema(description = "The amount extra that each floater will make the ship float, per kg mass")
-        var floaterBuoyantFactorPerKg = 50_000.0
-
-        @JsonSchema(description = "The maximum amount extra each floater will multiply the buoyant force by, irrespective of mass")
-        var maxFloaterBuoyantFactor = 1.0
-
         // The velocity any ship at least can move at.
         @JsonSchema(description = "The speed a ship with no engines can move at")
         var baseSpeed = 3.0
@@ -46,9 +40,6 @@ object EurekaConfig {
         @JsonSchema(description = "Vertical sensitivity up ascend/descend")
         var impulseElevationRate = 7
 
-        // If a ship with weight 0 and 0 balloons would exist in the world, it would have this max attitude.
-        @JsonSchema(description = "The Y level that a ship with 0 mass would naturally float to")
-        var neutralLimit = 80.0
 
         // Do i need to explain? the mass 1 baloon gets to float
         @JsonSchema(description = "Amount of mass in kg a balloon can lift")
@@ -160,9 +151,6 @@ object EurekaConfig {
         @JsonSchema(description = "Whether the ship helm assembles diagonally connected blocks or not")
         val diagonals = true
 
-        @JsonSchema(description = "How many blocks to assemble per tick")
-        val assembliesPerTick = 1000
-
         @JsonSchema(description = "Weight of ballast when lowest redstone power")
         val ballastWeight: Double = 10000.0
 
@@ -178,7 +166,7 @@ object EurekaConfig {
         @JsonSchema(description = "Max speed an anchor will pull a ship back to the anchor point")
         val anchorSpeed: Double = 100000.0
 
-        @JsonSchema(description = "Disassembly is broken ATM, enable at ur own risk.")
-        val enableDisassembly = false
+        @JsonSchema(description = "Allow ships to be disassembled")
+        val enableDisassembly = true
     }
 }
