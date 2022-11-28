@@ -85,7 +85,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             return
         }
         // Disable fluid drag when helms are present, because it makes ships hard to drive
-        physShip.doFluidDrag = false
+        physShip.doFluidDrag = EurekaConfig.SERVER.doFluidDrag
 
         val forcesApplier = physShip
 

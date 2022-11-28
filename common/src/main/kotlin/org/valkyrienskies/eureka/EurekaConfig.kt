@@ -50,6 +50,10 @@ object EurekaConfig {
         @JsonSchema(description = "The Y level that a ship with 0 mass would naturally float to")
         var neutralLimit = 80.0
 
+        // Allow Eureka controlled ships to be affected by fluid drag
+        @JsonSchema(description = "Allow Eureka controlled ships to be affected by fluid drag")
+        var doFluidDrag = false
+
         // Do i need to explain? the mass 1 baloon gets to float
         @JsonSchema(description = "Amount of mass in kg a balloon can lift")
         var massPerBalloon = 5000.0
