@@ -84,12 +84,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         val omega = SegmentUtils.getOmega(physShip.poseVel, segment, Vector3d())
         val vel = SegmentUtils.getVelocity(physShip.poseVel, segment, Vector3d())
 
-        val buoyantFactorPerFloater = min(
-            EurekaConfig.SERVER.floaterBuoyantFactorPerKg / 15 / mass,
-            EurekaConfig.SERVER.maxFloaterBuoyantFactor
-        )
-
-        physShip.buoyantFactor = 1.0 + floaters * buoyantFactorPerFloater
         // Revisiting eureka control code.
         // [x] Move torque stabilization code
         // [x] Move linear stabilization code
@@ -330,11 +324,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             field = v; deleteIfEmpty()
         }
 
-    var floaters = 0 // Amount of floaters * 15
-        set(v) {
-            field = v; deleteIfEmpty()
-        }
-
     override fun tick() {
         extraForce = power
         power = 0.0
@@ -343,7 +332,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     }
 
     private fun deleteIfEmpty() {
-        if (helms == 0 && floaters == 0 && anchors == 0 && balloons == 0) {
+        if (helms == 0 && anchors == 0 && balloons == 0) {
             ship?.saveAttachment<EurekaShipControl>(null)
         }
     }

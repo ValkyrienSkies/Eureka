@@ -27,18 +27,6 @@ object FloaterBlock : Block(
         builder.add(POWER)
     }
 
-    override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
-        super.onPlace(state, level, pos, oldState, isMoving)
-
-        if (level.isClientSide) return
-        level as ServerLevel
-
-        val floaterPower = 15 - state.getValue(POWER)
-
-        val ship = level.getShipObjectManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        EurekaShipControl.getOrCreate(ship).floaters += floaterPower
-    }
-
     override fun neighborChanged(
         state: BlockState,
         level: Level,
@@ -52,25 +40,6 @@ object FloaterBlock : Block(
         if (level as? ServerLevel == null) return
 
         val signal = level.getBestNeighborSignal(pos)
-        val currentPower = state.getValue(POWER)
-
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.floaters += (currentPower - signal)
-        }
-
         level.setBlock(pos, state.setValue(POWER, signal), 2)
-    }
-
-    override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
-        super.onRemove(state, level, pos, newState, isMoving)
-
-        if (level.isClientSide) return
-        level as ServerLevel
-
-        val floaterPower = 15 - state.getValue(POWER)
-
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.floaters -= floaterPower
-        }
     }
 }

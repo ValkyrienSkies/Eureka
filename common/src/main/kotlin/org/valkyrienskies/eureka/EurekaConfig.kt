@@ -169,6 +169,12 @@ object EurekaConfig {
         @JsonSchema(description = "Weight of ballast when highest redstone power")
         val ballastNoWeight: Double = 1000.0
 
+        @JsonSchema(description = "Weight of floater when lowest redstone power")
+        val floaterWeight: Double = 10.0
+
+        @JsonSchema(description = "Weight of floater when highest redstone power")
+        val floaterNoWeight: Double = 1000.0
+
         @JsonSchema(description = "Max speed an anchor will pull a ship back to the anchor point")
         val anchorSpeed: Double = 100000.0
 

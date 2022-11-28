@@ -22,6 +22,15 @@ object EurekaWeights : BlockStateInfoProvider {
                             ) / 16.0
                     )
         }
+        if (blockState.block == EurekaBlocks.FLOATER.get()) {
+            return EurekaConfig.SERVER.floaterWeight + (EurekaConfig.SERVER.floaterNoWeight - EurekaConfig.SERVER.floaterWeight) * (
+                    (
+                            blockState.getValue(
+                                BlockStateProperties.POWER
+                            ) + 1
+                            ) / 16.0
+                    )
+        }
 
         return null
     }
