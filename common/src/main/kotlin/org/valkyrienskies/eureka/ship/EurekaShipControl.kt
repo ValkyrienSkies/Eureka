@@ -117,29 +117,30 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // [ ] Fix elevation sensititvity
 
         // region Aligning
+        run {
+            val invRotation = physShip.poseVel.rot.invert(Quaterniond())
+            val invRotationAxisAngle = AxisAngle4d(invRotation)
+            // Floor makes a number 0 to 3, which corresponds to direction
+            alignTarget = floor((invRotationAxisAngle.angle / (PI * 0.5)) + 4.5).toInt() % 4
+            angleUntilAligned = (alignTarget.toDouble() * (0.5 * Math.PI)) - invRotationAxisAngle.angle
+            if (disassembling && ship != null) {
+                val pos = this.ship!!.shipTransform.shipPositionInWorldCoordinates
+                positionUntilAligned = pos.floor(Vector3d())
+                val direction = pos.sub(positionUntilAligned, Vector3d())
+                forcesApplier.applyInvariantForce(direction)
+            }
+            if ((aligning) && abs(angleUntilAligned) > ALIGN_THRESHOLD) {
+                if (angleUntilAligned < 0.3 && angleUntilAligned > 0.0) angleUntilAligned = 0.3
+                if (angleUntilAligned > -0.3 && angleUntilAligned < 0.0) angleUntilAligned = -0.3
 
-        val invRotation = physShip.poseVel.rot.invert(Quaterniond())
-        val invRotationAxisAngle = AxisAngle4d(invRotation)
-        // Floor makes a number 0 to 3, which corresponds to direction
-        alignTarget = floor((invRotationAxisAngle.angle / (PI * 0.5)) + 4.5).toInt() % 4
-        angleUntilAligned = (alignTarget.toDouble() * (0.5 * Math.PI)) - invRotationAxisAngle.angle
-        if (disassembling && ship != null) {
-            val pos = this.ship!!.shipTransform.shipPositionInWorldCoordinates
-            positionUntilAligned = pos.floor(Vector3d())
-            val direction = pos.sub(positionUntilAligned, Vector3d())
-            forcesApplier.applyInvariantForce(direction)
-        }
-        if ((aligning) && abs(angleUntilAligned) > ALIGN_THRESHOLD) {
-            if (angleUntilAligned < 0.3 && angleUntilAligned > 0.0) angleUntilAligned = 0.3
-            if (angleUntilAligned > -0.3 && angleUntilAligned < 0.0) angleUntilAligned = -0.3
+                val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z)
+                    .mul(-angleUntilAligned)
+                    .mul(EurekaConfig.SERVER.stabilizationSpeed)
 
-            val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z)
-                .mul(-angleUntilAligned)
-                .mul(EurekaConfig.SERVER.stabilizationSpeed)
+                val idealTorque = moiTensor.transform(idealOmega)
 
-            val idealTorque = moiTensor.transform(idealOmega)
-
-            forcesApplier.applyInvariantTorque(idealTorque)
+                forcesApplier.applyInvariantTorque(idealTorque)
+            }
         }
         // endregion
 
@@ -321,8 +322,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         }
         // endregion
 
-        // Drag
-        // forcesApplier.applyInvariantForce(Vector3d(vel.y()).mul(-mass))
+        // Add drag to the y-component
+        forcesApplier.applyInvariantForce(Vector3d(vel.y()).mul(-mass))
     }
 
     var power = 0.0
