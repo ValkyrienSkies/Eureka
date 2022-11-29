@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[36,)"
+loaderVersion = "[40.1.85,)"
 issueTrackerURL = "https://github.com/ValkyrienSkies/Valkyrien-Skies-2/issues"
 license = "Apache-2.0"
 
@@ -15,8 +15,15 @@ logoFile = "icon.png"
 
 [[dependencies.vs_eureka]]
 modId = "forge"
-mandatory = false
-versionRange = "[36,)"
+mandatory = true
+versionRange = "[40.1.85,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.vs_eureka]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18.2,)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -32,18 +39,4 @@ modId = "minecraft"
 mandatory = false
 versionRange = "[1.18.2,)"
 ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.vs_eureka]]
-modId = "minecraft"
-mandatory = false
-versionRange = "[1.18.2,)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.vs_eureka]]
-modId = "architectury"
-mandatory = false
-versionRange = "[1.31.61,)"
-ordering = "AFTER"
 side = "BOTH"
