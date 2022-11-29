@@ -58,8 +58,8 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-//    implementation("org.valkyrienskies:valkyrien-dependency-downloader:4.2")
-//    include("org.valkyrienskies:valkyrien-dependency-downloader:4.2:all")
+    implementation("org.valkyrienskies:valkyrien-dependency-downloader:4.5")
+    shadowCommon("org.valkyrienskies:valkyrien-dependency-downloader:4.5:all") { transitive = false }
 }
 
 processResources {
