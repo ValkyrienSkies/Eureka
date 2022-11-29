@@ -27,7 +27,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
 
-        assembleButton = addWidget(
+        assembleButton = addRenderableWidget(
             ShipHelmButton(x + BUTTON_1_X, y + BUTTON_1_Y, ASSEMBLE_TEXT, font) {
                 // Send assemble or dissemble packet
                 if (this.menu.assembled) {
@@ -41,13 +41,13 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
 
 
 
-        alignButton = addWidget(
+        alignButton = addRenderableWidget(
             ShipHelmButton(x + BUTTON_2_X, y + BUTTON_2_Y, ALIGN_TEXT, font) {
                 minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 1)
             }
         )
 
-        todoButton = addWidget(
+        todoButton = addRenderableWidget(
             ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, TODO_TEXT, font) {
                 minecraft!!.gameMode!!.handleInventoryButtonClick(menu.containerId, 3)
             }

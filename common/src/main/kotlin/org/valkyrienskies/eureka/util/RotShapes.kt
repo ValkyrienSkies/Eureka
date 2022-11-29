@@ -3,6 +3,8 @@ package org.valkyrienskies.eureka.util
 import net.minecraft.core.Direction
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
+import kotlin.math.max
+import kotlin.math.min
 
 interface RotShape {
     fun rotate90(): RotShape
@@ -37,7 +39,13 @@ object RotShapes {
         RotShape {
         override fun rotate90(): RotShape = Box(16 - z1, y1, x1, 16 - z2, y2, x2)
 
-        override fun makeMcShape(): VoxelShape = Shapes.box(0.0, y1 / 16, 0.0, x2 / 16, y2 / 16, z2 / 16)
+        override fun makeMcShape(): VoxelShape = Shapes.box(
+            min(x1, x2) / 16,
+            min(y1, y2) / 16,
+            min(z1, z2) / 16,
+            max(x1, x2) / 16,
+            max(y1, y2) / 16,
+            max(z1, z2) / 16)
     }
 
     private class Union(val shapes: List<RotShape>) : RotShape {
