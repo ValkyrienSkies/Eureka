@@ -32,6 +32,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     @JsonIgnore
     override var ship: ServerShip? = null
+
+    @delegate:JsonIgnore
     private val controllingPlayer by shipValue<SeatedControllingPlayer>()
 
     private var extraForce = 0.0
