@@ -5,8 +5,6 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.valkyrienskies.dependency_downloader.ValkyrienDependencyDownloader;
 
-import java.nio.file.Paths;
-
 public class AutoDependenciesForge {
     public static void runUpdater() {
         boolean isServer = FMLEnvironment.dist.isDedicatedServer();
