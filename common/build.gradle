@@ -15,8 +15,8 @@ dependencies {
     modApi("org.valkyrienskies:valkyrienskies-118-common:${rootProject.vs2_version}")
     implementation("org.valkyrienskies.core:api:1.1.0+c92814e9b7") { transitive = false }
 
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10"
-    api "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.21"
+    api "org.jetbrains.kotlin:kotlin-reflect:1.7.21"
 }
 
 publishing {
