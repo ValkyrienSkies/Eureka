@@ -7,9 +7,9 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.state.BlockState
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ships.ServerShip
-import org.valkyrienskies.core.datastructures.DenseBlockPosSet
-import org.valkyrienskies.core.game.ships.ShipObjectServer
-import org.valkyrienskies.core.util.logger
+import org.valkyrienskies.core.impl.datastructures.DenseBlockPosSet
+import org.valkyrienskies.core.impl.game.ships.ShipObjectServer
+import org.valkyrienskies.core.impl.util.logger
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.common.assembly.createNewShipWithBlocks
 import org.valkyrienskies.mod.common.util.toJOML

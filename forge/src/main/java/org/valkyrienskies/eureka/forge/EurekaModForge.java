@@ -12,7 +12,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.valkyrienskies.core.config.VSConfigClass;
+import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaMod;

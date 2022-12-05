@@ -1,6 +1,7 @@
 package org.valkyrienskies.eureka
 
-import org.valkyrienskies.core.config.VSConfigClass
+import org.valkyrienskies.core.impl.config.VSConfigClass
+
 
 object EurekaMod {
     const val MOD_ID = "vs_eureka"

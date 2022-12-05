@@ -2,8 +2,8 @@ package org.valkyrienskies.eureka.ship
 
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ships.PhysShip
-import org.valkyrienskies.core.game.ships.PhysShipImpl
-import org.valkyrienskies.core.pipelines.SegmentUtils
+import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
+import org.valkyrienskies.core.impl.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.physics_api.SegmentDisplacement
 

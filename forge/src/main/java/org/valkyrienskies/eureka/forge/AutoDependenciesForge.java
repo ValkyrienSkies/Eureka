@@ -7,12 +7,17 @@ import org.valkyrienskies.dependency_downloader.ValkyrienDependencyDownloader;
 
 public class AutoDependenciesForge {
     public static void runUpdater() {
-        boolean isServer = FMLEnvironment.dist.isDedicatedServer();
+        try {
+            boolean isServer = FMLEnvironment.dist.isDedicatedServer();
 
-        ValkyrienDependencyDownloader.start(
-            FMLPaths.MODSDIR.get(),
-            FMLLoader.getLoadingModList().getModFileById("vs_eureka").getFile().getFilePath(),
-            isServer
-        );
+            ValkyrienDependencyDownloader.start(
+                FMLPaths.MODSDIR.get(),
+                FMLLoader.getLoadingModList().getModFileById("vs_eureka").getFile().getFilePath(),
+                isServer
+            );
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
     }
 }

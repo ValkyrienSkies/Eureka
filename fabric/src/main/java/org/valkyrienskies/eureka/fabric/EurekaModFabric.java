@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegi
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
-import org.valkyrienskies.core.config.VSConfigClass;
+import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaMod;
