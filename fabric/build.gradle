@@ -47,11 +47,7 @@ processResources {
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
-
-    filesMatching("valkyrien_dependency_manifest.json") {
-        expand "vs2_version": project.vs2_version, "vs2_plain_version": project.vs2_version.substring(0, project.vs2_version.indexOf('+'))
+        expand "version": project.version, "vs2_version": project.vs2_version.substring(0, project.vs2_version.indexOf('+'))
     }
 }
 
