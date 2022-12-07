@@ -3,7 +3,6 @@ package org.valkyrienskies.eureka.forge.mixin;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-import org.valkyrienskies.eureka.forge.AutoDependenciesForge;
 
 import java.util.List;
 import java.util.Set;
@@ -15,7 +14,6 @@ public class ValkyrienForgeMixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public void onLoad(final String s) {
-        AutoDependenciesForge.runUpdater();
     }
 
     @Override
