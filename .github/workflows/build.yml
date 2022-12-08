@@ -73,8 +73,8 @@ jobs:
   publish:
     name: Publish to Maven
     runs-on: ubuntu-latest
-    # Run only on main branch
-    if: github.ref == 'refs/heads/main'
+    # Run only on main branches
+    if: endsWith(github.ref, '/main')
     steps:
       - name: Shallow Clone (--recurse-submodules)
         uses: actions/checkout@v2
