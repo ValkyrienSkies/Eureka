@@ -1,0 +1,127 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+orbs:
+  discord: antonioned/discord@0.1.0
+
+executors:
+  java_large:
+    resource_class: large
+    docker:
+      - image: cimg/openjdk:17.0
+    environment:
+        ORG_GRADLE_PROJECT_block_external_repositories: "true"
+
+
+commands:
+  checkout_and_cache:
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+
+      - restore_cache:
+          keys:
+            - v1-gradle-home-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+            - v1-gradle-home
+      - restore_cache:
+          keys:
+            - v1-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+
+  save_artifacts:
+    steps:
+      # Rename artifacts to "forge.jar" and "fabric.jar"
+      - run: find ./forge/build/libs -regextype posix-extended -regex ".*/eureka(-[^-]+){3}.jar" -exec bash -c 'cp $0 ./forge.jar' {} \;
+      - run: find ./fabric/build/libs -regextype posix-extended -regex ".*/eureka(-[^-]+){3}.jar" -exec bash -c 'cp $0 ./fabric.jar' {} \;
+
+      # Store artifacts
+      - store_artifacts:
+          path: "fabric.jar"
+      - store_artifacts:
+          path: "forge.jar"
+
+  save_gradle_cache:
+    steps:
+      - save_cache:
+          key: v1-gradle-home-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+          paths:
+            - ~/.gradle
+      - save_cache:
+          key: v1-gradle-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+          paths:
+            - .gradle
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+  gradle_build:
+    executor: java_large
+    steps:
+      # Checkout repo
+      - checkout_and_cache
+      # Run build
+      - run:
+          name: "Build"
+          command: "./gradlew build --stacktrace"
+      - save_artifacts
+      - save_gradle_cache
+
+  publish_to_maven:
+    executor: java_large
+    steps:
+      # Checkout repo
+      - checkout_and_cache
+      # Run build
+      - run:
+          name: "Build"
+          command: "./gradlew build publish --stacktrace"
+
+  notify_playtesters:
+    executor: java_large
+    steps:
+      # Checkout repo
+      - checkout_and_cache
+      # Run build
+      - run:
+          name: "Build"
+          command: "./gradlew build --stacktrace"
+      - save_artifacts
+      - run: >-
+          echo 'export DISCORD_MSG="
+          New version, **${CIRCLE_TAG}** |
+          [Download Forge](https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/${CIRCLE_NODE_INDEX}/forge.jar) |
+          [Download Fabric](https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/${CIRCLE_NODE_INDEX}/fabric.jar)
+          "' >> "$BASH_ENV"
+      - discord/status:
+          success_message: ${DISCORD_MSG}
+          success_only: true
+          webhook: ${EUREKA_118_WEBHOOK}
+    
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  build:
+    jobs:
+      - gradle_build:
+          context:
+            - valkyrien_maven
+
+      - notify_playtesters:
+          filters:
+            tags:
+              only: /^playtest.*/
+            branches: 
+              ignore: /.*/
+          context:
+            - discord_webhooks
+            - valkyrien_maven
+            
+      - publish_to_maven:
+          filters:
+            branches:
+              only: 
+                - /.*\/main/
+          context:
+            - valkyrien_maven
+            - github_maven
