@@ -73,8 +73,8 @@ jobs:
   publish:
     name: Publish to Maven
     runs-on: ubuntu-latest
-    # Run only on main branches
-    if: endsWith(github.ref, '/main')
+    # Run only on pushes to main branches
+    if: ${{ endsWith(github.ref, '/main') && github.event_name == 'push' }}
     steps:
       - name: Shallow Clone (--recurse-submodules)
         uses: actions/checkout@v2
