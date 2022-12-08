@@ -33,10 +33,3 @@ mandatory = true
 versionRange = "[${vs2_version},)"
 ordering = "AFTER"
 side = "BOTH"
-
-[[dependencies.vs_eureka]]
-modId = "minecraft"
-mandatory = false
-versionRange = "[1.18.2,)"
-ordering = "NONE"
-side = "BOTH"
