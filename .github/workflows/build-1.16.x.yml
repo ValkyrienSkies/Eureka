@@ -2,9 +2,11 @@ name: Build
 on:
   push:
     branches:
-      - '*'
+      - '1.16.x/*'
   pull_request:
     types: [ opened, synchronize, reopened ]
+    branches:
+      - '1.16.x/*'
 jobs:
   validate-gradle:
     name: "Validate Gradle wrapper"
