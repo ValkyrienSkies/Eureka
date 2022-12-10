@@ -312,8 +312,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         }
         // endregion
 
-        // Drag
-        // forcesApplier.applyInvariantForce(Vector3d(vel.y()).mul(-mass))
+        // Add drag to the y-component
+        forcesApplier.applyInvariantForce(Vector3d(vel.y()).mul(-mass))
     }
 
     var power = 0.0
