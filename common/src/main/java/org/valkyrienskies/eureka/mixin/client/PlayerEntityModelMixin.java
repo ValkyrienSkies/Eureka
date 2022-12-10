@@ -3,6 +3,7 @@ package org.valkyrienskies.eureka.mixin.client;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,8 +27,11 @@ public abstract class PlayerEntityModelMixin<T extends LivingEntity> extends Hum
                           final float i,
                           final float j,
                           final CallbackInfo info) {
-        if (livingEntity.getVehicle() instanceof ShipMountingEntity) {
-            this.riding = false;
+        final Entity vehicle = livingEntity.getVehicle();
+        if (vehicle instanceof ShipMountingEntity) {
+            if (vehicle.level.getBlockState(vehicle.blockPosition()).isAir()) {
+                this.riding = false;
+            }
         }
     }
 
