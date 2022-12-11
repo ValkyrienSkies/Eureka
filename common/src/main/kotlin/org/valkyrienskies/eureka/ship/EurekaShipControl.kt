@@ -7,6 +7,7 @@ import org.joml.AxisAngle4d
 import org.joml.Math.clamp
 import org.joml.Quaterniond
 import org.joml.Vector3d
+import org.valkyrienskies.core.api.VSBeta
 import org.valkyrienskies.core.api.ships.PhysShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.getAttachment
@@ -76,10 +77,15 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         }
     }
 
+    @OptIn(VSBeta::class)
     override fun applyForces(physShip: PhysShip) {
         if (helms < 1) {
+            // Enable fluid drag if all the helms have been destroyed
+            physShip.doFluidDrag = true
             return
         }
+        // Disable fluid drag when helms are present, because it makes ships hard to drive
+        physShip.doFluidDrag = false
 
         val forcesApplier = physShip
 
