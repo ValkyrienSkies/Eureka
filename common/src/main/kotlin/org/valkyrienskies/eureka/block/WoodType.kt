@@ -3,7 +3,7 @@ package org.valkyrienskies.eureka.block
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.StringRepresentable
 
-// TODO mod compat
+// TODO mod integrations
 
 enum class WoodType(val resourceName: String) : StringRepresentable {
     OAK("oak"),

@@ -13,6 +13,13 @@ object EurekaConfig {
 
     class Server {
 
+        val ComputerCraft = COMPUTERCRAFT()
+
+        class COMPUTERCRAFT {
+            @JsonSchema(description = "DIsabled COpmuterCraft Integration")
+            val disableComputerCraft = false;
+        }
+
         @JsonSchema(description = "Movement power per engine heated fully")
         val enginePower: Float = 2000000f
 
