@@ -23,6 +23,9 @@ curseforge {
             addGameVersion project.loader_platform
 
             mainArtifact(remapJar.archiveFile.get().asFile) {
+                relations {
+                    requiredDependency 'valkyrien-skies'
+                }
                 displayName = fileDisplayName
             }
         }
@@ -43,4 +46,8 @@ modrinth {
     uploadFile = remapJar
     gameVersions = [project.minecraft_version]
     loaders = [project.loader_platform.toLowerCase()]
+
+    dependencies {
+        required.project 'valkyrien-skies'
+    }
 }

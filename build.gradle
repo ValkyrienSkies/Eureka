@@ -10,7 +10,7 @@ plugins {
     id "checkstyle"
 
     id 'com.matthewprenger.cursegradle' version '1.4.0' apply false
-    id "com.modrinth.minotaur" version "2.4.3" apply false
+    id "com.modrinth.minotaur" version "2.4.5" apply false
 }
 
 // Determine the version
