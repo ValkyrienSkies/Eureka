@@ -18,6 +18,7 @@ import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
+import org.valkyrienskies.eureka.fabric.integrations.cc_restitched.EurekaPeripheralProviders;
 import org.valkyrienskies.eureka.fabric.integrations.cc_restitched.ShipHelmPeripheralProvider;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 
@@ -33,7 +34,7 @@ public class EurekaModFabric implements ModInitializer {
         EurekaMod.init();
 
         if (FabricLoader.getInstance().isModLoaded("computercraft") && !EurekaConfig.SERVER.getComputerCraft().getDisableComputerCraft()) {
-            ComputerCraftAPI.registerPeripheralProvider(new ShipHelmPeripheralProvider());
+            EurekaPeripheralProviders.registerPeripheralProviders();
         }
     }
 
