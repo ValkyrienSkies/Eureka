@@ -23,6 +23,7 @@ import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.block.WoodType;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
+import org.valkyrienskies.eureka.forge.integrations.cc_tweaked.EurekaPeripheralProviders;
 import org.valkyrienskies.eureka.forge.integrations.cc_tweaked.ShipHelmPeripheralProvider;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 
@@ -48,7 +49,7 @@ public class EurekaModForge {
         EurekaMod.init();
 
         if (FMLLoader.getLoadingModList().getModFileById("computercraft") != null && !EurekaConfig.SERVER.getComputerCraft().getDisableComputerCraft()) {
-            ComputerCraftAPI.registerPeripheralProvider(new ShipHelmPeripheralProvider());
+            EurekaPeripheralProviders.registerPeripheralProviders();
         }
     }
 
