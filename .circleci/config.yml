@@ -85,7 +85,7 @@ jobs:
       # Run build
       - run:
           name: "Build"
-          command: "./gradlew build --stacktrace"
+          command: "./gradlew build --no-daemon --stacktrace"
       - save_artifacts
       - save_gradle_cache
 
@@ -97,14 +97,14 @@ jobs:
       # Run build
       - run:
           name: "Build"
-          command: "./gradlew build publish --stacktrace"
+          command: "./gradlew build publish --no-daemon --stacktrace"
   deploy_to_curse:
     executor: java_large
     steps:
       - checkout_and_cache
       - run: echo 'export ORG_GRADLE_PROJECT_CustomReleaseVersion=${CIRCLE_TAG}' >> "$BASH_ENV"
       - run:
-          command: "./gradlew modrinth curseforge --stacktrace --continue"
+          command: "./gradlew build modrinth curseforge --no-daemon --stacktrace --continue"
   notify_playtesters:
     executor: java_large
     steps:
@@ -113,7 +113,7 @@ jobs:
       # Run build
       - run:
           name: "Build"
-          command: "./gradlew build --stacktrace"
+          command: "./gradlew build --no-daemon --stacktrace"
       - save_artifacts_and_generate_discord
       - discord/status:
           success_message: ${DISCORD_MSG}
