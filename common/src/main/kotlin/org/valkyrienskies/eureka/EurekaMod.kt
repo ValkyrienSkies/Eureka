@@ -5,7 +5,6 @@ import org.valkyrienskies.core.impl.config.VSConfigClass
 
 object EurekaMod {
     const val MOD_ID = "vs_eureka"
-    private var isTick1 = false
 
     @JvmStatic
     fun init() {
