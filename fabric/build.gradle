@@ -4,7 +4,7 @@ plugins {
     id "com.modrinth.minotaur"
 }
 
-//apply from: '../gradle-scripts/publish-curseforge.gradle'
+apply from: '../gradle-scripts/publish-curseforge.gradle'
 
 architectury {
     platformSetupLoomIde()
