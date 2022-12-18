@@ -30,6 +30,6 @@ side = "BOTH"
 [[dependencies.vs_eureka]]
 modId = "valkyrienskies"
 mandatory = true
-versionRange = "[${vs2_version},)"
+versionRange = "[2,)"
 ordering = "AFTER"
 side = "BOTH"
