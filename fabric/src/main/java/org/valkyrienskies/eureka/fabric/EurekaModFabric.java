@@ -2,13 +2,11 @@ package org.valkyrienskies.eureka.fabric;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import dan200.computercraft.api.ComputerCraftAPI;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
@@ -18,8 +16,6 @@ import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
-import org.valkyrienskies.eureka.fabric.integrations.cc_restitched.EurekaPeripheralProviders;
-import org.valkyrienskies.eureka.fabric.integrations.cc_restitched.ShipHelmPeripheralProvider;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 
 public class EurekaModFabric implements ModInitializer {
@@ -32,10 +28,6 @@ public class EurekaModFabric implements ModInitializer {
         }
 
         EurekaMod.init();
-
-        if (FabricLoader.getInstance().isModLoaded("computercraft") && !EurekaConfig.SERVER.getComputerCraft().getDisableComputerCraft()) {
-            EurekaPeripheralProviders.registerPeripheralProviders();
-        }
     }
 
     @Environment(EnvType.CLIENT)
