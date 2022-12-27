@@ -1,6 +1,5 @@
 package org.valkyrienskies.eureka.forge;
 
-import dan200.computercraft.api.ComputerCraftAPI;
 import me.shedaniel.architectury.platform.forge.EventBuses;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,9 +12,6 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.javafmlmod.FMLModContainer;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.valkyrienskies.core.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
@@ -23,8 +19,6 @@ import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.block.WoodType;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
-import org.valkyrienskies.eureka.forge.integrations.cc_tweaked.EurekaPeripheralProviders;
-import org.valkyrienskies.eureka.forge.integrations.cc_tweaked.ShipHelmPeripheralProvider;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 
 @Mod(EurekaMod.MOD_ID)
@@ -47,10 +41,6 @@ public class EurekaModForge {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
 
         EurekaMod.init();
-
-        if (FMLLoader.getLoadingModList().getModFileById("computercraft") != null && !EurekaConfig.SERVER.getComputerCraft().getDisableComputerCraft()) {
-            EurekaPeripheralProviders.registerPeripheralProviders();
-        }
     }
 
     void clientSetup(final FMLClientSetupEvent event) {

@@ -52,9 +52,6 @@ dependencies {
 
     implementation("org.valkyrienskies:valkyrien-dependency-downloader:4.2")
     shadowCommon("org.valkyrienskies:valkyrien-dependency-downloader:4.2")
-
-    // CC Restitched
-    modCompileOnly("curse.maven:cc-restitched-462672:3622561")
 }
 
 processResources {
