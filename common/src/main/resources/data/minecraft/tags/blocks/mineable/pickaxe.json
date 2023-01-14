@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "vs_eureka:ballast",
+    "vs_eureka:engine",
+    "vs_eureka:anchor"
+  ]
+}
