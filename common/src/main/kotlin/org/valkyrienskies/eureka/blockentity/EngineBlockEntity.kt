@@ -149,13 +149,13 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
         ) <= 64.0
     }
 
-    override fun getSlotsForFace(side: Direction): IntArray =
+    override fun getSlotsForFace(side: Direction?): IntArray =
         if (side == Direction.DOWN) intArrayOf() else intArrayOf(0)
 
     override fun canPlaceItemThroughFace(index: Int, itemStack: ItemStack, direction: Direction?): Boolean =
         direction != Direction.DOWN && canPlaceItem(index, itemStack)
 
-    override fun canTakeItemThroughFace(index: Int, stack: ItemStack, direction: Direction): Boolean = false
+    override fun canTakeItemThroughFace(index: Int, stack: ItemStack?, direction: Direction?): Boolean = false
 
     override fun canPlaceItem(index: Int, stack: ItemStack): Boolean =
         index == 0 && AbstractFurnaceBlockEntity.isFuel(stack)
