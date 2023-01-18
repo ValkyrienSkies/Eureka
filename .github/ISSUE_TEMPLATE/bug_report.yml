@@ -64,3 +64,5 @@ body:
        required: true
      - label: "I have checked that my problem is not already fixed"
        required: true
+     - label: "I am sure that my issue is releted to Eureka, not Valkyrien Skies 2"
+       required: true
