@@ -35,9 +35,9 @@ body:
     label: Mod Version
     description: Which mod version you are using?
     options:
-     - 1.16.x
-     - 1.17.x
      - 1.18.x
+     - 1.17.x
+     - 1.16.x
    validations:
      required: true
  - type: textarea
