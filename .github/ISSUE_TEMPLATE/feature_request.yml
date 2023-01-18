@@ -1,23 +1,15 @@
 name: Request a Feature
-description: Create a report to help us improve (search for duplicates first)
+description: Create a feature request to help us improve (search for duplicates first)
 labels: enhancement
 body:
  - type: textarea
    attributes:
     label: Feature description
-    description: Explain clearly
+    description: Describe your feature request clearly
     placeholder: |
      Tell us here about the feature
    validations:
     required: true
- - type: textarea
-   attributes:
-    label: Logs
-    description: Provide logs [Optional]
-    placeholder: |
-     example_log.txt
-   validations:
-    required: false
  - type: checkboxes
    attributes:
     label: Issue tracker rule checks (please read carefully)
