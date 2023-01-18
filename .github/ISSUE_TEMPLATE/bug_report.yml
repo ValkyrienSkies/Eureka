@@ -56,7 +56,7 @@ body:
    attributes:
     label: Issue tracker rule checks (please read carefully)
     options:
-     - label: "I have checked that my problem <a href='https://github.com/ValkyrienSkies/Eureka/issues' target='_blank'>is not already reported</a>"
+     - label: "I have checked that my problem <a href='https://github.com/ValkyrienSkies/Eureka/issues' target='_blank'>is not already requested</a>"
        required: true
      - label: "I have checked that my problem is not already fixed"
        required: true
