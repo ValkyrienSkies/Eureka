@@ -33,7 +33,7 @@ body:
  - type: dropdown
    attributes:
     label: Mod Version
-    description: Which mod version you're using?
+    description: Which mod version you are using?
     options:
      - 1.16.x
      - 1.17.x
