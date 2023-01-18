@@ -13,7 +13,7 @@ body:
  - type: textarea
    attributes:
     label: How to reproduce this issue?
-    description: Try to explain what you did for the bug to occur. A good explanation of steps to reproduce helps us locate the bug faster. If applicable, add screenshots to help explain your problem.
+    description: Try to explain what you did for the bug to occur. If applicable, add screenshots to help explain your problem.
     placeholder: |
       Step 1: ...
       Step 2: ...
@@ -27,7 +27,7 @@ body:
     options:
      - Windows
      - macOS
-     - Linux (pecify the name)
+     - Linux (Specify the name)
    validations:
      required: true
  - type: dropdown
@@ -46,8 +46,8 @@ body:
      description: Which operating system do you use please specify the name.
      placeholder: |
       Ubuntu etc.
-     validations:
-      required: false
+   validations:
+     required: false
  - type: textarea
    attributes:
     label: Logs
