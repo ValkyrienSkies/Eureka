@@ -1,4 +1,4 @@
-name: "Bug report"
+name: Bug report
 description: Please specify that it is a bug report
 labels: bug
 body:
@@ -42,7 +42,7 @@ body:
      required: true
  - type: textarea
    attributes: 
-     label: Operating system
+     label: Operating system [Optional]
      description: Which operating system do you use please specify the name.
      placeholder: |
       Ubuntu etc.
