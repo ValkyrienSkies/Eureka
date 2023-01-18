@@ -1,5 +1,5 @@
 name: Bug report
-description: Create a report to help us improve (search for duplicates first)
+description: Please specify that it is a bug report
 labels: bug
 body:
  - type: textarea
@@ -27,9 +27,15 @@ body:
     options:
      - Windows
      - macOS
-     - Linux
+     - Linux [Specify the name]
    validations:
      required: true
+ - type: textarea
+   attributes: 
+     label: Operating system
+     description: Which operating system do you use please specify the name.
+     placeholder: |
+       Ubuntu..
  - type: textarea
    attributes:
     label: Details
