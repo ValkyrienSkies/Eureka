@@ -1,4 +1,4 @@
-name: Bug report
+name: "Bug report"
 description: Please specify that it is a bug report
 labels: bug
 body:
