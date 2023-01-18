@@ -62,7 +62,8 @@ body:
     options:
      - label: "I have checked that my problem <a href='https://github.com/ValkyrienSkies/Eureka/issues' target='_blank'>is not already requested</a>"
        required: true
+     - label: "I am sure that my issue is releted to <a href='https://www.curseforge.com/minecraft/mc-mods/eureka-ships' target='_blank'>Eureka</a>, not <a href='https://github.com/ValkyrienSkies/Valkyrien-Skies-2' target='_blank'>Valkyrien Skies 2</a>"
+       required: true
      - label: "I have checked that my problem is not already fixed"
        required: true
-     - label: "I am sure that my issue is releted to Eureka, not Valkyrien Skies 2"
-       required: true
+     
