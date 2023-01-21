@@ -12,7 +12,7 @@ import net.minecraft.world.level.material.Material
 import net.minecraft.world.level.material.MaterialColor
 import org.valkyrienskies.eureka.block.*
 import org.valkyrienskies.eureka.registry.DeferredRegister
-import org.valkyrienskies.mod.event.RegistryEvents
+import org.valkyrienskies.mod.common.hooks.VSGameEvents
 
 @Suppress("unused")
 object EurekaBlocks {
@@ -165,7 +165,7 @@ object EurekaBlocks {
     fun register() {
         BLOCKS.applyAll()
 
-        RegistryEvents.onRegistriesComplete {
+        VSGameEvents.registriesCompleted.on { _, _ ->
             makeFlammables()
         }
     }

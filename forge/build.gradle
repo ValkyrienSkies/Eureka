@@ -56,6 +56,9 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    // Add Kotlin for Forge.
+    forgeRuntimeLibrary('curse.maven:kotlinforforge-351264:3925887')
 }
 
 processResources {
