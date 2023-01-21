@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.RenderShape
+import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityTicker
 import net.minecraft.world.level.block.entity.BlockEntityType
@@ -115,12 +116,16 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
     }
 
     override fun isPathfindable(
-        blockState: BlockState,
-        blockGetter: BlockGetter,
-        blockPos: BlockPos,
-        pathComputationType: PathComputationType
+            blockState: BlockState,
+            blockGetter: BlockGetter,
+            blockPos: BlockPos,
+            pathComputationType: PathComputationType
     ): Boolean {
         return false
+    }
+
+    override fun rotate(state: BlockState, rotation: Rotation): BlockState? {
+        return state.setValue(HORIZONTAL_FACING, rotation.rotate(state.getValue(HORIZONTAL_FACING) as Direction)) as BlockState
     }
 
     override fun <T : BlockEntity?> getTicker(

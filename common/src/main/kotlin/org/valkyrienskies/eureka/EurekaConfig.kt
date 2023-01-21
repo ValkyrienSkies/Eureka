@@ -177,6 +177,6 @@ object EurekaConfig {
         val anchorSpeed: Double = 100000.0
 
         @JsonSchema(description = "Disassembly is broken ATM, enable at ur own risk.")
-        val enableDisassembly = false
+        val enableDisassembly = true
     }
 }
