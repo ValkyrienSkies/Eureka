@@ -1,6 +1,5 @@
 package org.valkyrienskies.eureka.util
 
-import com.google.common.collect.Lists
 import com.google.common.collect.Sets
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.core.BlockPos
@@ -9,6 +8,8 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
+import org.joml.AxisAngle4d
+import org.joml.Matrix4d
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.impl.datastructures.DenseBlockPosSet
@@ -25,6 +26,11 @@ import org.valkyrienskies.mod.common.playerWrapper
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.util.relocateBlock
 import org.valkyrienskies.mod.util.updateBlock
+import kotlin.collections.set
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.round
+import kotlin.math.sign
 
 object ShipAssembler {
     fun collectBlocks(level: ServerLevel, center: BlockPos, predicate: (BlockState) -> Boolean): ServerShip {
@@ -35,18 +41,43 @@ object ShipAssembler {
         return createNewShipWithBlocks(center, blocks, level)
     }
 
+    private fun roundToNearestMultipleOf(number: Double, multiple: Double) = multiple * round(number / multiple)
+
+    // modified from https://gamedev.stackexchange.com/questions/83601/from-3d-rotation-snap-to-nearest-90-directions
+    private fun snapRotation(direction: AxisAngle4d): AxisAngle4d {
+        val x = abs(direction.x)
+        val y = abs(direction.y)
+        val z = abs(direction.z)
+        val angle = roundToNearestMultipleOf(direction.angle, PI / 2)
+
+        return if (x > y && x > z) {
+            direction.set(angle, direction.x.sign, 0.0, 0.0)
+        } else if (y > x && y > z) {
+            direction.set(angle, 0.0, direction.y.sign, 0.0)
+        } else {
+            direction.set(angle, 0.0, 0.0, direction.z.sign)
+        }
+    }
+
     fun unfillShip(level: ServerLevel, ship: ServerShip, direction: Direction, shipCenter: BlockPos, center: BlockPos) {
         ship as ShipObjectServer
         ship.shipData.isStatic = true
 
-        val shipToWorld = ship.shipToWorld
+        // ship's rotation rounded to nearest 90*
+        val shipToWorld = ship.transform.run {
+            Matrix4d()
+                .translate(positionInWorld)
+                .rotate(snapRotation(AxisAngle4d(shipToWorldRotation)))
+                .scale(shipToWorldScaling)
+                .translate(-positionInShip.x(), -positionInShip.y(), -positionInShip.z())
+        }
+
+
         val alloc0 = Vector3d()
-        val alloc1 = BlockPos.MutableBlockPos()
-        val alloc2 = BlockPos.MutableBlockPos()
 
         // Direction comes from direction ship is aligning to
         // We can assume that the ship in shipspace is always facing north, because it has to be
-        var rotation: Rotation = when (direction) {
+        val rotation: Rotation = when (direction) {
             Direction.SOUTH -> Rotation.NONE // Bug in Direction.from2DDataValue() can return south/north as opposite
             Direction.NORTH -> Rotation.CLOCKWISE_180
             Direction.EAST -> Rotation.CLOCKWISE_90
@@ -58,12 +89,9 @@ object ShipAssembler {
 
         val chunksToBeUpdated = mutableMapOf<ChunkPos, Pair<ChunkPos, ChunkPos>>()
 
-        ship.shipActiveChunksSet.iterateChunkPos { chunkX, chunkZ ->
-            val chunkBlockPos = BlockPos(chunkX shl 4, 0, chunkZ shl 4)
-            val worldChunkPos = shipToWorld.transformPosition(alloc0.set(chunkBlockPos.x.toDouble(), chunkBlockPos.y.toDouble(), chunkBlockPos.z.toDouble()))
-            val worldChunkBlockPos = BlockPos(worldChunkPos.x, 0.0, worldChunkPos.z)
-
-            chunksToBeUpdated[ChunkPos(chunkX, chunkZ)] = Pair(ChunkPos(chunkX, chunkZ), level.getChunkAt(worldChunkBlockPos).pos)
+        ship.activeChunksSet.forEach { chunkX, chunkZ ->
+            chunksToBeUpdated[ChunkPos(chunkX, chunkZ)] =
+                Pair(ChunkPos(chunkX, chunkZ), ChunkPos(chunkX, chunkZ))
         }
 
         val chunkPairs = chunksToBeUpdated.values.toList()
@@ -78,10 +106,10 @@ object ShipAssembler {
 
         val toUpdate = Sets.newHashSet<Triple<BlockPos, BlockPos, BlockState>>()
 
-        ship.shipActiveChunksSet.iterateChunkPos { chunkX, chunkZ ->
+        ship.activeChunksSet.forEach { chunkX, chunkZ ->
             val chunk = level.getChunk(chunkX, chunkZ)
             for (section in chunk.sections) {
-                if (section == null) continue
+                if (section == null || section.hasOnlyAir()) continue
                 for (x in 0..15) {
                     for (y in 0..15) {
                         for (z in 0..15) {
@@ -92,16 +120,12 @@ object ShipAssembler {
                             val realY = section.bottomBlockY() + y
                             val realZ = (chunkZ shl 4) + z
 
-                            val inWorldPos = shipToWorld.transformPosition(
-                                alloc0.set(realX.toDouble() + 0.5, realY.toDouble() + 0.5, realZ.toDouble() + 0.5)
-                            ).round()
+                            val inWorldPos = shipToWorld.transformPosition(alloc0.set(realX + 0.5, realY + 0.5, realZ + 0.5)).floor()
 
-                            val inWorldBlockPos =
-                                alloc1.set(inWorldPos.x.toInt(), inWorldPos.y.toInt(), inWorldPos.z.toInt())
-                            val inShipPos =
-                                alloc2.set(realX, realY, realZ)
+                            val inWorldBlockPos = BlockPos(inWorldPos.x.toInt(), inWorldPos.y.toInt(), inWorldPos.z.toInt())
+                            val inShipPos = BlockPos(realX, realY, realZ)
 
-                            toUpdate.add(Triple<BlockPos, BlockPos, BlockState>(inShipPos.immutable(), inWorldBlockPos.immutable(), state))
+                            toUpdate.add(Triple(inShipPos, inWorldBlockPos, state))
                             level.relocateBlock(inShipPos, inWorldBlockPos, false, null, rotation)
                         }
                     }
