@@ -31,7 +31,7 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
             return true
         }
 
-        if (id == 3 && assembled && !player.level.isClientSide && EurekaConfig.SERVER.enableDisassembly) {
+        if (id == 3 && assembled && !player.level.isClientSide && EurekaConfig.SERVER.allowDisassembly) {
             blockEntity.disassemble()
             return true
         }

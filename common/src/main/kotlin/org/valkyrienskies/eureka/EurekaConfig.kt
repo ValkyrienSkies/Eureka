@@ -179,7 +179,7 @@ object EurekaConfig {
         @JsonSchema(description = "Max speed an anchor will pull a ship back to the anchor point")
         val anchorSpeed: Double = 100000.0
 
-        @JsonSchema(description = "Disassembly is broken ATM, enable at ur own risk.")
-        val enableDisassembly = false
+        @JsonSchema(description = "Whether or not disassembly is permitted")
+        val allowDisassembly = true
     }
 }

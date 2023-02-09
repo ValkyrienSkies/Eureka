@@ -10,6 +10,7 @@ import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.phys.BlockHitResult
+import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.mod.common.getShipManagingPos
 
@@ -48,13 +49,16 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
                 minecraft?.gameMode?.handleInventoryButtonClick(menu.containerId, 3)
             }
         )
+
+        disassembleButton.active = EurekaConfig.SERVER.allowDisassembly
+        updateButtons()
     }
 
     private fun updateButtons() {
         val level = Minecraft.getInstance().level ?: return
         val isLookingAtShip = level.getShipManagingPos(pos ?: return) != null
         assembleButton.active = !isLookingAtShip
-        disassembleButton.active = isLookingAtShip
+        disassembleButton.active = EurekaConfig.SERVER.allowDisassembly && isLookingAtShip
     }
 
     override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
