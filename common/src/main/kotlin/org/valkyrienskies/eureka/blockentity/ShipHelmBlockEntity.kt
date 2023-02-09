@@ -136,6 +136,9 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         control.aligning = !control.aligning
     }
 
-    fun sit(player: Player, force: Boolean = false): Boolean =
-        player.startRiding(spawnSeat(blockPos, blockState, level as ServerLevel), force)
+    fun sit(player: Player, force: Boolean = false): Boolean {
+        val seat = spawnSeat(blockPos, blockState, level as ServerLevel)
+        control?.seatedPlayer = player
+        return player.startRiding(seat, force)
+    }
 }

@@ -59,8 +59,11 @@ object EurekaConfig {
         var massPerBalloon = 5000.0
 
         // The amount of speed that the ship can move at when the left/right impulse button is held down.
-        @JsonSchema(description = "Turn sensitivity of the ship helm")
-        var turnSpeed = 3.0
+        @JsonSchema(description = "The maximum linear velocity at any point on the ship caused by helm torque")
+        var turnSpeed = 20.0
+
+        @JsonSchema(description = "The maximum linear acceleration at any point on the ship caused by helm torque")
+        var turnAcceleration = 30.0
 
         // The strength used when trying to level the ship
         @JsonSchema(description = "How much torque a ship will apply to try and keep level")
