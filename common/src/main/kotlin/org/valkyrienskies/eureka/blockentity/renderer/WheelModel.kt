@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.resources.model.BakedModel
 import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.StateHolder
 import net.minecraft.world.level.block.state.properties.EnumProperty
 import org.valkyrienskies.eureka.block.ShipHelmBlock
@@ -19,15 +18,10 @@ import java.util.function.Function
 // WheelModel has 1 woodtype and represents 1 state
 // In the mixin it gets queued and abused
 object WheelModels {
-    val mc by lazy { Minecraft.getInstance() }
-    val property = EnumProperty.create("wood", WoodType::class.java)
+    private val mc get() = Minecraft.getInstance()
+    private val property = EnumProperty.create("wood", WoodType::class.java)
 
-    val models by lazy { property.possibleValues.associateWith { WheelModel(it) } }
-    val definition = object : StateDefinition<WheelModels, WheelModel>(
-        { models.values.first() }, WheelModels,
-        { a, b, c -> WheelModel(b[property!!] as WoodType) },
-        mapOf(Pair("wood", property))
-    ) {}
+    private val models by lazy { property.possibleValues.associateWith { WheelModel(it) } }
 
     fun render(
         matrixStack: PoseStack,
@@ -36,6 +30,7 @@ object WheelModels {
         combinedLight: Int,
         combinedOverlay: Int
     ) {
+        val level = blockEntity.level ?: return
         val woodType = (blockEntity.blockState.block as ShipHelmBlock).woodType
 
         matrixStack.pushPose()
@@ -43,14 +38,14 @@ object WheelModels {
         matrixStack.translate(-0.5, -0.625, -0.25)
 
         mc.blockRenderer.modelRenderer.tesselateWithoutAO(
-            blockEntity.level,
+            level,
             models[woodType]!!.model,
             blockEntity.blockState,
             blockEntity.blockPos,
             matrixStack,
             buffer.getBuffer(RenderType.cutout()),
             true,
-            blockEntity.level?.random,
+            level.random,
             42L, // Used in ModelBlockRenderer.class in renderModel, not sure what the right number is but this seems to work
             combinedOverlay
         )
