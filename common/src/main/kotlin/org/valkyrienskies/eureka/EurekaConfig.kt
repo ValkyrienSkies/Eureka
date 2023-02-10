@@ -46,10 +46,6 @@ object EurekaConfig {
         @JsonSchema(description = "Vertical sensitivity up ascend/descend")
         var impulseElevationRate = 7
 
-        // If a ship with weight 0 and 0 balloons would exist in the world, it would have this max attitude.
-        @JsonSchema(description = "The Y level that a ship with 0 mass would naturally float to")
-        var neutralLimit = 80.0
-
         // Allow Eureka controlled ships to be affected by fluid drag
         @JsonSchema(description = "Allow Eureka controlled ships to be affected by fluid drag")
         var doFluidDrag = false
@@ -60,10 +56,10 @@ object EurekaConfig {
 
         // The amount of speed that the ship can move at when the left/right impulse button is held down.
         @JsonSchema(description = "The maximum linear velocity at any point on the ship caused by helm torque")
-        var turnSpeed = 20.0
+        var turnSpeed = 3.0
 
         @JsonSchema(description = "The maximum linear acceleration at any point on the ship caused by helm torque")
-        var turnAcceleration = 30.0
+        var turnAcceleration = 10.0
 
         // The strength used when trying to level the ship
         @JsonSchema(description = "How much torque a ship will apply to try and keep level")
