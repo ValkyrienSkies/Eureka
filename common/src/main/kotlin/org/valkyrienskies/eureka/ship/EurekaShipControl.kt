@@ -2,12 +2,12 @@ package org.valkyrienskies.eureka.ship
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import net.minecraft.core.Direction
 import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.world.entity.player.Player
 import org.joml.AxisAngle4d
-import org.joml.Math.clamp
 import org.joml.Quaterniond
 import org.joml.Vector3d
 import org.joml.Vector3dc
@@ -33,6 +33,7 @@ import kotlin.math.*
     isGetterVisibility = JsonAutoDetect.Visibility.NONE,
     setterVisibility = JsonAutoDetect.Visibility.NONE
 )
+@JsonIgnoreProperties(ignoreUnknown = true)
 class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     @JsonIgnore
@@ -46,10 +47,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     var disassembling = false // Disassembling also affects position
     private var physConsumption = 0f
     private val anchored get() = anchorsActive > 0
-    private val anchorSpeed = EurekaConfig.SERVER.anchorSpeed
-    private var wasAnchored = false
-    private var anchorTargetPos = Vector3d()
-    private var anchorTargetRot = Quaterniond()
 
     private var angleUntilAligned = 0.0
     private var positionUntilAligned = Vector3d()
@@ -327,35 +324,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         // endregion
 
         // region Anchor
-        if (wasAnchored != anchored) {
-            anchorTargetPos = Vector3d(physShip.poseVel.pos)
-            anchorTargetRot = Quaterniond(physShip.poseVel.rot)
-            wasAnchored = anchored
-        }
-        if (anchored && anchorTargetPos.isFinite) { // TODO: Same thing but with rotation; rotate ship to anchor point
-            val x1 = anchorTargetPos.x()
-            val z1 = anchorTargetPos.z()
-            val x2 = physShip.poseVel.pos.x()
-            val z2 = physShip.poseVel.pos.z()
-            val targetVel = Vector3d(x1 - x2, 0.0, z1 - z2)
-            val len = targetVel.length()
-            targetVel.mul(clamp(0.0, anchorSpeed, len * 10.0))
-            targetVel.mul(physShip.inertia.shipMass)
-            physShip.applyInvariantForce(targetVel)
-
-            val invRotation = physShip.poseVel.rot.invert(Quaterniond())
-            val invRotationAxisAngle = AxisAngle4d(invRotation)
-
-            val alignTarget = (anchorTargetRot.angle() / (0.5 * Math.PI))
-            val angleUntilAligned = abs((alignTarget * (0.5 * Math.PI)) - invRotationAxisAngle.angle)
-            val idealOmega = Vector3d(invRotationAxisAngle.x, invRotationAxisAngle.y, invRotationAxisAngle.z)
-                .mul(angleUntilAligned)
-                .mul(EurekaConfig.SERVER.stabilizationSpeed)
-
-            val idealTorque = moiTensor.transform(idealOmega)
-
-            physShip.applyInvariantTorque(idealTorque)
-        }
+        physShip.isStatic = anchored
         // endregion
 
         // Add drag to the y-component
