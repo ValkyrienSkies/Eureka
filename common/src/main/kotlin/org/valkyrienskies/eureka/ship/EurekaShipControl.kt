@@ -213,7 +213,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
                 dist = max(dist, center.distance(aabb.maxX(), center.y(), aabb.maxZ()))
 
                 dist
-            }.coerceAtLeast(0.5)
+            }.coerceIn(0.5, EurekaConfig.SERVER.maxSizeForTurnSpeedPenalty)
 
             val maxLinearAcceleration = EurekaConfig.SERVER.turnAcceleration
             val maxLinearSpeed = EurekaConfig.SERVER.turnSpeed

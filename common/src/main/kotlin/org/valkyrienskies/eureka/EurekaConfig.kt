@@ -61,6 +61,12 @@ object EurekaConfig {
         @JsonSchema(description = "The maximum linear acceleration at any point on the ship caused by helm torque")
         var turnAcceleration = 10.0
 
+        @JsonSchema(description = "The maximum distance from center of mass to one end of the ship considered by " +
+                "the turn speed. At it's default of 16, it ensures that really large ships will turn at the same " +
+                "speed as a ship with a center of mass only 16 blocks away from the farthest point in the ship. " +
+                "That way, large ships do not turn painfully slowly")
+        var maxSizeForTurnSpeedPenalty = 16.0
+
         // The strength used when trying to level the ship
         @JsonSchema(description = "How much torque a ship will apply to try and keep level")
         var stabilizationTorqueConstant = 15.0
