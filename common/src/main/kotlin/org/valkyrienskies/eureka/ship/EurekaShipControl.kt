@@ -288,7 +288,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             val baseForwardForce = Vector3d(baseForwardVel).sub(velOrthogonalToPlayerUp).mul(mass * 10)
 
             // This is the maximum speed we want to go in any scenario (when not sprinting)
-            val idealForwardVel = Vector3d(forwardVector).mul(EurekaConfig.SERVER.maxCasualSpeed.toDouble())
+            val idealForwardVel = Vector3d(forwardVector).mul(EurekaConfig.SERVER.maxCasualSpeed)
             val idealForwardForce = Vector3d(idealForwardVel).sub(velOrthogonalToPlayerUp).mul(mass * 10)
 
             val extraForceNeeded = Vector3d(idealForwardForce).sub(baseForwardForce)

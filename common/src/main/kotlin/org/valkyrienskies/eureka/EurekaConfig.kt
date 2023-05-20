@@ -41,7 +41,7 @@ object EurekaConfig {
         val engineFuelMultiplier = 2f
 
         @JsonSchema(description = "Max speed of a ship without boosting")
-        val maxCasualSpeed = 20f
+        val maxCasualSpeed = 15.0
 
         @JsonSchema(description = "The speed at which the ship stabilizes")
         var stabilizationSpeed = 10.0
