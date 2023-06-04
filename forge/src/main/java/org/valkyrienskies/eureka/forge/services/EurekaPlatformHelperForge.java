@@ -2,7 +2,6 @@ package org.valkyrienskies.eureka.forge.services;
 
 import kotlin.jvm.functions.Function0;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +20,7 @@ public class EurekaPlatformHelperForge implements EurekaPlatformHelper {
 
             @Override
             public Component getDisplayName() {
-                return new TranslatableComponent("itemGroup." + String.format("%s.%s", id.getNamespace(), id.getPath()));
+                return Component.translatable("itemGroup." + String.format("%s.%s", id.getNamespace(), id.getPath()));
             }
         };
     }

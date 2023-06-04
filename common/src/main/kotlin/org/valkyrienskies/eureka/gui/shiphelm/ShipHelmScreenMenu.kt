@@ -3,11 +3,12 @@ package org.valkyrienskies.eureka.gui.shiphelm
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.item.ItemStack
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaScreens
 import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 
-class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: ShipHelmBlockEntity?) :
+class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, private val blockEntity: ShipHelmBlockEntity?) :
     AbstractContainerMenu(EurekaScreens.SHIP_HELM.get(), syncId) {
 
     constructor(syncId: Int, playerInv: Inventory) : this(syncId, playerInv, null)
@@ -37,6 +38,11 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
         }
 
         return super.clickMenuButton(player, id)
+    }
+
+    override fun quickMoveStack(player: Player, index: Int): ItemStack {
+        // Do nothing
+        return ItemStack.EMPTY
     }
 
     companion object {

@@ -8,8 +8,8 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.resources.ResourceLocation;
 import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
@@ -36,7 +36,7 @@ public class EurekaModFabric implements ModInitializer {
         @Override
         public void onInitializeClient() {
             EurekaMod.initClient();
-            BlockEntityRendererRegistry.INSTANCE.register(
+            BlockEntityRenderers.register(
                     EurekaBlockEntities.INSTANCE.getSHIP_HELM().get(),
                     ShipHelmBlockEntityRenderer::new
             );

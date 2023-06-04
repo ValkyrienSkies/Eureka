@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.phys.BlockHitResult
@@ -104,10 +103,10 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         private const val BUTTON_3_X = 10
         private const val BUTTON_3_Y = 133
 
-        private val ASSEMBLE_TEXT = TranslatableComponent("gui.vs_eureka.assemble")
-        private val DISSEMBLE_TEXT = TranslatableComponent("gui.vs_eureka.disassemble")
-        private val ALIGN_TEXT = TranslatableComponent("gui.vs_eureka.align")
-        private val ALIGNING_TEXT = TranslatableComponent("gui.vs_eureka.aligning")
-        private val TODO_TEXT = TranslatableComponent("gui.vs_eureka.todo")
+        private val ASSEMBLE_TEXT = Component.translatable("gui.vs_eureka.assemble")
+        private val DISSEMBLE_TEXT = Component.translatable("gui.vs_eureka.disassemble")
+        private val ALIGN_TEXT = Component.translatable("gui.vs_eureka.align")
+        private val ALIGNING_TEXT = Component.translatable("gui.vs_eureka.aligning")
+        private val TODO_TEXT = Component.translatable("gui.vs_eureka.todo")
     }
 }

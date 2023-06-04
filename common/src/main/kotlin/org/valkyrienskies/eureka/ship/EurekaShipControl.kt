@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import net.minecraft.core.Direction
-import net.minecraft.network.chat.TranslatableComponent
+import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.player.Player
 import org.joml.AxisAngle4d
 import org.joml.Quaterniond
@@ -333,7 +333,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
     private fun showCruiseStatus() {
         val cruiseKey = if (isCruising) "hud.vs_eureka.start_cruising" else "hud.vs_eureka.stop_cruising"
-        seatedPlayer?.displayClientMessage(TranslatableComponent(cruiseKey), true)
+        seatedPlayer?.displayClientMessage(Component.translatable(cruiseKey), true)
     }
 
     var power = 0.0

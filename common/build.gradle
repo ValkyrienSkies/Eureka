@@ -12,7 +12,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     // Remove the next line if you don't want to depend on the API
 //    modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
-    modApi("org.valkyrienskies:valkyrienskies-118-common:${rootProject.vs2_version}")
+    modApi("org.valkyrienskies:valkyrienskies-1192-common:${rootProject.vs2_version}")
     implementation("org.valkyrienskies.core:api:1.1.0+c92814e9b7") { transitive = false }
 
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.21"

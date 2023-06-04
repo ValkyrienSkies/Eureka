@@ -5,6 +5,7 @@ import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
+import net.minecraft.util.RandomSource
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
@@ -84,7 +85,7 @@ class EngineBlock : BaseEntityBlock(
         }
     }
 
-    override fun animateTick(state: BlockState, level: Level, pos: BlockPos, random: Random) {
+    override fun animateTick(state: BlockState, level: Level, pos: BlockPos, randomSource: RandomSource) {
         val heat = state.getValue(HEAT)
         if (heat == 0) return
 
@@ -92,18 +93,18 @@ class EngineBlock : BaseEntityBlock(
         val e = pos.y.toDouble()
         val f = pos.z.toDouble() + 0.5
 
-        if (random.nextDouble() < (0.04 * heat)) {
+        if (randomSource.nextDouble() < (0.04 * heat)) {
             level.playLocalSound(d, e, f, SoundEvents.FURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0f, 1.0f, false)
         }
 
         // Make the amount of particles based of the heat
-        if (random.nextDouble() > (0.2 * heat)) return
+        if (randomSource.nextDouble() > (0.2 * heat)) return
 
         val direction = state.getValue(HORIZONTAL_FACING)
         val axis = direction.axis
-        val h = random.nextDouble() * 0.6 - 0.3
+        val h = randomSource.nextDouble() * 0.6 - 0.3
         val i = if (axis === Direction.Axis.X) direction.stepX.toDouble() * 0.52 else h
-        val j = random.nextDouble() * 4.0 / 16.0
+        val j = randomSource.nextDouble() * 4.0 / 16.0
         val k = if (axis === Direction.Axis.Z) direction.stepZ.toDouble() * 0.52 else h
         level.addParticle(ParticleTypes.SMOKE, d + i, e + j, f + k, 0.0, 0.0, 0.0)
         level.addParticle(ParticleTypes.FLAME, d + i, e + j, f + k, 0.0, 0.0, 0.0)

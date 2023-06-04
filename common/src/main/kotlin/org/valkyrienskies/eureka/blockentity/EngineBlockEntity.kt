@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.ContainerHelper
 import net.minecraft.world.WorldlyContainer
@@ -49,7 +48,7 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
     override fun createMenu(containerId: Int, inventory: Inventory): AbstractContainerMenu =
         EngineScreenMenu(containerId, inventory, this)
 
-    override fun getDefaultName(): Component = TranslatableComponent("gui.vs_eureka.engine")
+    override fun getDefaultName(): Component = Component.translatable("gui.vs_eureka.engine")
 
     private var heat = 0f
     fun tick() {

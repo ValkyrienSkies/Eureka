@@ -2,7 +2,7 @@ package org.valkyrienskies.eureka.block
 
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
-import net.minecraft.network.chat.TextComponent
+import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -31,6 +31,7 @@ import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
+import java.awt.TextComponent
 
 class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntityBlock(properties) {
     val HELM_BASE = RotShapes.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0)
@@ -78,7 +79,7 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
             player.openMenu(blockEntity)
             InteractionResult.CONSUME
         } else if (level.getShipManagingPos(pos) == null) {
-            player.displayClientMessage(TextComponent("Sneak to open the ship helm!"), true)
+            player.displayClientMessage(Component.literal("Sneak to open the ship helm!"), true)
             InteractionResult.CONSUME
         } else if (blockEntity.sit(player)) {
             InteractionResult.CONSUME

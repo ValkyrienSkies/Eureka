@@ -5,7 +5,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.entity.player.Inventory
@@ -50,7 +49,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     override fun getDisplayName(): Component {
-        return TranslatableComponent("gui.vs_eureka.ship_helm")
+        return Component.translatable("gui.vs_eureka.ship_helm")
     }
 
     // Needs to get called server-side
