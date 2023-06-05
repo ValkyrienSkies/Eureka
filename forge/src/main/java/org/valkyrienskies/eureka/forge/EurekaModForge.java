@@ -11,6 +11,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
@@ -22,13 +23,22 @@ import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 
 @Mod(EurekaMod.MOD_ID)
 public class EurekaModForge {
-    boolean happendClientSetup = false;
+    private boolean handledClientSetup = false;
     static IEventBus MOD_BUS;
 
     public EurekaModForge() {
         // Submit our event bus to let architectury register our content on the right time
         MOD_BUS = FMLJavaModLoadingContext.get().getModEventBus();
-        MOD_BUS.addListener(this::clientSetup);
+
+        final boolean isClient = FMLEnvironment.dist.isClient();
+
+        if (isClient) {
+            MOD_BUS.addListener(this::clientSetup);
+            MOD_BUS.addListener(this::onModelRegistry);
+            MOD_BUS.addListener(this::onModelBaked);
+            MOD_BUS.addListener(this::clientSetup);
+            MOD_BUS.addListener(this::entityRenderers);
+        }
 
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory((Minecraft client, Screen parent) ->
@@ -36,17 +46,12 @@ public class EurekaModForge {
                                 VSConfigClass.Companion.getRegisteredConfig(EurekaConfig.class)))
         );
 
-        MOD_BUS.addListener(this::onModelRegistry);
-        MOD_BUS.addListener(this::onModelBaked);
-        MOD_BUS.addListener(this::clientSetup);
-        MOD_BUS.addListener(this::entityRenderers);
-
         EurekaMod.init();
     }
 
     void clientSetup(final FMLClientSetupEvent event) {
-        if (happendClientSetup) return;
-        happendClientSetup = true;
+        if (handledClientSetup) return;
+        handledClientSetup = true;
 
         EurekaMod.initClient();
     }
