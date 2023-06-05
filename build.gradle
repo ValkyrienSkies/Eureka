@@ -1,7 +1,7 @@
 plugins {
     // Needed for Forge+Fabric
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "0.12.0-SNAPSHOT" apply false
+    id "architectury-plugin" version "3.4.143"
+    id "dev.architectury.loom" version "1.0.306" apply false
     // Kotlin
     id "org.jetbrains.kotlin.jvm" version "1.7.21" apply false
     // Kotlin linter
@@ -48,10 +48,7 @@ subprojects {
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         // The following line declares the mojmap mappings, you may use other mappings as well
-        mappings(loom.layered {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-1.18.2:2022.09.04@zip")
-        })
+        mappings loom.officialMojangMappings()
     }
 
     checkstyle {
