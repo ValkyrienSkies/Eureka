@@ -17,13 +17,25 @@ object EurekaConfig {
         val enginePower: Float = 2000000f
 
         @JsonSchema(description = "Movement power per engine with minimal heat")
-        val minEnginePower: Float = 700000f
+        val minEnginePower: Float = 10000f
+
+        @JsonSchema(description = "Turning power per engine heated fully")
+        val engineTurnPower = 1f
 
         @JsonSchema(description = "The amount of heat a engine loses per tick")
         val engineHeatLoss = 0.01f
 
         @JsonSchema(description = "The amount of heat a gain per tick (when burning)")
         val engineHeatGain = 0.03f
+
+        @JsonSchema(description = "Increases heat gain at low heat level and increased heat decrees at high heat while not consuming fuel")
+        val engineHeatChangeExponent = 0.1f
+
+        @JsonSchema(description = "Avoids consuming fuel when heat is 100%")
+        val engineFuelSaving = false
+
+        @JsonSchema(description = "Increasing this value will result in more items being able to converted to fuel")
+        val engineMinCapacity = 2000
 
         @JsonSchema(description = "Max speed of a ship without boosting")
         val maxCasualSpeed = 20f

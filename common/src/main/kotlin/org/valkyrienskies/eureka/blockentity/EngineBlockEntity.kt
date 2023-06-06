@@ -31,6 +31,7 @@ import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.KtContainerData
 import org.valkyrienskies.mod.common.getShipManagingPos
 import kotlin.math.ceil
+import kotlin.math.max
 
 class EngineBlockEntity(pos: BlockPos, state: BlockState) :
     BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get(), pos, state),
@@ -45,6 +46,8 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
     var fuelLeft by data
     var fuelTotal by data
     private var fuel: ItemStack = ItemStack.EMPTY
+    private var maxEffectiveFuel = 100f - EurekaConfig.SERVER.engineHeatGain
+    private var lastFuelValue = 1600; // coal: 1600
 
     override fun createMenu(containerId: Int, inventory: Inventory): AbstractContainerMenu =
         EngineScreenMenu(containerId, inventory, this)
@@ -54,24 +57,42 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
     private var heat = 0f
     fun tick() {
         if (!this.level!!.isClientSide) {
-            // Disable engines when they are receiving a redstone signal
-            if (level!!.hasNeighborSignal(blockPos)) {
-                heatLevel = 0
-                level!!.setBlock(blockPos, this.blockState.setValue(HEAT, 0), 11)
-                return
-            }
+            // Disable engine feeding when they are receiving a redstone signal
+            if (!level!!.hasNeighborSignal(blockPos)) {
+                if (fuelLeft > 0) {
 
-            if (this.fuelLeft > 0) {
-                this.fuelLeft--
+                    if (EurekaConfig.SERVER.engineFuelSaving) {
+                        if (heat <= maxEffectiveFuel) {
+                            heat += heatEngine(EurekaConfig.SERVER.engineHeatGain)
+                            fuelLeft--
+                        }
+                    } else {
+                        fuelLeft--
 
-                if (this.heat < 100f) {
-                    this.heat += EurekaConfig.SERVER.engineHeatGain
+                        if (heat <= maxEffectiveFuel) {
+                            heat += heatEngine(EurekaConfig.SERVER.engineHeatGain)
+                        }
+                    }
+
+                    // Refill while burning
+                    if (!fuel.isEmpty && lastFuelValue <= EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
+                        lastFuelValue = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
+
+                        if (lastFuelValue <= EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
+                            fuelLeft += lastFuelValue
+                            fuelTotal = max(lastFuelValue, EurekaConfig.SERVER.engineMinCapacity)
+                            removeItem(0, 1)
+                            setChanged()
+                        }
+                    }
+
+                } else if (!fuel.isEmpty) {
+                    lastFuelValue = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
+                    fuelLeft = lastFuelValue
+                    fuelTotal = max(lastFuelValue, EurekaConfig.SERVER.engineMinCapacity)
+                    removeItem(0, 1)
+                    setChanged()
                 }
-            } else if (!fuel.isEmpty && this.heat < 100f) {
-                fuelTotal = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
-                fuelLeft = fuelTotal
-                removeItem(0, 1)
-                setChanged()
             }
 
             val prevHeatLevel = heatLevel
@@ -80,23 +101,36 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
                 level!!.setBlock(blockPos, this.blockState.setValue(HEAT, heatLevel), 11)
             }
 
-            if (heat > 0 && ship != null && eurekaShipControl != null) {
-                eurekaShipControl!!.power += lerp(
-                    heat / 100f,
-                    EurekaConfig.SERVER.minEnginePower,
-                    EurekaConfig.SERVER.enginePower
-                )
-
-                heat -= eurekaShipControl!!.consumed
-            }
-
             if (heat > 0) {
-                heat -= min(EurekaConfig.SERVER.engineHeatLoss, heat)
+
+               if (ship != null && eurekaShipControl != null) {
+
+                   // Avoid fluctuations in speed
+                   var effectiveHeat = 1f
+                   if (heat < maxEffectiveFuel) {
+                       effectiveHeat = heat / 100f;
+                   }
+
+                   eurekaShipControl!!.power += lerp(
+                       EurekaConfig.SERVER.minEnginePower,
+                       EurekaConfig.SERVER.enginePower,
+                       effectiveHeat,
+                   )
+
+                   heat -= eurekaShipControl!!.consumed;
+               }
+
+                heat = max(heat - coolEngine(EurekaConfig.SERVER.engineHeatLoss),0f)
             }
         }
     }
 
     fun isBurning() = fuelLeft > 0
+
+    private fun heatEngine(value: Float) = (100 * EurekaConfig.SERVER.engineHeatChangeExponent -
+            this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
+
+    private fun coolEngine(value: Float) = (this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
 
     override fun saveAdditional(tag: CompoundTag) {
         tag.put("FuelSlot", fuel.save(CompoundTag()))

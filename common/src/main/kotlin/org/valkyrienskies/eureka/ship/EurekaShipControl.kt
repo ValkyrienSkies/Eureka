@@ -216,7 +216,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             }.coerceIn(0.5, EurekaConfig.SERVER.maxSizeForTurnSpeedPenalty)
 
             val maxLinearAcceleration = EurekaConfig.SERVER.turnAcceleration
-            val maxLinearSpeed = EurekaConfig.SERVER.turnSpeed
+            val maxLinearSpeed = EurekaConfig.SERVER.turnSpeed +
+                    extraForce / EurekaConfig.SERVER.enginePower * EurekaConfig.SERVER.engineTurnPower
 
             // acceleration = alpha * r
             // therefore: maxAlpha = maxAcceleration / r
