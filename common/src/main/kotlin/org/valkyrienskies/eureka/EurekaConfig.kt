@@ -13,13 +13,13 @@ object EurekaConfig {
 
     class Server {
 
-        @JsonSchema(description = "Movement power per engine heated fully")
+        @JsonSchema(description = "Movement power per engine when heated fully")
         val enginePower: Float = 2000000f
 
         @JsonSchema(description = "Movement power per engine with minimal heat")
         val minEnginePower: Float = 10000f
 
-        @JsonSchema(description = "Turning power per engine heated fully")
+        @JsonSchema(description = "Turning power per engine when heated fully")
         val engineTurnPower = 1f
 
         @JsonSchema(description = "The amount of heat a engine loses per tick")
@@ -28,7 +28,7 @@ object EurekaConfig {
         @JsonSchema(description = "The amount of heat a gain per tick (when burning)")
         val engineHeatGain = 0.03f
 
-        @JsonSchema(description = "Increases heat gain at low heat level and increased heat decrees at high heat while not consuming fuel")
+        @JsonSchema(description = "Increases heat gained at low heat level, and increased heat decreases when at high heat and not consuming fuel")
         val engineHeatChangeExponent = 0.1f
 
         @JsonSchema(description = "Avoids consuming fuel when heat is 100%")
