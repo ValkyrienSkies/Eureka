@@ -37,6 +37,9 @@ object EurekaConfig {
         @JsonSchema(description = "Increasing this value will result in more items being able to converted to fuel")
         val engineMinCapacity = 2000
 
+        @JsonSchema(description = "Fuel burn time multiplier")
+        val engineFuelMultiplier = 2f
+
         @JsonSchema(description = "Max speed of a ship without boosting")
         val maxCasualSpeed = 20f
 

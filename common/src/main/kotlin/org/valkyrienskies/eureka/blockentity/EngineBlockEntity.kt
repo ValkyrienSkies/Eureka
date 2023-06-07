@@ -76,22 +76,16 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
 
                     // Refill while burning
                     if (!fuel.isEmpty && lastFuelValue <= EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
-                        lastFuelValue = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
+                        lastFuelValue = ((FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * EurekaConfig.SERVER.engineFuelMultiplier).toInt()
 
                         if (lastFuelValue <= EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
-                            fuelLeft += lastFuelValue
-                            fuelTotal = max(lastFuelValue, EurekaConfig.SERVER.engineMinCapacity)
-                            removeItem(0, 1)
-                            setChanged()
+                            useFuel(lastFuelValue)
                         }
                     }
 
                 } else if (!fuel.isEmpty) {
-                    lastFuelValue = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
-                    fuelLeft = lastFuelValue
-                    fuelTotal = max(lastFuelValue, EurekaConfig.SERVER.engineMinCapacity)
-                    removeItem(0, 1)
-                    setChanged()
+                    lastFuelValue = ((FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * EurekaConfig.SERVER.engineFuelMultiplier).toInt()
+                    useFuel(lastFuelValue)
                 }
             }
 
@@ -129,6 +123,21 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
 
     private fun heatEngine(value: Float) = (100 * EurekaConfig.SERVER.engineHeatChangeExponent -
             this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
+
+    private fun useFuel(value: Int) {
+        if (value > 0) {
+            fuelLeft += value
+            fuelTotal = max(value, EurekaConfig.SERVER.engineMinCapacity)
+
+            // Handle items like lava buckets
+            if (fuel.item.hasCraftingRemainingItem()) {
+                fuel = ItemStack(fuel.item.craftingRemainingItem!!, 1)
+            } else {
+                removeItem(0, 1)
+            }
+            setChanged()
+        }
+    }
 
     private fun coolEngine(value: Float) = (this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
 
