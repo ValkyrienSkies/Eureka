@@ -1,11 +1,10 @@
 package org.valkyrienskies.eureka.forge.mixin;
 
+import java.util.List;
+import java.util.Set;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * For now, just using this class as an abusive early entrypoint to run the updater
