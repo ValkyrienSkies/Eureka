@@ -42,10 +42,10 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
     override val ship: ServerShip? get() = (this.level as ServerLevel).getShipManagingPos(this.blockPos)
     private val eurekaShipControl by shipValue<EurekaShipControl>()
     val data = KtContainerData()
-    var heatLevel by data
-    var fuelLeft by data
-    var fuelTotal by data
-    private var fuel: ItemStack = ItemStack.EMPTY
+    private var heatLevel by data
+    private var fuelLeft by data
+    private var fuelTotal by data
+    var fuel: ItemStack = ItemStack.EMPTY
     private var maxEffectiveFuel = 100f - EurekaConfig.SERVER.engineHeatGain
     private var lastFuelValue = 1600; // coal: 1600
 

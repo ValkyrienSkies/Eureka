@@ -7,6 +7,7 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
+import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
@@ -118,5 +119,18 @@ class EngineBlock : BaseEntityBlock(
         if (blockEntity is EngineBlockEntity) {
             blockEntity.tick()
         }
+    }
+
+    override fun playerWillDestroy(level: Level, pos: BlockPos, state: BlockState, player: Player) {
+        if (!level.isClientSide) {
+            val blockEntity = level.getBlockEntity(pos) as EngineBlockEntity
+
+            // Drop inventory
+            if (!blockEntity.fuel.isEmpty) {
+                level.addFreshEntity(ItemEntity(level, pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), blockEntity.fuel))
+            }
+        }
+
+        super.playerWillDestroy(level, pos, state, player)
     }
 }
