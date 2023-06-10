@@ -36,7 +36,6 @@ public class EurekaModForge {
             MOD_BUS.addListener(this::clientSetup);
             MOD_BUS.addListener(this::onModelRegistry);
             MOD_BUS.addListener(this::onModelBaked);
-            MOD_BUS.addListener(this::clientSetup);
             MOD_BUS.addListener(this::entityRenderers);
         }
 
