@@ -30,6 +30,8 @@ public class EurekaModForge {
         // Submit our event bus to let architectury register our content on the right time
         MOD_BUS = FMLJavaModLoadingContext.get().getModEventBus();
         MOD_BUS.addListener(this::clientSetup);
+        MOD_BUS.addListener(this::onModelRegistry);
+        MOD_BUS.addListener(this::entityRenderers);
 
         ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,
                 () -> new ConfigGuiHandler.ConfigGuiFactory((Minecraft client, Screen parent) ->
@@ -37,9 +39,6 @@ public class EurekaModForge {
                                 VSConfigClass.Companion.getRegisteredConfig(EurekaConfig.class)))
         );
 
-        MOD_BUS.addListener(this::onModelRegistry);
-        MOD_BUS.addListener(this::clientSetup);
-        MOD_BUS.addListener(this::entityRenderers);
 
         EurekaMod.init();
     }
