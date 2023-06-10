@@ -7,11 +7,15 @@ import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
@@ -46,6 +50,36 @@ public class EurekaModForge {
         );
 
         EurekaMod.init();
+
+        carryOnModSupport();
+
+    }
+
+    private static void carryOnModSupport() {
+        if (ModList.get().isLoaded("carryon")) {
+
+            final Logger LOGGER = LogManager.getLogger(EurekaMod.MOD_ID);
+
+            LOGGER.info(EurekaMod.MOD_ID + ": Carry On was detected, sending blocklist.");
+
+            final var exclusions = new String[] {
+                "vs_eureka:oak_ship_helm",
+                "vs_eureka:spruce_ship_helm",
+                "vs_eureka:birch_ship_helm",
+                "vs_eureka:jungle_ship_helm",
+                "vs_eureka:acacia_ship_helm",
+                "vs_eureka:dark_oak_ship_helm",
+                "vs_eureka:crimson_ship_helm",
+                "vs_eureka:warped_ship_helm"
+            };
+
+            for (final String item : exclusions) {
+                InterModComms.sendTo("carryon", "blacklistBlock", () -> {
+                    LOGGER.debug("carryon->blacklistBlock->" + item);
+                    return item;
+                });
+            }
+        }
     }
 
     void clientSetup(final FMLClientSetupEvent event) {
