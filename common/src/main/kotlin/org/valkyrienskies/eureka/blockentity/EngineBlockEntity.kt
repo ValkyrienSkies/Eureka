@@ -63,35 +63,24 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
 
                     if (EurekaConfig.SERVER.engineFuelSaving) {
                         if (heat <= maxEffectiveFuel) {
-                            heat += heatEngine(EurekaConfig.SERVER.engineHeatGain)
+                            heat += scaleEngineHeating(EurekaConfig.SERVER.engineHeatGain)
                             fuelLeft--
                         }
                     } else {
                         fuelLeft--
 
                         if (heat <= maxEffectiveFuel) {
-                            heat += heatEngine(EurekaConfig.SERVER.engineHeatGain)
+                            heat += scaleEngineHeating(EurekaConfig.SERVER.engineHeatGain)
                         }
                     }
 
                     // Refill while burning
                     if (!fuel.isEmpty && lastFuelValue <= EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
-                        lastFuelValue = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
-
-                        if (lastFuelValue <= EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
-                            fuelLeft += lastFuelValue
-                            fuelTotal = max(lastFuelValue, EurekaConfig.SERVER.engineMinCapacity)
-                            removeItem(0, 1)
-                            setChanged()
-                        }
+                        consumeFuel()
                     }
 
                 } else if (!fuel.isEmpty) {
-                    lastFuelValue = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
-                    fuelLeft = lastFuelValue
-                    fuelTotal = max(lastFuelValue, EurekaConfig.SERVER.engineMinCapacity)
-                    removeItem(0, 1)
-                    setChanged()
+                    consumeFuel()
                 }
             }
 
@@ -120,17 +109,59 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
                    heat -= eurekaShipControl!!.consumed;
                }
 
-                heat = max(heat - coolEngine(EurekaConfig.SERVER.engineHeatLoss),0f)
+                heat = max(heat - scaleEngineCooling(EurekaConfig.SERVER.engineHeatLoss),0f)
             }
         }
     }
 
-    fun isBurning() = fuelLeft > 0
+    fun isBurning(): Boolean = fuelLeft > 0
 
-    private fun heatEngine(value: Float) = (100 * EurekaConfig.SERVER.engineHeatChangeExponent -
+    /**
+     * Get fuel value from the item type stored in the engine.
+     *
+     * @return scaled fuel ticks.
+     */
+    private fun getScaledFuel(): Int = ((FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * EurekaConfig.SERVER.engineFuelMultiplier).toInt()
+
+    /**
+     * Absorb one fuel item into the engine.
+     */
+    private fun consumeFuel() {
+
+        lastFuelValue = getScaledFuel()
+
+        if (lastFuelValue > 0) {
+            if (fuelLeft > 0 && lastFuelValue > EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
+                return
+            }
+
+            fuelLeft += lastFuelValue
+            fuelTotal = max(lastFuelValue, EurekaConfig.SERVER.engineMinCapacity)
+
+            // Handle items like lava buckets
+            if (fuel.item.hasCraftingRemainingItem()) {
+                fuel = ItemStack(fuel.item.craftingRemainingItem!!, 1)
+            } else {
+                removeItem(0, 1)
+            }
+            setChanged()
+        }
+    }
+
+    /**
+     * Scale given heating [value] based on current heat.
+     *
+     * @return the scaled value.
+     */
+    private fun scaleEngineHeating(value: Float): Float = (100 * EurekaConfig.SERVER.engineHeatChangeExponent -
             this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
 
-    private fun coolEngine(value: Float) = (this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
+    /**
+     * Scale given cooling [value] based on current heat.
+     *
+     * @return the scaled value.
+     */
+    private fun scaleEngineCooling(value: Float): Float = (this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
 
     override fun saveAdditional(tag: CompoundTag) {
         tag.put("FuelSlot", fuel.save(CompoundTag()))
