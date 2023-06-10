@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
@@ -41,6 +42,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     override var ship: ServerShip? = null // TODO ship is not being set in vs2?
         get() = field ?: (level as ServerLevel).getShipObjectManagingPos(this.blockPos)
     val control by shipValue<EurekaShipControl>()
+    val seats = mutableListOf<ShipMountingEntity>()
     val assembled get() = ship != null
     val aligning get() = control?.aligning ?: false
     var shouldDisassembleWhenPossible = false
@@ -137,6 +139,13 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     fun sit(player: Player, force: Boolean = false): Boolean {
+        // If player is already controlling the ship, open the helm menu
+        if (!force && player.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE && control?.seatedPlayer == player)
+        {
+            player.openMenu(this);
+            return true;
+        }
+
         val seat = spawnSeat(blockPos, blockState, level as ServerLevel)
         control?.seatedPlayer = player
         return player.startRiding(seat, force)

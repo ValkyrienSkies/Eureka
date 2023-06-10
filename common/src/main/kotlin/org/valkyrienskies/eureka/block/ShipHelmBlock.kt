@@ -29,6 +29,7 @@ import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
@@ -58,8 +59,14 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         if (level.isClientSide) return
         level as ServerLevel
 
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.helms -= 1
+        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let { control ->
+
+            if (control.helms <= 1 && control.seatedPlayer?.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE) {
+                control.seatedPlayer!!.unRide()
+                control.seatedPlayer = null
+            }
+
+            control.helms -= 1
         }
     }
 

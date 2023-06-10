@@ -367,7 +367,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
     }
 
     private fun deleteIfEmpty() {
-        if (helms == 0 && floaters == 0 && anchors == 0 && balloons == 0) {
+        if (helms <= 0 && floaters <= 0 && anchors <= 0 && balloons <= 0) {
             ship?.saveAttachment<EurekaShipControl>(null)
         }
     }
