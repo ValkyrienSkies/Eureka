@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
@@ -41,6 +42,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     override var ship: ServerShip? = null // TODO ship is not being set in vs2?
         get() = field ?: (level as ServerLevel).getShipObjectManagingPos(this.blockPos)
     val control by shipValue<EurekaShipControl>()
+    val seats = mutableListOf<ShipMountingEntity>()
     val assembled get() = ship != null
     val aligning get() = control?.aligning ?: false
     var shouldDisassembleWhenPossible = false
@@ -83,6 +85,28 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
 
         level.addFreshEntityWithPassengers(entity)
         return entity
+    }
+
+    fun startRiding(player: Player, force: Boolean, blockPos: BlockPos, state: BlockState, level: ServerLevel): Boolean {
+
+        for (i in seats.size-1 downTo 0) {
+            if (!seats[i].isVehicle) {
+                seats[i].kill()
+                seats.removeAt(i)
+            } else if (!seats[i].isAlive) {
+                seats.removeAt(i)
+            }
+        }
+
+        val seat = spawnSeat(blockPos, blockState, level)
+        val ride = player.startRiding(seat, force)
+
+        if (ride) {
+            control?.seatedPlayer = player
+            seats.add(seat)
+        }
+
+        return ride;
     }
 
     fun tick() {
@@ -136,9 +160,30 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         control.aligning = !control.aligning
     }
 
+    override fun setRemoved() {
+
+        if (level?.isClientSide == false) {
+            for (i in seats.indices) {
+                seats[i].kill()
+            }
+            seats.clear()
+        }
+
+        super.setRemoved()
+    }
+
     fun sit(player: Player, force: Boolean = false): Boolean {
-        val seat = spawnSeat(blockPos, blockState, level as ServerLevel)
-        control?.seatedPlayer = player
-        return player.startRiding(seat, force)
+        // If player is already controlling the ship, open the helm menu
+        if (!force && player.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE && seats.contains(player.vehicle as ShipMountingEntity))
+        {
+            player.openMenu(this);
+            return true;
+        }
+
+        //val seat = spawnSeat(blockPos, blockState, level as ServerLevel)
+        //control?.seatedPlayer = player
+        //return player.startRiding(seat, force)
+        return startRiding(player, force, blockPos, blockState, level as ServerLevel)
+
     }
 }
