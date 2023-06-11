@@ -172,7 +172,7 @@ object EurekaBlocks {
 
     // region Flammables
     // TODO make this part of the registration sequence
-    fun flammableBlock(block: Block?, flameOdds: Int, burnOdds: Int) {
+    fun flammableBlock(block: Block, flameOdds: Int, burnOdds: Int) {
         val fire = Blocks.FIRE as FireBlock
         fire.setFlammable(block, flameOdds, burnOdds)
     }

@@ -65,7 +65,7 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         matrixStack.popPose()
     }
 
-    override fun renderLabels(poseStack: PoseStack?, mouseX: Int, mouseY: Int) {
+    override fun renderLabels(poseStack: PoseStack, mouseX: Int, mouseY: Int) {
         // super.renderLabels(poseStack, mouseX, mouseY)
     }
 
