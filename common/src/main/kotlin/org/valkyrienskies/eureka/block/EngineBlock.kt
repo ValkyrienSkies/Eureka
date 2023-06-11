@@ -77,11 +77,11 @@ class EngineBlock : BaseEntityBlock(
         return RenderShape.MODEL
     }
 
-    override fun getShadeBrightness(state: BlockState?, level: BlockGetter?, pos: BlockPos?): Float {
-        if (state?.getValue(HEAT) ?: 0 > 0) {
-            return 1.0f
+    override fun getShadeBrightness(state: BlockState, level: BlockGetter, pos: BlockPos): Float {
+        return if ((state.getValue(HEAT) ?: 0) > 0) {
+            1.0f
         } else {
-            return super.getShadeBrightness(state, level, pos)
+            super.getShadeBrightness(state, level, pos)
         }
     }
 

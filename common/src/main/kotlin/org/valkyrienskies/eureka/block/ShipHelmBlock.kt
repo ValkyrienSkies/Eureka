@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.RenderShape
@@ -53,8 +54,8 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         EurekaShipControl.getOrCreate(ship).helms += 1
     }
 
-    override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
-        super.onRemove(state, level, pos, newState, isMoving)
+    override fun destroy(level: LevelAccessor, pos: BlockPos, state: BlockState) {
+        super.destroy(level, pos, state)
 
         if (level.isClientSide) return
         level as ServerLevel
