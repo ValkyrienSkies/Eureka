@@ -60,7 +60,7 @@ public class EurekaModForge {
 
             final Logger LOGGER = LogManager.getLogger(EurekaMod.MOD_ID);
 
-            LOGGER.info(EurekaMod.MOD_ID + ": Carry On was detected, sending blocklist.");
+            LOGGER.info(EurekaMod.MOD_ID + ": Carry On was detected, sending blacklist.");
 
             final var exclusions = new String[] {
                 "vs_eureka:oak_ship_helm",
