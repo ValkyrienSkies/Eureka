@@ -59,7 +59,14 @@ object EurekaConfig {
         // Sensitivity of the up/down impulse buttons.
         // TODO maybe should be moved to VS2 client-side config?
         @JsonSchema(description = "Vertical sensitivity up ascend/descend")
-        var impulseElevationRate = 7
+        var baseImpulseElevationRate = 1.0
+
+        @JsonSchema(description = "The max elevation speed boost gained by having extra extra balloons")
+        var balloonElevationMaxSpeed = 5.0
+
+        // Higher numbers make the ship accelerate to max speed faster
+        @JsonSchema(description = "Ascend and descend acceleration")
+        var elevationSnappiness = 1.0
 
         // Allow Eureka controlled ships to be affected by fluid drag
         @JsonSchema(description = "Allow Eureka controlled ships to be affected by fluid drag")
