@@ -59,10 +59,10 @@ object EurekaConfig {
         // Sensitivity of the up/down impulse buttons.
         // TODO maybe should be moved to VS2 client-side config?
         @JsonSchema(description = "Vertical sensitivity up ascend/descend")
-        var baseImpulseElevationRate = 1.0
+        var baseImpulseElevationRate = 2.0
 
         @JsonSchema(description = "The max elevation speed boost gained by having extra extra balloons")
-        var balloonElevationMaxSpeed = 5.0
+        var balloonElevationMaxSpeed = 5.5
 
         // Higher numbers make the ship accelerate to max speed faster
         @JsonSchema(description = "Ascend and descend acceleration")
