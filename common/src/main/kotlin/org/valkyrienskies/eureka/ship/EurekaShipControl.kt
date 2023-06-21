@@ -100,12 +100,13 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
         physShip as PhysShipImpl
 
+        val ship = ship ?: return
         val mass = physShip.inertia.shipMass
         val moiTensor = physShip.inertia.momentOfInertiaTensor
         val segment = physShip.segments.segments[0]?.segmentDisplacement!!
         val omega: Vector3dc = SegmentUtils.getOmega(physShip.poseVel, segment, Vector3d())
         val vel = SegmentUtils.getVelocity(physShip.poseVel, segment, Vector3d())
-        val ship = ship ?: return
+        val balloonForceProvided = balloons * forcePerBalloon
 
 
         val buoyantFactorPerFloater = min(
@@ -305,20 +306,19 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             if (control.upImpulse != 0.0f) {
                 idealUpwardVel = Vector3d(0.0, 1.0, 0.0)
                     .mul(control.upImpulse.toDouble())
-                    .mul(EurekaConfig.SERVER.impulseElevationRate.toDouble())
+                    .mul(EurekaConfig.SERVER.baseImpulseElevationRate +
+                        // Smoothing for how the elevation scales as you approaches the balloonElevationMaxSpeed
+                        smoothing(2.0, EurekaConfig.SERVER.balloonElevationMaxSpeed, balloonForceProvided / mass)
+                    )
             }
         }
 
         // region Elevation
-        // Higher numbers make the ship accelerate to max speed faster
-        val elevationSnappiness = 10.0
         val idealUpwardForce = Vector3d(
             0.0,
-            idealUpwardVel.y() - vel.y() - (GRAVITY / elevationSnappiness),
+            idealUpwardVel.y() - vel.y() - (GRAVITY / EurekaConfig.SERVER.elevationSnappiness),
             0.0
-        ).mul(mass * elevationSnappiness)
-
-        val balloonForceProvided = balloons * forcePerBalloon
+        ).mul(mass * EurekaConfig.SERVER.elevationSnappiness)
 
         val actualUpwardForce = Vector3d(0.0, min(balloonForceProvided, max(idealUpwardForce.y(), 0.0)), 0.0)
         physShip.applyInvariantForce(actualUpwardForce)
@@ -371,6 +371,11 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             ship?.saveAttachment<EurekaShipControl>(null)
         }
     }
+
+    /**
+     * f(x) = max - smoothing / (x + (smoothing / max))
+     */
+    private fun smoothing(smoothing: Double, max: Double, x: Double): Double = max - smoothing / (x + (smoothing / max))
 
     companion object {
         fun getOrCreate(ship: ServerShip): EurekaShipControl {
