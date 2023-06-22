@@ -177,12 +177,14 @@ object ShipAssembler {
                     }
                 }
             }
-            if (blocks.size > EurekaConfig.SERVER.maxShipBlocks) {
+            if ((EurekaConfig.SERVER.maxShipBlocks > 0) and (blocks.size > EurekaConfig.SERVER.maxShipBlocks)) {
                 logger.info("Stopped ship assembly due too many blocks")
                 return false
             }
         }
-        logger.info("Assembled ship with ${blocks.size} blocks, out of ${EurekaConfig.SERVER.maxShipBlocks} allowed")
+        if (EurekaConfig.SERVER.maxShipBlocks > 0){
+            logger.info("Assembled ship with ${blocks.size} blocks, out of ${EurekaConfig.SERVER.maxShipBlocks} allowed")
+        }
         return true
     }
 
