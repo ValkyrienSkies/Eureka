@@ -133,7 +133,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
 
         if (builtShip == null){
             player.sendMessage(TextComponent("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks"), Util.NIL_UUID)
-            logger.warn("${player.name.string} tried to assemble a ship that was too big")
+            logger.warn("Failed to assemble ship for ${player.name.string}")
         }
     }
 

@@ -178,7 +178,7 @@ object ShipAssembler {
                 }
             }
             if (blocks.size > EurekaConfig.SERVER.maxShipBlocks) {
-                logger.info("Stopped ship assembly by: too many blocks")
+                logger.info("Stopped ship assembly due too many blocks")
                 return false
             }
         }
