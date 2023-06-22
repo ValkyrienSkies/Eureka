@@ -1,10 +1,12 @@
 package org.valkyrienskies.eureka.blockentity
 
+import net.minecraft.Util
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TextComponent
 import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
@@ -116,17 +118,21 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     // Needs to get called server-side
-    fun assemble() {
+    fun assemble(player: Player) {
         val level = level as ServerLevel
 
         // Check the block state before assembling to avoid creating an empty ship
         val blockState = level.getBlockState(blockPos)
         if (blockState.block !is ShipHelmBlock) return
 
-        ShipAssembler.collectBlocks(
+        val builtShip = ShipAssembler.collectBlocks(
             level,
             blockPos
         ) { !it.isAir && !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
+
+        if (builtShip == null){
+            player.sendMessage(TextComponent("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks"), Util.NIL_UUID)
+        }
     }
 
     fun disassemble() {
