@@ -178,11 +178,12 @@ object ShipAssembler {
                 }
             }
             if (blocks.size > EurekaConfig.SERVER.maxShipBlocks) {
+                logger.info("Stopped ship assembly by: too many blocks")
                 return false
             }
         }
-        logger.info("Found ${blocks.size} blocks, out of ${EurekaConfig.SERVER.maxShipBlocks} allowed")
-        return true;
+        logger.info("Assembled ship with ${blocks.size} blocks, out of ${EurekaConfig.SERVER.maxShipBlocks} allowed")
+        return true
     }
 
     private fun directions(center: BlockPos, lambda: (BlockPos) -> Unit) {

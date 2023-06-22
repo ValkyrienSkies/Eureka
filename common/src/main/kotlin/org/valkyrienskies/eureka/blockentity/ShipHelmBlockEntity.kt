@@ -26,6 +26,7 @@ import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.getAttachment
 import org.valkyrienskies.core.impl.api.ServerShipProvider
 import org.valkyrienskies.core.impl.api.shipValue
+import org.valkyrienskies.core.impl.util.logger
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.block.ShipHelmBlock
@@ -132,6 +133,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
 
         if (builtShip == null){
             player.sendMessage(TextComponent("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks"), Util.NIL_UUID)
+            logger.warn("${player.name.string} tried to assemble a ship that was too big")
         }
     }
 
@@ -192,4 +194,5 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         return startRiding(player, force, blockPos, blockState, level as ServerLevel)
 
     }
+    private val logger by logger()
 }

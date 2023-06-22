@@ -201,6 +201,6 @@ object EurekaConfig {
         val allowDisassembly = true
 
         @JsonSchema(description = "Maximum number of blocks allowed in a ship")
-        val maxShipBlocks = 262144
+        val maxShipBlocks = 64*64*64
     }
 }
