@@ -33,6 +33,9 @@
     ],
     "modmenu": [
       "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}ModMenu"
+    ],
+    "fabric-datagen": [
+      "org.valkyrienskies.eureka.fabric.EurekaDataGenerator"
     ]
   },
   "mixins": [
