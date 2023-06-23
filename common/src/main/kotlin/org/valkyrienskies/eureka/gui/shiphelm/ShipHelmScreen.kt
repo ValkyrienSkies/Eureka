@@ -72,7 +72,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
     }
 
     override fun renderLabels(guiGraphics: GuiGraphics, i: Int, j: Int) {
-        guiGraphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040)
+        guiGraphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040, false)
 
         if (this.menu.aligning) {
             alignButton.message = ALIGNING_TEXT

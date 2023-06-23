@@ -41,7 +41,8 @@ class ShipHelmButton(x: Int, y: Int, text: Component, private val font: Font, on
             formattedCharSequence,
             ((x + width / 2) - font.width(formattedCharSequence) / 2),
             (y + (height - 8) / 2),
-            color
+            color,
+            false
         )
     }
 
