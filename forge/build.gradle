@@ -51,7 +51,7 @@ configurations {
 
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
-    modApi("org.valkyrienskies:valkyrienskies-1192-forge:${rootProject.vs2_version}") { transitive = false }
+    modApi("org.valkyrienskies:valkyrienskies-1201-forge:${rootProject.vs2_version}") { transitive = false }
     implementation("org.valkyrienskies.core:api:1.1.0+ead972f384") { transitive = false }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

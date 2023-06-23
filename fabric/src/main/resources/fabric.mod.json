@@ -40,7 +40,7 @@
     "vs_eureka.mixins.json"
   ],
   "depends": {
-    "minecraft": ">=1.18.2",
+    "minecraft": ">=1.20.1",
     "valkyrienskies": ">=${vs2_version}"
   }
 }
