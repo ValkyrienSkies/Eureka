@@ -6,6 +6,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.common.data.BlockTagsProvider;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
@@ -45,6 +47,7 @@ public class EurekaModForge {
             MOD_BUS.addListener(this::entityRenderers);
         }
 
+        MOD_BUS.addListener(this::onGatherData);
         MOD_BUS.addListener(this::loadComplete);
 
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
@@ -112,6 +115,16 @@ public class EurekaModForge {
                         new ResourceLocation(EurekaMod.MOD_ID, "block/" + woodType.getResourceName() + "_ship_helm_wheel"),
                         Minecraft.getInstance().getModelManager().getMissingModel()
                 ));
+    }
+
+    void onGatherData(final GatherDataEvent event) {
+        final BlockTagsProvider blockTagProvider = new EurekaBlockTagsProvider(
+                event.getGenerator().getPackOutput(),
+                event.getLookupProvider(),
+                EurekaMod.MOD_ID,
+                event.getExistingFileHelper()
+        );
+        event.getGenerator().addProvider(event.includeServer(), blockTagProvider);
     }
 
     void loadComplete(final FMLLoadCompleteEvent event) {
