@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
-import net.minecraft.world.level.material.Material
+import net.minecraft.world.level.material.MapColor
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
 import org.valkyrienskies.core.api.ships.getAttachment
@@ -23,7 +23,7 @@ import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
 class AnchorBlock :
-    HorizontalDirectionalBlock(Properties.of(Material.METAL).strength(5.0f, 1200.0f).sound(SoundType.ANVIL)) {
+    HorizontalDirectionalBlock(Properties.of().mapColor(MapColor.METAL).strength(5.0f, 1200.0f).sound(SoundType.ANVIL)) {
 
     val ANCHOR_BOTTOM = RotShapes.box(2.0, 2.0, 14.0, 14.0, 4.0, 16.0)
     val ANCHOR_ROD = RotShapes.box(7.0, 2.0, 14.0, 9.0, 24.0, 16.0)

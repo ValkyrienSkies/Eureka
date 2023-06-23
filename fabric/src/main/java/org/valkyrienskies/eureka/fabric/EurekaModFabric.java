@@ -1,7 +1,5 @@
 package org.valkyrienskies.eureka.fabric;
 
-import com.terraformersmc.modmenu.api.ConfigScreenFactory;
-import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,14 +9,12 @@ import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.resources.ResourceLocation;
-import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
-import org.valkyrienskies.eureka.EurekaConfig;
+import org.valkyrienskies.eureka.EurekaItems;
 import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.block.WoodType;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
-import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
 public class EurekaModFabric implements ModInitializer {
@@ -28,6 +24,8 @@ public class EurekaModFabric implements ModInitializer {
         new ValkyrienSkiesModFabric().onInitialize();
 
         EurekaMod.init();
+
+        EurekaItems.INSTANCE.registerCreativeTab();
     }
 
     @Environment(EnvType.CLIENT)
@@ -53,6 +51,7 @@ public class EurekaModFabric implements ModInitializer {
         }
     }
 
+    /*
     public static class ModMenu implements ModMenuApi {
         @Override
         public ConfigScreenFactory<?> getModConfigScreenFactory() {
@@ -62,4 +61,5 @@ public class EurekaModFabric implements ModInitializer {
             );
         }
     }
+     */
 }

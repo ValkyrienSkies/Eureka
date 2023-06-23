@@ -29,7 +29,7 @@ public abstract class PlayerEntityModelMixin<T extends LivingEntity> extends Hum
                           final CallbackInfo info) {
         final Entity vehicle = livingEntity.getVehicle();
         if (vehicle instanceof ShipMountingEntity) {
-            if (vehicle.level.getBlockState(vehicle.blockPosition()).isAir()) {
+            if (vehicle.level().getBlockState(vehicle.blockPosition()).isAir()) {
                 this.riding = false;
             }
         }

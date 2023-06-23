@@ -12,6 +12,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
+import org.valkyrienskies.eureka.EurekaItems;
 import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.block.WoodType;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
@@ -42,6 +44,8 @@ public class EurekaModForge {
             MOD_BUS.addListener(this::onModelBaked);
             MOD_BUS.addListener(this::entityRenderers);
         }
+
+        MOD_BUS.addListener(this::loadComplete);
 
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory((Minecraft client, Screen parent) ->
@@ -108,5 +112,9 @@ public class EurekaModForge {
                         new ResourceLocation(EurekaMod.MOD_ID, "block/" + woodType.getResourceName() + "_ship_helm_wheel"),
                         Minecraft.getInstance().getModelManager().getMissingModel()
                 ));
+    }
+
+    void loadComplete(final FMLLoadCompleteEvent event) {
+        EurekaItems.INSTANCE.registerCreativeTab();
     }
 }

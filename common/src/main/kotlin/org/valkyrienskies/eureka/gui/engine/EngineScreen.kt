@@ -2,6 +2,7 @@ package org.valkyrienskies.eureka.gui.engine
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
@@ -13,7 +14,7 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
     AbstractContainerScreen<EngineScreenMenu>(handler, playerInventory, text) {
 
     // The texture is 512 so every coord is 2 pixels big
-    override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
+    override fun renderBg(guiGraphics: GuiGraphics, partialTicks: Float, mouseX: Int, mouseY: Int) {
         RenderSystem.setShader { GameRenderer.getPositionTexShader() }
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShaderTexture(0, TEXTURE)
@@ -22,10 +23,10 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
 
         menu as EngineScreenMenu
 
-        matrixStack.pushPose()
+        guiGraphics.pose().pushPose()
         // This matrix magic is bcs the texture is 512x512 and is 256x256 mc classic (mojank)
-        matrixStack.translate(xP.toDouble(), yP.toDouble(), 0.0)
-        matrixStack.scale(2f, 2f, 2F)
+        guiGraphics.pose().translate(xP.toDouble(), yP.toDouble(), 0.0)
+        guiGraphics.pose().scale(2f, 2f, 2F)
 
         // Draw the container background
         val (containerX, containerY) = if (menu.heatLevel > 1)
@@ -33,7 +34,7 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         else
             Pair(CONTAINER_X, CONTAINER_Y)
 
-        blit(matrixStack, FIRE_HOLE_X, FIRE_HOLE_Y, containerX, containerY, FIRE_HOLE_WIDTH, FIRE_HOLE_HEIGHT)
+        guiGraphics.blit(TEXTURE, FIRE_HOLE_X, FIRE_HOLE_Y, containerX, containerY, FIRE_HOLE_WIDTH, FIRE_HOLE_HEIGHT)
 
         // region COALS
         // Draw the coal
@@ -42,7 +43,7 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
             fun coal(xC: Int, yC: Int, heightC: Int, mult: Float) {
                 val drop = (t * mult).toInt()
                 val calcY = FIRE_HOLE_HEIGHT - heightC + drop
-                blit(matrixStack, FIRE_HOLE_X, FIRE_HOLE_Y + calcY, xC, yC, COAL_WIDTH, heightC)
+                guiGraphics.blit(TEXTURE, FIRE_HOLE_X, FIRE_HOLE_Y + calcY, xC, yC, COAL_WIDTH, heightC)
             }
 
             coal(COAL_4_X, COAL_4_Y, COAL_4_HEIGHT, COAL_4_MULT)
@@ -58,14 +59,14 @@ class EngineScreen(handler: EngineScreenMenu, playerInventory: Inventory, text: 
         else
             Pair(GLASS_X, GLASS_Y)
 
-        blit(matrixStack, FIRE_HOLE_X, FIRE_HOLE_Y, glassX, glassY, FIRE_HOLE_WIDTH, FIRE_HOLE_HEIGHT)
+        guiGraphics.blit(TEXTURE, FIRE_HOLE_X, FIRE_HOLE_Y, glassX, glassY, FIRE_HOLE_WIDTH, FIRE_HOLE_HEIGHT)
 
         // Draw the inventory
-        blit(matrixStack, 0, 0, 0, 0, imageWidth / 2, imageHeight / 2)
-        matrixStack.popPose()
+        guiGraphics.blit(TEXTURE, 0, 0, 0, 0, imageWidth / 2, imageHeight / 2)
+        guiGraphics.pose().popPose()
     }
 
-    override fun renderLabels(poseStack: PoseStack?, mouseX: Int, mouseY: Int) {
+    override fun renderLabels(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         // super.renderLabels(poseStack, mouseX, mouseY)
     }
 

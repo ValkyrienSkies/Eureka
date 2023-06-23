@@ -22,17 +22,17 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, private val blockEnt
     override fun clickMenuButton(player: Player, id: Int): Boolean {
         if (blockEntity == null) return false
 
-        if (id == 0 && !assembled && !player.level.isClientSide) {
+        if (id == 0 && !assembled && !player.level().isClientSide) {
             blockEntity.assemble()
             return true
         }
 
-        if (id == 1 && assembled && !player.level.isClientSide) {
+        if (id == 1 && assembled && !player.level().isClientSide) {
             blockEntity.align()
             return true
         }
 
-        if (id == 3 && assembled && !player.level.isClientSide && EurekaConfig.SERVER.allowDisassembly) {
+        if (id == 3 && assembled && !player.level().isClientSide && EurekaConfig.SERVER.allowDisassembly) {
             blockEntity.disassemble()
             return true
         }

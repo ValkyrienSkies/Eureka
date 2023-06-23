@@ -4,6 +4,7 @@ import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.Registry
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
@@ -101,7 +102,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         ShipAssembler.collectBlocks(
             level,
             blockPos
-        ) { !it.isAir && !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
+        ) { !it.isAir && !EurekaConfig.SERVER.blockBlacklist.contains(BuiltInRegistries.BLOCK.getKey(it.block).toString()) }
     }
 
     fun disassemble() {
@@ -123,7 +124,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
             ship,
             control.aligningTo,
             this.blockPos,
-            BlockPos(inWorld.x, inWorld.y, inWorld.z)
+            BlockPos.containing(inWorld.x, inWorld.y, inWorld.z)
         )
         // ship.die() TODO i think we do need this no? or autodetecting on all air
 

@@ -117,7 +117,7 @@ object ShipAssembler {
                             if (state.isAir) continue
 
                             val realX = (chunkX shl 4) + x
-                            val realY = section.bottomBlockY() + y
+                            val realY = chunk.minBuildHeight + y
                             val realZ = (chunkZ shl 4) + z
 
                             val inWorldPos = shipToWorld.transformPosition(alloc0.set(realX + 0.5, realY + 0.5, realZ + 0.5)).floor()

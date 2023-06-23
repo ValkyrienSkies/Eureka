@@ -8,10 +8,10 @@ import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties.POWER
-import net.minecraft.world.level.material.Material
+import net.minecraft.world.level.material.MapColor
 
 class BallastBlock : Block(
-    Properties.of(Material.STONE)
+    Properties.of().mapColor(MapColor.STONE)
         .sound(SoundType.STONE).strength(1.0f, 2.0f)
 ) {
 

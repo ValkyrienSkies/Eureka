@@ -19,7 +19,7 @@ import org.valkyrienskies.mod.common.getShipObjectManagingPos
 class BalloonBlock(properties: Properties) : Block(properties) {
 
     override fun fallOn(level: Level, state: BlockState, blockPos: BlockPos, entity: Entity, f: Float) {
-        entity.causeFallDamage(f, 0.2f, DamageSource.FALL)
+        entity.causeFallDamage(f, 0.2f, entity.damageSources().fall())
     }
 
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {

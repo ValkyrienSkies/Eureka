@@ -8,14 +8,14 @@ import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties.POWER
-import net.minecraft.world.level.material.Material
+import net.minecraft.world.level.material.MapColor
 import org.valkyrienskies.core.api.ships.getAttachment
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
 class FloaterBlock : Block(
-    Properties.of(Material.WOOD)
+    Properties.of().mapColor(MapColor.WOOD)
         .sound(SoundType.WOOL).strength(1.0f, 2.0f)
 ) {
     init {

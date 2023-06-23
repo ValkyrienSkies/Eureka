@@ -2,7 +2,7 @@ package org.valkyrienskies.eureka
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.EntityRenderers
-import net.minecraft.core.Registry
+import net.minecraft.core.registries.Registries
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.MobCategory
@@ -22,7 +22,7 @@ private data class ToRegEntityRenderer<T : Entity>(
 }
 
 object EurekaEntities {
-    private val ENTITIES = DeferredRegister.create(EurekaMod.MOD_ID, Registry.ENTITY_TYPE_REGISTRY)
+    private val ENTITIES = DeferredRegister.create(EurekaMod.MOD_ID, Registries.ENTITY_TYPE)
     private val ENTITY_RENDERERS = mutableListOf<ToRegEntityRenderer<*>>()
 
     // val SEAT = ::SeatEntity category MobCategory.MISC byName "seat" registerRenderer ::EmptyRenderer

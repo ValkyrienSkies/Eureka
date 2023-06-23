@@ -1,8 +1,8 @@
 package org.valkyrienskies.eureka.gui.shiphelm
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
@@ -60,7 +60,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         disassembleButton.active = EurekaConfig.SERVER.allowDisassembly && isLookingAtShip
     }
 
-    override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
+    override fun renderBg(guiGraphics: GuiGraphics, partialTicks: Float, mouseX: Int, mouseY: Int) {
         updateButtons()
 
         RenderSystem.setShader { GameRenderer.getPositionTexShader() }
@@ -68,11 +68,11 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         RenderSystem.setShaderTexture(0, TEXTURE)
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
-        blit(matrixStack, x, y, 0, 0, imageWidth, imageHeight)
+        guiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight)
     }
 
-    override fun renderLabels(matrixStack: PoseStack, i: Int, j: Int) {
-        font.draw(matrixStack, title, titleLabelX.toFloat(), titleLabelY.toFloat(), 0x404040)
+    override fun renderLabels(guiGraphics: GuiGraphics, i: Int, j: Int) {
+        guiGraphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040)
 
         if (this.menu.aligning) {
             alignButton.message = ALIGNING_TEXT
