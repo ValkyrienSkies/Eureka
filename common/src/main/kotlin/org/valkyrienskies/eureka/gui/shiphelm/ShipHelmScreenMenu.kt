@@ -22,7 +22,7 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Shi
         if (blockEntity == null) return false
 
         if (id == 0 && !assembled && !player.level.isClientSide) {
-            blockEntity.assemble()
+            blockEntity.assemble(player)
             return true
         }
 

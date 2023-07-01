@@ -1,10 +1,12 @@
 package org.valkyrienskies.eureka.blockentity
 
+import net.minecraft.Util
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TextComponent
 import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.MenuProvider
@@ -24,6 +26,7 @@ import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.getAttachment
 import org.valkyrienskies.core.impl.api.ServerShipProvider
 import org.valkyrienskies.core.impl.api.shipValue
+import org.valkyrienskies.core.impl.util.logger
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.block.ShipHelmBlock
@@ -116,17 +119,22 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     // Needs to get called server-side
-    fun assemble() {
+    fun assemble(player: Player) {
         val level = level as ServerLevel
 
         // Check the block state before assembling to avoid creating an empty ship
         val blockState = level.getBlockState(blockPos)
         if (blockState.block !is ShipHelmBlock) return
 
-        ShipAssembler.collectBlocks(
+        val builtShip = ShipAssembler.collectBlocks(
             level,
             blockPos
         ) { !it.isAir && !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
+
+        if (builtShip == null){
+            player.sendMessage(TextComponent("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks (changable in the config)"), Util.NIL_UUID)
+            logger.warn("Failed to assemble ship for ${player.name.string}")
+        }
     }
 
     fun disassemble() {
@@ -186,4 +194,5 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         return startRiding(player, force, blockPos, blockState, level as ServerLevel)
 
     }
+    private val logger by logger()
 }

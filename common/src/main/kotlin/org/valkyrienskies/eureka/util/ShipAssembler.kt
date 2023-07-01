@@ -33,12 +33,16 @@ import kotlin.math.round
 import kotlin.math.sign
 
 object ShipAssembler {
-    fun collectBlocks(level: ServerLevel, center: BlockPos, predicate: (BlockState) -> Boolean): ServerShip {
+    fun collectBlocks(level: ServerLevel, center: BlockPos, predicate: (BlockState) -> Boolean): ServerShip? {
         val blocks = DenseBlockPosSet()
 
         blocks.add(center.toJOML())
-        bfs(level, center, blocks, predicate)
-        return createNewShipWithBlocks(center, blocks, level)
+        val result = bfs(level, center, blocks, predicate)
+        if (result) {
+            return createNewShipWithBlocks(center, blocks, level)
+        } else {
+            return null
+        }
     }
 
     private fun roundToNearestMultipleOf(number: Double, multiple: Double) = multiple * round(number / multiple)
@@ -154,7 +158,7 @@ object ShipAssembler {
         start: BlockPos,
         blocks: DenseBlockPosSet,
         predicate: (BlockState) -> Boolean
-    ) {
+    ): Boolean {
 
         val blacklist = DenseBlockPosSet()
         val stack = ObjectArrayList<BlockPos>()
@@ -173,7 +177,15 @@ object ShipAssembler {
                     }
                 }
             }
+            if ((EurekaConfig.SERVER.maxShipBlocks > 0) and (blocks.size > EurekaConfig.SERVER.maxShipBlocks)) {
+                logger.info("Stopped ship assembly due too many blocks")
+                return false
+            }
         }
+        if (EurekaConfig.SERVER.maxShipBlocks > 0){
+            logger.info("Assembled ship with ${blocks.size} blocks, out of ${EurekaConfig.SERVER.maxShipBlocks} allowed")
+        }
+        return true
     }
 
     private fun directions(center: BlockPos, lambda: (BlockPos) -> Unit) {
