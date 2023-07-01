@@ -158,7 +158,7 @@ object ShipAssembler {
         start: BlockPos,
         blocks: DenseBlockPosSet,
         predicate: (BlockState) -> Boolean
-    ):Boolean {
+    ): Boolean {
 
         val blacklist = DenseBlockPosSet()
         val stack = ObjectArrayList<BlockPos>()
