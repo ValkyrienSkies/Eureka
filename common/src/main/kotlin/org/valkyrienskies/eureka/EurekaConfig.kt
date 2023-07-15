@@ -163,7 +163,32 @@ object EurekaConfig {
             "minecraft:end_portal_frame",
             "minecraft:end_portal",
             "minecraft:end_gateway",
-            "minecraft:portal"
+            "minecraft:portal",
+            "minecraft:oak_sapling",
+            "minecraft:spruce_sapling",
+            "minecraft:birch_sapling",
+            "minecraft:jungle_sapling",
+            "minecraft:acacia_sapling",
+            "minecraft:dark_oak_sapling",
+            "minecraft:mangrove_propagule",
+            "minecraft:cherry_sapling",
+            "minecraft:oak_leaves",
+            "minecraft:spruce_leaves",
+            "minecraft:birch_leaves",
+            "minecraft:jungle_leaves",
+            "minecraft:acacia_leaves",
+            "minecraft:dark_oak_leaves",
+            "minecraft:mangrove_leaves",
+            "minecraft:cherry_leaves",
+            "minecraft:azalea_leaves",
+            "minecraft:flowering_azalea_leaves",
+            "minecraft:frog_spawn",
+            "minecraft:mangrove_roots",
+            "minecraft:mud",
+            "minecraft:muddy_mangrove_roots",
+            "minecraft:reinforced_deepslate",
+            "minecraft:sculk",
+            "minecraft:sculk_vein"
         )
 
         @JsonSchema(description = "Whether the ship helm assembles diagonally connected blocks or not")
