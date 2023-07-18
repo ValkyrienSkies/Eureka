@@ -10,6 +10,8 @@ import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
@@ -30,7 +32,11 @@ public class EurekaModFabric implements ModInitializer {
 
         EurekaMod.init();
 
-        EurekaItems.INSTANCE.registerCreativeTab();
+        Registry.register(
+                BuiltInRegistries.CREATIVE_MODE_TAB,
+                EurekaItems.INSTANCE.getTAB(),
+                EurekaItems.INSTANCE.createCreativeTab()
+        );
     }
 
     @Environment(EnvType.CLIENT)

@@ -2,7 +2,9 @@ package org.valkyrienskies.eureka.forge;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
@@ -14,9 +16,9 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.registries.DeferredRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.core.impl.config.VSConfigClass;
@@ -48,7 +50,6 @@ public class EurekaModForge {
         }
 
         MOD_BUS.addListener(this::onGatherData);
-        MOD_BUS.addListener(this::loadComplete);
 
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory((Minecraft client, Screen parent) ->
@@ -60,6 +61,9 @@ public class EurekaModForge {
 
         carryOnModSupport();
 
+        DeferredRegister<CreativeModeTab> deferredRegister = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, EurekaMod.MOD_ID);
+        deferredRegister.register("general", EurekaItems.INSTANCE::createCreativeTab);
+        deferredRegister.register(MOD_BUS);
     }
 
     private static void carryOnModSupport() {
@@ -125,9 +129,5 @@ public class EurekaModForge {
                 event.getExistingFileHelper()
         );
         event.getGenerator().addProvider(event.includeServer(), blockTagProvider);
-    }
-
-    void loadComplete(final FMLLoadCompleteEvent event) {
-        EurekaItems.INSTANCE.registerCreativeTab();
     }
 }

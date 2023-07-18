@@ -37,5 +37,6 @@
   "gui.vs_eureka.aligning": "Aligning...",
   "gui.vs_eureka.todo": "Disassemble",
   "hud.vs_eureka.start_cruising": "Cruise control enabled",
-  "hud.vs_eureka.stop_cruising": "Cruise control disabled"
+  "hud.vs_eureka.stop_cruising": "Cruise control disabled",
+  "itemGroup.eureka": "Eureka"
 }

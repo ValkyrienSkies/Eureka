@@ -1,7 +1,5 @@
 package org.valkyrienskies.eureka
 
-import net.minecraft.core.Registry
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceKey
@@ -15,27 +13,24 @@ import org.valkyrienskies.eureka.registry.RegistrySupplier
 @Suppress("unused")
 object EurekaItems {
     private val ITEMS = DeferredRegister.create(EurekaMod.MOD_ID, Registries.ITEM)
-    private val TAB: ResourceKey<CreativeModeTab> = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation(EurekaMod.MOD_ID, "eureka_tab"))
+    val TAB: ResourceKey<CreativeModeTab> =
+        ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation(EurekaMod.MOD_ID, "eureka_tab"))
 
     fun register() {
         EurekaBlocks.registerItems(ITEMS)
         ITEMS.applyAll()
     }
 
-    fun registerCreativeTab() {
-        Registry.register(
-            BuiltInRegistries.CREATIVE_MODE_TAB,
-            TAB,
-            CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
-                .title(Component.translatable("itemGroup.eureka"))
-                .icon { ItemStack(EurekaBlocks.OAK_SHIP_HELM.get()) }
-                .displayItems { _, output ->
-                    ITEMS.forEach { registrySupplier: RegistrySupplier<Item> ->
-                        output.accept(registrySupplier.get())
-                    }
+    fun createCreativeTab(): CreativeModeTab {
+        return CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
+            .title(Component.translatable("itemGroup.eureka"))
+            .icon { ItemStack(EurekaBlocks.OAK_SHIP_HELM.get()) }
+            .displayItems { _, output ->
+                ITEMS.forEach { registrySupplier: RegistrySupplier<Item> ->
+                    output.accept(registrySupplier.get())
                 }
-                .build()
-        )
+            }
+            .build()
     }
 
     private infix fun Item.byName(name: String) = ITEMS.register(name) { this }
