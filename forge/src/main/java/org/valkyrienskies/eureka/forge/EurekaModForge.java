@@ -83,10 +83,21 @@ public class EurekaModForge {
     }
 
     void clientSetup(final FMLClientSetupEvent event) {
-        if (handledClientSetup) return;
+        if (handledClientSetup) {
+            return;
+        }
         handledClientSetup = true;
 
         EurekaMod.initClient();
+
+        /*
+        WheelModels.INSTANCE.setModelGetter(woodType -> ForgeModelBakery.instance().getBakedTopLevelModels()
+                .getOrDefault(
+                        new ResourceLocation(EurekaMod.MOD_ID,
+                            "block/" + woodType.getResourceName() + "_ship_helm_wheel"),
+                        Minecraft.getInstance().getModelManager().getMissingModel()
+                ));
+         */
     }
 
     void entityRenderers(final EntityRenderersEvent.RegisterRenderers event) {

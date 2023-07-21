@@ -13,11 +13,14 @@ object EurekaConfig {
 
     class Server {
 
-        @JsonSchema(description = "Movement power per engine heated fully")
+        @JsonSchema(description = "Movement power per engine when heated fully")
         val enginePower: Float = 2000000f
 
         @JsonSchema(description = "Movement power per engine with minimal heat")
-        val minEnginePower: Float = 700000f
+        val minEnginePower: Float = 10000f
+
+        @JsonSchema(description = "Turning power per engine when heated fully")
+        val engineTurnPower = 1f
 
         @JsonSchema(description = "The amount of heat a engine loses per tick")
         val engineHeatLoss = 0.01f
@@ -25,8 +28,20 @@ object EurekaConfig {
         @JsonSchema(description = "The amount of heat a gain per tick (when burning)")
         val engineHeatGain = 0.03f
 
+        @JsonSchema(description = "Increases heat gained at low heat level, and increased heat decreases when at high heat and not consuming fuel")
+        val engineHeatChangeExponent = 0.1f
+
+        @JsonSchema(description = "Avoids consuming fuel when heat is 100%")
+        val engineFuelSaving = false
+
+        @JsonSchema(description = "Increasing this value will result in more items being able to converted to fuel")
+        val engineMinCapacity = 2000
+
+        @JsonSchema(description = "Fuel burn time multiplier")
+        val engineFuelMultiplier = 2f
+
         @JsonSchema(description = "Max speed of a ship without boosting")
-        val maxCasualSpeed = 20f
+        val maxCasualSpeed = 15.0
 
         @JsonSchema(description = "The speed at which the ship stabilizes")
         var stabilizationSpeed = 10.0
@@ -44,13 +59,20 @@ object EurekaConfig {
         // Sensitivity of the up/down impulse buttons.
         // TODO maybe should be moved to VS2 client-side config?
         @JsonSchema(description = "Vertical sensitivity up ascend/descend")
-        var impulseElevationRate = 7
+        var baseImpulseElevationRate = 2.0
+
+        @JsonSchema(description = "The max elevation speed boost gained by having extra extra balloons")
+        var balloonElevationMaxSpeed = 5.5
+
+        // Higher numbers make the ship accelerate to max speed faster
+        @JsonSchema(description = "Ascend and descend acceleration")
+        var elevationSnappiness = 1.0
 
         // Allow Eureka controlled ships to be affected by fluid drag
         @JsonSchema(description = "Allow Eureka controlled ships to be affected by fluid drag")
         var doFluidDrag = false
 
-        // Do i need to explain? the mass 1 baloon gets to float
+        // Do I need to explain? the mass 1 balloon gets to float
         @JsonSchema(description = "Amount of mass in kg a balloon can lift")
         var massPerBalloon = 5000.0
 
@@ -177,5 +199,8 @@ object EurekaConfig {
 
         @JsonSchema(description = "Whether or not disassembly is permitted")
         val allowDisassembly = true
+
+        @JsonSchema(description = "Maximum number of blocks allowed in a ship. Set to 0 for no limit")
+        val maxShipBlocks = 32*32*32
     }
 }

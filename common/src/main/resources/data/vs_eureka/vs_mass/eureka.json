@@ -2,5 +2,13 @@
   {
     "block": "vs_eureka:ship_helm",
     "mass": 350.0
+  },
+  {
+    "block": "vs_eureka:engine",
+    "mass": 3200.0
+  },
+  {
+    "block": "vs_eureka:anchor",
+    "mass": 8840.0
   }
 ]
