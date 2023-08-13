@@ -83,7 +83,9 @@ public class EurekaModForge {
     }
 
     void clientSetup(final FMLClientSetupEvent event) {
-        if (handledClientSetup) return;
+        if (handledClientSetup) {
+            return;
+        }
         handledClientSetup = true;
 
         EurekaMod.initClient();

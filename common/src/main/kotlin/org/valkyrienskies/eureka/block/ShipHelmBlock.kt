@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.RenderShape
@@ -29,6 +30,7 @@ import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import java.awt.TextComponent
@@ -53,14 +55,20 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         EurekaShipControl.getOrCreate(ship).helms += 1
     }
 
-    override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
-        super.onRemove(state, level, pos, newState, isMoving)
+    override fun destroy(level: LevelAccessor, pos: BlockPos, state: BlockState) {
+        super.destroy(level, pos, state)
 
         if (level.isClientSide) return
         level as ServerLevel
 
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.helms -= 1
+        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let { control ->
+
+            if (control.helms <= 1 && control.seatedPlayer?.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE) {
+                control.seatedPlayer!!.unRide()
+                control.seatedPlayer = null
+            }
+
+            control.helms -= 1
         }
     }
 

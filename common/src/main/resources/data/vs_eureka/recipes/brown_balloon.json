@@ -5,11 +5,11 @@
       "item": "vs_eureka:balloon"
     },
     {
-      "item": "minecraft:cyan_dye"
+      "item": "minecraft:brown_dye"
     }
   ],
   "result": {
-    "item": "vs_eureka:cyan_balloon",
+    "item": "vs_eureka:brown_balloon",
     "count": 1
   }
 }
