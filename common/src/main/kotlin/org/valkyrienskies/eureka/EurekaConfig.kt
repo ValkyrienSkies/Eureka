@@ -141,6 +141,7 @@ object EurekaConfig {
             "minecraft:fern",
             "minecraft:dead_bush",
             "minecraft:seagrass",
+            "minecraft:tall_seagrass",
             "minecraft:sea_pickle",
             "minecraft:kelp",
             "minecraft:bamboo",
