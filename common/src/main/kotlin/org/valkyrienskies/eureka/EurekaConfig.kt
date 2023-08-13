@@ -141,6 +141,7 @@ object EurekaConfig {
             "minecraft:fern",
             "minecraft:dead_bush",
             "minecraft:seagrass",
+            "minecraft:tall_seagrass",
             "minecraft:sea_pickle",
             "minecraft:kelp",
             "minecraft:bamboo",
@@ -185,7 +186,19 @@ object EurekaConfig {
             "minecraft:end_portal_frame",
             "minecraft:end_portal",
             "minecraft:end_gateway",
-            "minecraft:portal"
+            "minecraft:portal",
+            "minecraft:oak_sapling",
+            "minecraft:spruce_sapling",
+            "minecraft:birch_sapling",
+            "minecraft:jungle_sapling",
+            "minecraft:acacia_sapling",
+            "minecraft:dark_oak_sapling",
+            "minecraft:oak_leaves",
+            "minecraft:spruce_leaves",
+            "minecraft:birch_leaves",
+            "minecraft:jungle_leaves",
+            "minecraft:acacia_leaves",
+            "minecraft:dark_oak_leaves"
         )
 
         @JsonSchema(description = "Whether the ship helm assembles diagonally connected blocks or not")
