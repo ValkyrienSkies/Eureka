@@ -14,14 +14,13 @@ import org.joml.Vector3dc
 import org.valkyrienskies.core.api.VSBeta
 import org.valkyrienskies.core.api.ships.PhysShip
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.api.ships.ShipForcesInducer
 import org.valkyrienskies.core.api.ships.getAttachment
 import org.valkyrienskies.core.api.ships.saveAttachment
 import org.valkyrienskies.core.impl.api.ServerShipUser
-import org.valkyrienskies.core.impl.api.ShipForcesInducer
 import org.valkyrienskies.core.impl.api.Ticked
 import org.valkyrienskies.core.impl.api.shipValue
 import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
-import org.valkyrienskies.core.impl.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
@@ -103,9 +102,8 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         val ship = ship ?: return
         val mass = physShip.inertia.shipMass
         val moiTensor = physShip.inertia.momentOfInertiaTensor
-        val segment = physShip.segments.segments[0]?.segmentDisplacement!!
-        val omega: Vector3dc = SegmentUtils.getOmega(physShip.poseVel, segment, Vector3d())
-        val vel = SegmentUtils.getVelocity(physShip.poseVel, segment, Vector3d())
+        val omega: Vector3dc = physShip.poseVel.omega
+        val vel: Vector3dc = physShip.poseVel.vel
         val balloonForceProvided = balloons * forcePerBalloon
 
 
@@ -160,7 +158,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
             physShip,
             omega,
             vel,
-            segment,
             physShip,
             controllingPlayer == null && !aligning,
             controllingPlayer == null
@@ -250,18 +247,10 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
             rotationVector.mul(idealAlphaY * -1.5)
 
-            SegmentUtils.transformDirectionWithScale(
-                physShip.poseVel,
-                segment,
+            physShip.poseVel.rot.transform(
                 moiTensor.transform(
-                    SegmentUtils.invTransformDirectionWithScale(
-                        physShip.poseVel,
-                        segment,
-                        rotationVector,
-                        rotationVector
-                    )
-                ),
-                rotationVector
+                    physShip.poseVel.rot.transformInverse(rotationVector)
+                )
             )
 
             physShip.applyInvariantTorque(rotationVector)
@@ -269,12 +258,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
 
             // region Player controlled forward and backward thrust
             val forwardVector = control.seatInDirection.normal.toJOMLD()
-            SegmentUtils.transformDirectionWithoutScale(
-                physShip.poseVel,
-                segment,
-                forwardVector,
-                forwardVector
-            )
+            physShip.poseVel.rot.transform(forwardVector)
             forwardVector.y *= 0.1 // Reduce vertical thrust
             forwardVector.normalize()
 
