@@ -26,7 +26,7 @@ configurations {
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
-    modImplementation("net.fabricmc:fabric-language-kotlin:1.8.5+kotlin.1.7.20")
+    include(modImplementation("net.fabricmc:fabric-language-kotlin:1.10.10+kotlin.1.9.10"))
 
     // Mod menu
     modImplementation("com.terraformersmc:modmenu:3.2.3")
@@ -51,18 +51,18 @@ shadowJar {
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    archiveClassifier.set "dev-shadow"
 }
 
 remapJar {
     injectAccessWidener = true
     input.set shadowJar.archiveFile
             dependsOn shadowJar
-            classifier null
+    archiveClassifier.set null
 }
 
 jar {
-    classifier "dev"
+    archiveClassifier.set "dev"
 }
 
 sourcesJar {

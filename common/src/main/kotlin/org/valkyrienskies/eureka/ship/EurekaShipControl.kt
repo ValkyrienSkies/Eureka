@@ -17,14 +17,15 @@ import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.ShipForcesInducer
 import org.valkyrienskies.core.api.ships.getAttachment
 import org.valkyrienskies.core.api.ships.saveAttachment
-import org.valkyrienskies.core.impl.api.ServerShipUser
-import org.valkyrienskies.core.impl.api.Ticked
-import org.valkyrienskies.core.impl.api.shipValue
 import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.min
 
 @JsonAutoDetect(
     fieldVisibility = JsonAutoDetect.Visibility.ANY,
@@ -33,13 +34,10 @@ import kotlin.math.*
     setterVisibility = JsonAutoDetect.Visibility.NONE
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
-class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
+class EurekaShipControl : ShipForcesInducer {
 
     @JsonIgnore
-    override var ship: ServerShip? = null
-
-    @delegate:JsonIgnore
-    private val controllingPlayer by shipValue<SeatedControllingPlayer>()
+    internal var ship: ServerShip? = null
 
     private var extraForce = 0.0
     var aligning = false
@@ -133,7 +131,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         val invRotationAxisAngle = AxisAngle4d(invRotation)
         // Floor makes a number 0 to 3, which corresponds to direction
         alignTarget = floor((invRotationAxisAngle.angle / (PI * 0.5)) + 4.5).toInt() % 4
-        angleUntilAligned = (alignTarget.toDouble() * (0.5 * Math.PI)) - invRotationAxisAngle.angle
+        angleUntilAligned = (alignTarget.toDouble() * (0.5 * PI)) - invRotationAxisAngle.angle
         if (disassembling) {
             val pos = ship.transform.positionInWorld
             positionUntilAligned = pos.floor(Vector3d())
@@ -154,6 +152,7 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         }
         // endregion
 
+        val controllingPlayer = ship.getAttachment(SeatedControllingPlayer::class.java)
         stabilize(
             physShip,
             omega,
@@ -342,13 +341,6 @@ class EurekaShipControl : ShipForcesInducer, ServerShipUser, Ticked {
         set(v) {
             field = v; deleteIfEmpty()
         }
-
-    override fun tick() {
-        extraForce = power
-        power = 0.0
-        consumed = physConsumption * /* should be phyics ticks based*/ 0.1f
-        physConsumption = 0.0f
-    }
 
     private fun deleteIfEmpty() {
         if (helms <= 0 && floaters <= 0 && anchors <= 0 && balloons <= 0) {

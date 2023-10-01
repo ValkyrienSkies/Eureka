@@ -21,8 +21,6 @@ import net.minecraft.world.level.block.state.BlockState
 import org.joml.Math.lerp
 import org.joml.Math.min
 import org.valkyrienskies.core.api.ships.ServerShip
-import org.valkyrienskies.core.impl.api.ServerShipProvider
-import org.valkyrienskies.core.impl.api.shipValue
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaProperties.HEAT
@@ -34,13 +32,10 @@ import kotlin.math.ceil
 import kotlin.math.max
 
 class EngineBlockEntity(pos: BlockPos, state: BlockState) :
-    BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get(), pos, state),
-    ServerShipProvider,
-    StackedContentsCompatible,
+    BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get(), pos, state), StackedContentsCompatible,
     WorldlyContainer {
 
-    override val ship: ServerShip? get() = (this.level as ServerLevel).getShipManagingPos(this.blockPos)
-    private val eurekaShipControl by shipValue<EurekaShipControl>()
+    private val ship: ServerShip? get() = (this.level as ServerLevel).getShipManagingPos(this.blockPos)
     val data = KtContainerData()
     private var heatLevel by data
     private var fuelLeft by data
@@ -91,25 +86,24 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
             }
 
             if (heat > 0) {
+                val eurekaShipControl = ship?.getAttachment(EurekaShipControl::class.java)
+                if (ship != null && eurekaShipControl != null) {
+                    // Avoid fluctuations in speed
+                    var effectiveHeat = 1f
+                    if (heat < maxEffectiveFuel) {
+                        effectiveHeat = heat / 100f;
+                    }
 
-               if (ship != null && eurekaShipControl != null) {
+                    eurekaShipControl.power += lerp(
+                        EurekaConfig.SERVER.minEnginePower,
+                        EurekaConfig.SERVER.enginePower,
+                        effectiveHeat,
+                    )
 
-                   // Avoid fluctuations in speed
-                   var effectiveHeat = 1f
-                   if (heat < maxEffectiveFuel) {
-                       effectiveHeat = heat / 100f;
-                   }
+                    heat -= eurekaShipControl.consumed
+                }
 
-                   eurekaShipControl!!.power += lerp(
-                       EurekaConfig.SERVER.minEnginePower,
-                       EurekaConfig.SERVER.enginePower,
-                       effectiveHeat,
-                   )
-
-                   heat -= eurekaShipControl!!.consumed;
-               }
-
-                heat = max(heat - scaleEngineCooling(EurekaConfig.SERVER.engineHeatLoss),0f)
+                heat = max(heat - scaleEngineCooling(EurekaConfig.SERVER.engineHeatLoss), 0f)
             }
         }
     }
@@ -121,7 +115,8 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
      *
      * @return scaled fuel ticks.
      */
-    private fun getScaledFuel(): Int = ((FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * EurekaConfig.SERVER.engineFuelMultiplier).toInt()
+    private fun getScaledFuel(): Int =
+        ((FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * EurekaConfig.SERVER.engineFuelMultiplier).toInt()
 
     /**
      * Absorb one fuel item into the engine.
@@ -153,15 +148,16 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
      *
      * @return the scaled value.
      */
-    private fun scaleEngineHeating(value: Float): Float = (100 * EurekaConfig.SERVER.engineHeatChangeExponent -
-            this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
+    private fun scaleEngineHeating(value: Float): Float =
+        (100 * EurekaConfig.SERVER.engineHeatChangeExponent - this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
 
     /**
      * Scale given cooling [value] based on current heat.
      *
      * @return the scaled value.
      */
-    private fun scaleEngineCooling(value: Float): Float = (this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
+    private fun scaleEngineCooling(value: Float): Float =
+        (this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
 
     override fun saveAdditional(tag: CompoundTag) {
         tag.put("FuelSlot", fuel.save(CompoundTag()))
@@ -188,8 +184,7 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
 
     override fun isEmpty(): Boolean = fuel.isEmpty
 
-    override fun getItem(slot: Int): ItemStack =
-        if (slot == 0) fuel else ItemStack.EMPTY
+    override fun getItem(slot: Int): ItemStack = if (slot == 0) fuel else ItemStack.EMPTY
 
     override fun removeItem(slot: Int, amount: Int): ItemStack {
         return ContainerHelper.removeItem(listOf(fuel), slot, amount)
@@ -208,9 +203,7 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
         return if (level!!.getBlockEntity(worldPosition) !== this) {
             false
         } else player.distanceToSqr(
-            worldPosition.x.toDouble() + 0.5,
-            worldPosition.y.toDouble() + 0.5,
-            worldPosition.z.toDouble() + 0.5
+            worldPosition.x.toDouble() + 0.5, worldPosition.y.toDouble() + 0.5, worldPosition.z.toDouble() + 0.5
         ) <= 64.0
     }
 

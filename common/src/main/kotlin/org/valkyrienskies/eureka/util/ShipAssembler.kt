@@ -12,10 +12,8 @@ import org.joml.AxisAngle4d
 import org.joml.Matrix4d
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ships.ServerShip
-import org.valkyrienskies.core.impl.datastructures.DenseBlockPosSet
-import org.valkyrienskies.core.impl.game.ships.ShipObjectServer
 import org.valkyrienskies.core.impl.networking.simple.sendToClient
-import org.valkyrienskies.core.impl.util.logger
+import org.valkyrienskies.core.util.datastructures.DenseBlockPosSet
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.common.assembly.createNewShipWithBlocks
 import org.valkyrienskies.mod.common.executeIf
@@ -24,6 +22,7 @@ import org.valkyrienskies.mod.common.networking.PacketRestartChunkUpdates
 import org.valkyrienskies.mod.common.networking.PacketStopChunkUpdates
 import org.valkyrienskies.mod.common.playerWrapper
 import org.valkyrienskies.mod.common.util.toJOML
+import org.valkyrienskies.mod.util.logger
 import org.valkyrienskies.mod.util.relocateBlock
 import org.valkyrienskies.mod.util.updateBlock
 import kotlin.collections.set
@@ -64,8 +63,7 @@ object ShipAssembler {
     }
 
     fun unfillShip(level: ServerLevel, ship: ServerShip, direction: Direction, shipCenter: BlockPos, center: BlockPos) {
-        ship as ShipObjectServer
-        ship.shipData.isStatic = true
+        ship.isStatic = true
 
         // ship's rotation rounded to nearest 90*
         val shipToWorld = ship.transform.run {
