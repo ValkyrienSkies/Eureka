@@ -13,7 +13,8 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
 //    modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
     modApi("org.valkyrienskies:valkyrienskies-118-common:${rootProject.vs2_version}")
-    implementation("org.valkyrienskies.core:api:1.1.0+c92814e9b7") { transitive = false }
+    implementation("org.valkyrienskies.core:api:${rootProject.vs_core_version}") { transitive = false }
+    implementation("org.valkyrienskies.core:util:${rootProject.vs_core_version}") { transitive = false }
 
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.21"
     api "org.jetbrains.kotlin:kotlin-reflect:1.7.21"
