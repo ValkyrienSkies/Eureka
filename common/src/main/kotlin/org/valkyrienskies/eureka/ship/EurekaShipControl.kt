@@ -37,7 +37,7 @@ import kotlin.math.min
 class EurekaShipControl : ShipForcesInducer {
 
     @JsonIgnore
-    private var ship: ServerShip? = null
+    internal var ship: ServerShip? = null
 
     private var extraForce = 0.0
     var aligning = false

@@ -40,11 +40,11 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(EurekaBlockEntities.SHIP_HELM.get(), pos, state), MenuProvider {
 
     private val ship: ServerShip? get() = (level as ServerLevel).getShipObjectManagingPos(this.blockPos)
-    val control: EurekaShipControl? = ship?.getAttachment(EurekaShipControl::class.java)
-    val seats = mutableListOf<ShipMountingEntity>()
+    private val control: EurekaShipControl? get() = ship?.getAttachment(EurekaShipControl::class.java)
+    private val seats = mutableListOf<ShipMountingEntity>()
     val assembled get() = ship != null
     val aligning get() = control?.aligning ?: false
-    var shouldDisassembleWhenPossible = false
+    private var shouldDisassembleWhenPossible = false
 
     override fun createMenu(id: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
         return ShipHelmScreenMenu(id, playerInventory, this)
@@ -105,13 +105,14 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
             seats.add(seat)
         }
 
-        return ride;
+        return ride
     }
 
     fun tick() {
         if (shouldDisassembleWhenPossible && ship?.getAttachment<EurekaShipControl>()?.canDisassemble == true) {
             this.disassemble()
         }
+        control?.ship = ship
     }
 
     // Needs to get called server-side
@@ -180,8 +181,8 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         // If player is already controlling the ship, open the helm menu
         if (!force && player.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE && seats.contains(player.vehicle as ShipMountingEntity))
         {
-            player.openMenu(this);
-            return true;
+            player.openMenu(this)
+            return true
         }
 
         //val seat = spawnSeat(blockPos, blockState, level as ServerLevel)
