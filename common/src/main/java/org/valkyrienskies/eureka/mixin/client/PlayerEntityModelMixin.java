@@ -14,8 +14,8 @@ import org.valkyrienskies.mod.common.entity.ShipMountingEntity;
 @Mixin(PlayerModel.class)
 public abstract class PlayerEntityModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
 
-    public PlayerEntityModelMixin(ModelPart $$0) {
-        super($$0);
+    public PlayerEntityModelMixin(final ModelPart model) {
+        super(model);
     }
 
     @SuppressWarnings("unchecked")

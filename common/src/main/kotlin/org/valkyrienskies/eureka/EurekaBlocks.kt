@@ -212,5 +212,4 @@ object EurekaBlocks {
             items.register(it.name) { BlockItem(it.get(), Item.Properties().tab(EurekaItems.TAB)) }
         }
     }
-
 }

@@ -50,9 +50,9 @@ class EurekaShipControl : ShipForcesInducer {
     private var alignTarget = 0
     val canDisassemble
         get() = ship != null &&
-                disassembling &&
-                abs(angleUntilAligned) < DISASSEMBLE_THRESHOLD &&
-                positionUntilAligned.distanceSquared(this.ship!!.transform.positionInWorld) < 4.0
+            disassembling &&
+            abs(angleUntilAligned) < DISASSEMBLE_THRESHOLD &&
+            positionUntilAligned.distanceSquared(this.ship!!.transform.positionInWorld) < 4.0
     val aligningTo: Direction get() = Direction.from2DDataValue(alignTarget)
     var consumed = 0f
         private set
@@ -103,7 +103,6 @@ class EurekaShipControl : ShipForcesInducer {
         val omega: Vector3dc = physShip.poseVel.omega
         val vel: Vector3dc = physShip.poseVel.vel
         val balloonForceProvided = balloons * forcePerBalloon
-
 
         val buoyantFactorPerFloater = min(
             EurekaConfig.SERVER.floaterBuoyantFactorPerKg / 15 / mass,
@@ -174,10 +173,10 @@ class EurekaShipControl : ShipForcesInducer {
                 // the player pressed the cruise button
                 isCruising = !isCruising
                 showCruiseStatus()
-            } else if (!player.cruise
-                && isCruising
-                && (player.leftImpulse != 0.0f || player.sprintOn || player.upImpulse != 0.0f || player.forwardImpulse != 0.0f)
-                && currentControlData != controlData
+            } else if (!player.cruise &&
+                isCruising &&
+                (player.leftImpulse != 0.0f || player.sprintOn || player.upImpulse != 0.0f || player.forwardImpulse != 0.0f) &&
+                currentControlData != controlData
             ) {
                 // The player pressed another button
                 isCruising = false
@@ -214,7 +213,7 @@ class EurekaShipControl : ShipForcesInducer {
 
             val maxLinearAcceleration = EurekaConfig.SERVER.turnAcceleration
             val maxLinearSpeed = EurekaConfig.SERVER.turnSpeed +
-                    extraForce / EurekaConfig.SERVER.enginePower * EurekaConfig.SERVER.engineTurnPower
+                extraForce / EurekaConfig.SERVER.enginePower * EurekaConfig.SERVER.engineTurnPower
 
             // acceleration = alpha * r
             // therefore: maxAlpha = maxAcceleration / r
@@ -289,9 +288,10 @@ class EurekaShipControl : ShipForcesInducer {
             if (control.upImpulse != 0.0f) {
                 idealUpwardVel = Vector3d(0.0, 1.0, 0.0)
                     .mul(control.upImpulse.toDouble())
-                    .mul(EurekaConfig.SERVER.baseImpulseElevationRate +
-                        // Smoothing for how the elevation scales as you approaches the balloonElevationMaxSpeed
-                        smoothing(2.0, EurekaConfig.SERVER.balloonElevationMaxSpeed, balloonForceProvided / mass)
+                    .mul(
+                        EurekaConfig.SERVER.baseImpulseElevationRate +
+                            // Smoothing for how the elevation scales as you approaches the balloonElevationMaxSpeed
+                            smoothing(2.0, EurekaConfig.SERVER.balloonElevationMaxSpeed, balloonForceProvided / mass)
                     )
             }
         }

@@ -32,7 +32,8 @@ import kotlin.math.ceil
 import kotlin.math.max
 
 class EngineBlockEntity(pos: BlockPos, state: BlockState) :
-    BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get(), pos, state), StackedContentsCompatible,
+    BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get(), pos, state),
+    StackedContentsCompatible,
     WorldlyContainer {
 
     private val ship: ServerShip? get() = (this.level as ServerLevel).getShipManagingPos(this.blockPos)
@@ -73,7 +74,6 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
                     if (!fuel.isEmpty && lastFuelValue <= EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
                         consumeFuel()
                     }
-
                 } else if (!fuel.isEmpty) {
                     consumeFuel()
                 }
@@ -91,7 +91,7 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
                     // Avoid fluctuations in speed
                     var effectiveHeat = 1f
                     if (heat < maxEffectiveFuel) {
-                        effectiveHeat = heat / 100f;
+                        effectiveHeat = heat / 100f
                     }
 
                     eurekaShipControl.power += lerp(

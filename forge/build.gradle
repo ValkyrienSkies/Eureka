@@ -61,7 +61,7 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    implementation 'thedarkcolour:kotlinforforge:3.12.0'
+    implementation("thedarkcolour:kotlinforforge:${rootProject.forge_kotlin_version}")
 }
 
 processResources {

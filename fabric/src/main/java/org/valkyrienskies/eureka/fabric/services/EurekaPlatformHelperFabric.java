@@ -11,7 +11,9 @@ import org.valkyrienskies.eureka.services.EurekaPlatformHelper;
 public class EurekaPlatformHelperFabric implements EurekaPlatformHelper {
     @NotNull
     @Override
-    public CreativeModeTab createCreativeTab(@NotNull ResourceLocation id, @NotNull Function0<ItemStack> stack) {
+    public CreativeModeTab createCreativeTab(
+            @NotNull final ResourceLocation id,
+            @NotNull final Function0<ItemStack> stack) {
         return FabricItemGroupBuilder.build(id, stack::invoke);
     }
 }
