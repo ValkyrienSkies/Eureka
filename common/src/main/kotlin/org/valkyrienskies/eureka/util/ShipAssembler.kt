@@ -74,7 +74,6 @@ object ShipAssembler {
                 .translate(-positionInShip.x(), -positionInShip.y(), -positionInShip.z())
         }
 
-
         val alloc0 = Vector3d()
 
         // Direction comes from direction ship is aligning to
@@ -180,7 +179,7 @@ object ShipAssembler {
                 return false
             }
         }
-        if (EurekaConfig.SERVER.maxShipBlocks > 0){
+        if (EurekaConfig.SERVER.maxShipBlocks > 0) {
             logger.info("Assembled ship with ${blocks.size} blocks, out of ${EurekaConfig.SERVER.maxShipBlocks} allowed")
         }
         return true

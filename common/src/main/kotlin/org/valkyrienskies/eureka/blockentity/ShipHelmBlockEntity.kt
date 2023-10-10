@@ -88,7 +88,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
 
     fun startRiding(player: Player, force: Boolean, blockPos: BlockPos, state: BlockState, level: ServerLevel): Boolean {
 
-        for (i in seats.size-1 downTo 0) {
+        for (i in seats.size - 1 downTo 0) {
             if (!seats[i].isVehicle) {
                 seats[i].kill()
                 seats.removeAt(i)
@@ -128,7 +128,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
             blockPos
         ) { !it.isAir && !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
 
-        if (builtShip == null){
+        if (builtShip == null) {
             player.sendMessage(TextComponent("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks (changable in the config)"), Util.NIL_UUID)
             logger.warn("Failed to assemble ship for ${player.name.string}")
         }
@@ -179,17 +179,15 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
 
     fun sit(player: Player, force: Boolean = false): Boolean {
         // If player is already controlling the ship, open the helm menu
-        if (!force && player.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE && seats.contains(player.vehicle as ShipMountingEntity))
-        {
+        if (!force && player.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE && seats.contains(player.vehicle as ShipMountingEntity)) {
             player.openMenu(this)
             return true
         }
 
-        //val seat = spawnSeat(blockPos, blockState, level as ServerLevel)
-        //control?.seatedPlayer = player
-        //return player.startRiding(seat, force)
+        // val seat = spawnSeat(blockPos, blockState, level as ServerLevel)
+        // control?.seatedPlayer = player
+        // return player.startRiding(seat, force)
         return startRiding(player, force, blockPos, blockState, level as ServerLevel)
-
     }
     private val logger by logger()
 }

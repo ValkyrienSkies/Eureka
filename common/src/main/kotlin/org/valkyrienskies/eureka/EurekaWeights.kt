@@ -26,12 +26,12 @@ object EurekaWeights : BlockStateInfoProvider {
     override fun getBlockStateMass(blockState: BlockState): Double? {
         if (blockState.block == EurekaBlocks.BALLAST.get()) {
             return EurekaConfig.SERVER.ballastWeight + (EurekaConfig.SERVER.ballastNoWeight - EurekaConfig.SERVER.ballastWeight) * (
-                    (
-                            blockState.getValue(
-                                BlockStateProperties.POWER
-                            ) + 1
-                            ) / 16.0
-                    )
+                (
+                    blockState.getValue(
+                        BlockStateProperties.POWER
+                    ) + 1
+                    ) / 16.0
+                )
         }
 
         return null

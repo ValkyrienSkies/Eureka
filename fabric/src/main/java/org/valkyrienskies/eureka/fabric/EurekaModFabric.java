@@ -42,14 +42,20 @@ public class EurekaModFabric implements ModInitializer {
             );
 
             ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
-                for (WoodType woodType : WoodType.values()) {
-                    out.accept(new ResourceLocation(EurekaMod.MOD_ID, "block/" + woodType.getResourceName() + "_ship_helm_wheel"));
+                for (final WoodType woodType : WoodType.values()) {
+                    out.accept(new ResourceLocation(
+                        EurekaMod.MOD_ID,
+                        "block/" + woodType.getResourceName() + "_ship_helm_wheel"
+                    ));
                 }
             });
 
             WheelModels.INSTANCE.setModelGetter(woodType ->
                 BakedModelManagerHelper.getModel(Minecraft.getInstance().getModelManager(),
-                    new ResourceLocation(EurekaMod.MOD_ID, "block/" + woodType.getResourceName() + "_ship_helm_wheel")));
+                    new ResourceLocation(
+                            EurekaMod.MOD_ID,
+                            "block/" + woodType.getResourceName() + "_ship_helm_wheel"
+                    )));
         }
     }
 
