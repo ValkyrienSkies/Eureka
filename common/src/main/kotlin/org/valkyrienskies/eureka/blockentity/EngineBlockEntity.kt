@@ -52,59 +52,62 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
 
     private var heat = 0f
     fun tick() {
-        if (!this.level!!.isClientSide) {
-            // Disable engine feeding when they are receiving a redstone signal
-            if (!level!!.hasNeighborSignal(blockPos)) {
-                if (fuelLeft > 0) {
+        if (this.level!!.isClientSide) return
 
-                    if (EurekaConfig.SERVER.engineFuelSaving) {
-                        if (heat <= maxEffectiveFuel) {
-                            heat += scaleEngineHeating(EurekaConfig.SERVER.engineHeatGain)
-                            fuelLeft--
-                        }
-                    } else {
+        val isPowered = level!!.hasNeighborSignal(blockPos)
+        if (EurekaConfig.SERVER.engineRedstoneBehaviorPause && isPowered) return
+
+        // Disable engine feeding when they are receiving a redstone signal
+        if (!isPowered) {
+            if (fuelLeft > 0) {
+
+                if (EurekaConfig.SERVER.engineFuelSaving) {
+                    if (heat <= maxEffectiveFuel) {
+                        heat += scaleEngineHeating(EurekaConfig.SERVER.engineHeatGain)
                         fuelLeft--
-
-                        if (heat <= maxEffectiveFuel) {
-                            heat += scaleEngineHeating(EurekaConfig.SERVER.engineHeatGain)
-                        }
                     }
+                } else {
+                    fuelLeft--
 
-                    // Refill while burning
-                    if (!fuel.isEmpty && lastFuelValue <= EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
-                        consumeFuel()
+                    if (heat <= maxEffectiveFuel) {
+                        heat += scaleEngineHeating(EurekaConfig.SERVER.engineHeatGain)
                     }
-                } else if (!fuel.isEmpty) {
+                }
+
+                // Refill while burning
+                if (!fuel.isEmpty && lastFuelValue <= EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
                     consumeFuel()
                 }
+            } else if (!fuel.isEmpty) {
+                consumeFuel()
             }
+        }
 
-            val prevHeatLevel = heatLevel
-            heatLevel = min(ceil(heat * 4f / 100f).toInt(), 4)
-            if (prevHeatLevel != heatLevel) {
-                level!!.setBlock(blockPos, this.blockState.setValue(HEAT, heatLevel), 11)
-            }
+        val prevHeatLevel = heatLevel
+        heatLevel = min(ceil(heat * 4f / 100f).toInt(), 4)
+        if (prevHeatLevel != heatLevel) {
+            level!!.setBlock(blockPos, this.blockState.setValue(HEAT, heatLevel), 11)
+        }
 
-            if (heat > 0) {
-                val eurekaShipControl = ship?.getAttachment(EurekaShipControl::class.java)
-                if (ship != null && eurekaShipControl != null && !level!!.hasNeighborSignal(blockPos)) {
-                    // Avoid fluctuations in speed
-                    var effectiveHeat = 1f
-                    if (heat < maxEffectiveFuel) {
-                        effectiveHeat = heat / 100f
-                    }
-
-                    eurekaShipControl.power += lerp(
-                        EurekaConfig.SERVER.minEnginePower,
-                        EurekaConfig.SERVER.enginePower,
-                        effectiveHeat,
-                    )
-
-                    heat -= eurekaShipControl.consumed
+        if (heat > 0) {
+            val eurekaShipControl = ship?.getAttachment(EurekaShipControl::class.java)
+            if (ship != null && eurekaShipControl != null) {
+                // Avoid fluctuations in speed
+                var effectiveHeat = 1f
+                if (heat < maxEffectiveFuel) {
+                    effectiveHeat = heat / 100f
                 }
 
-                heat = max(heat - scaleEngineCooling(EurekaConfig.SERVER.engineHeatLoss), 0f)
+                eurekaShipControl.power += lerp(
+                    EurekaConfig.SERVER.minEnginePower,
+                    EurekaConfig.SERVER.enginePower,
+                    effectiveHeat,
+                )
+
+                heat -= eurekaShipControl.consumed
             }
+
+            heat = max(heat - scaleEngineCooling(EurekaConfig.SERVER.engineHeatLoss), 0f)
         }
     }
 
