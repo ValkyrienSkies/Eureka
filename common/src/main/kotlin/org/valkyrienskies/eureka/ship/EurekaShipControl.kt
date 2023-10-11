@@ -14,6 +14,7 @@ import org.joml.Vector3dc
 import org.valkyrienskies.core.api.VSBeta
 import org.valkyrienskies.core.api.ships.PhysShip
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.api.ships.ServerTickListener
 import org.valkyrienskies.core.api.ships.ShipForcesInducer
 import org.valkyrienskies.core.api.ships.getAttachment
 import org.valkyrienskies.core.api.ships.saveAttachment
@@ -34,7 +35,7 @@ import kotlin.math.min
     setterVisibility = JsonAutoDetect.Visibility.NONE
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
-class EurekaShipControl : ShipForcesInducer {
+class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
     @JsonIgnore
     internal var ship: ServerShip? = null
@@ -364,5 +365,12 @@ class EurekaShipControl : ShipForcesInducer {
         private val forcePerBalloon get() = EurekaConfig.SERVER.massPerBalloon * -GRAVITY
 
         private const val GRAVITY = -10.0
+    }
+
+    override fun onServerTick() {
+        extraForce = power
+        power = 0.0
+        consumed = physConsumption * /* should be physics ticks based*/ 0.1f
+        physConsumption = 0.0f
     }
 }

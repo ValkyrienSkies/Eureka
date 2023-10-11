@@ -87,7 +87,7 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
 
             if (heat > 0) {
                 val eurekaShipControl = ship?.getAttachment(EurekaShipControl::class.java)
-                if (ship != null && eurekaShipControl != null) {
+                if (ship != null && eurekaShipControl != null && !level!!.hasNeighborSignal(blockPos)) {
                     // Avoid fluctuations in speed
                     var effectiveHeat = 1f
                     if (heat < maxEffectiveFuel) {
