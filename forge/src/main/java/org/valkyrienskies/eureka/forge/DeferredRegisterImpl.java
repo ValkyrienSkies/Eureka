@@ -40,7 +40,7 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
 
     @Override
     public void applyAll() {
-        forge.register(EurekaModForge.MOD_BUS);
+        forge.register(EurekaModForge.Companion.getModBus());
     }
 
     @NotNull

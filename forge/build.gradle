@@ -34,13 +34,6 @@ loom {
     }
 }
 
-repositories {
-    maven {
-        name = 'Kotlin for Forge'
-        url = 'https://thedarkcolour.github.io/KotlinForForge/'
-    }
-}
-
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -50,18 +43,18 @@ configurations {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
-    modApi("org.valkyrienskies:valkyrienskies-118-forge:${rootProject.vs2_version}") { transitive = false }
+    forge "net.minecraftforge:forge:$forge_version"
+    modApi("org.valkyrienskies:valkyrienskies-118-forge:$vs2_version") { transitive = false }
 
-    implementation("org.valkyrienskies.core:api:${rootProject.vs_core_version}")
-    implementation("org.valkyrienskies.core:api-game:${rootProject.vs_core_version}")
-    implementation("org.valkyrienskies.core:util:${rootProject.vs_core_version}")
-    implementation("org.valkyrienskies.core:impl:${rootProject.vs_core_version}")
+    implementation("org.valkyrienskies.core:api:$vs_core_version")
+    implementation("org.valkyrienskies.core:api-game:$vs_core_version")
+    implementation("org.valkyrienskies.core:util:$vs_core_version")
+    implementation("org.valkyrienskies.core:impl:$vs_core_version")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    implementation("thedarkcolour:kotlinforforge:${rootProject.forge_kotlin_version}")
+    implementation 'thedarkcolour:kotlinforforge:3.12.0'
 }
 
 processResources {
