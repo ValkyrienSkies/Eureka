@@ -14,13 +14,16 @@ object EurekaConfig {
     class Server {
 
         @JsonSchema(description = "Movement power per engine when heated fully")
-        val enginePower: Float = 2000000f
+        val enginePowerLinear: Float = 2000000f
 
         @JsonSchema(description = "Movement power per engine with minimal heat")
-        val minEnginePower: Float = 10000f
+        val enginePowerLinearMin: Float = 10000f
 
         @JsonSchema(description = "Turning power per engine when heated fully")
-        val engineTurnPower = 1f
+        val enginePowerAngular = 1.0f
+
+        @JsonSchema(description = "Turning power per engine when minimal heat")
+        val enginePowerAngularMin = 0.0f
 
         @JsonSchema(description = "The amount of heat a engine loses per tick")
         val engineHeatLoss = 0.01f

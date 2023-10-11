@@ -40,7 +40,9 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
     @JsonIgnore
     internal var ship: ServerShip? = null
 
-    private var extraForce = 0.0
+    private var extraForceLinear = 0.0
+    private var extraForceAngular = 0.0
+
     var aligning = false
     var disassembling = false // Disassembling also affects position
     private var physConsumption = 0f
@@ -213,8 +215,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
             }.coerceIn(0.5, EurekaConfig.SERVER.maxSizeForTurnSpeedPenalty)
 
             val maxLinearAcceleration = EurekaConfig.SERVER.turnAcceleration
-            val maxLinearSpeed = EurekaConfig.SERVER.turnSpeed +
-                extraForce / EurekaConfig.SERVER.enginePower * EurekaConfig.SERVER.engineTurnPower
+            val maxLinearSpeed = EurekaConfig.SERVER.turnSpeed + extraForceAngular
 
             // acceleration = alpha * r
             // therefore: maxAlpha = maxAcceleration / r
@@ -278,8 +279,8 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
             val extraForceNeeded = Vector3d(idealForwardForce).sub(baseForwardForce)
             val actualExtraForce = Vector3d(baseForwardForce)
 
-            if (extraForce != 0.0) {
-                actualExtraForce.fma(min(extraForce / extraForceNeeded.length(), 1.0), extraForceNeeded)
+            if (extraForceLinear != 0.0) {
+                actualExtraForce.fma(min(extraForceLinear / extraForceNeeded.length(), 1.0), extraForceNeeded)
             }
 
             physShip.applyInvariantForce(actualExtraForce)
@@ -321,7 +322,8 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         seatedPlayer?.displayClientMessage(TranslatableComponent(cruiseKey), true)
     }
 
-    var power = 0.0
+    var powerLinear = 0.0
+    var powerAngular = 0.0
     var anchors = 0 // Amount of anchors
         set(v) {
             field = v; deleteIfEmpty()
@@ -368,8 +370,12 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
     }
 
     override fun onServerTick() {
-        extraForce = power
-        power = 0.0
+        extraForceLinear = powerLinear
+        powerLinear = 0.0
+
+        extraForceAngular = powerAngular
+        powerAngular = 0.0;
+
         consumed = physConsumption * /* should be physics ticks based*/ 0.1f
         physConsumption = 0.0f
     }
