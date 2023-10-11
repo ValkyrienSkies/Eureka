@@ -171,6 +171,7 @@ object EurekaConfig {
             "minecraft:chorus_plant",
             "minecraft:chorus_flower",
             "minecraft:snow",
+            "minecraft:snow_block",
             "minecraft:cactus",
             "minecraft:vine",
             "minecraft:sunflower",
