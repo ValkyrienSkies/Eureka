@@ -31,6 +31,9 @@ object EurekaConfig {
         @JsonSchema(description = "Increases heat gained at low heat level, and increased heat decreases when at high heat and not consuming fuel")
         val engineHeatChangeExponent = 0.1f
 
+        @JsonSchema(description = "Pause fuel consumption and power when block is powered")
+        val engineRedstoneBehaviorPause = false
+
         @JsonSchema(description = "Avoids consuming fuel when heat is 100%")
         val engineFuelSaving = false
 
