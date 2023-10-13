@@ -26,7 +26,7 @@ configurations {
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
-    include(modImplementation("net.fabricmc:fabric-language-kotlin:1.10.10+kotlin.1.9.10"))
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.10.10+kotlin.1.9.10")
 
     // Mod menu
     modImplementation("com.terraformersmc:modmenu:3.2.3")
