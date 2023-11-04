@@ -135,6 +135,8 @@ object EurekaConfig {
             "minecraft:granite",
             "minecraft:diorite",
             "minecraft:andesite",
+            "minecraft:deepslate",
+            "minecraft:tuff",
             "minecraft:crimson_nylium",
             "minecraft:warped_nylium",
             "minecraft:red_sand",
