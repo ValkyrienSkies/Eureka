@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "vs_eureka:balloon",
+    "vs_eureka:white_balloon",
+    "vs_eureka:light_gray_balloon",
+    "vs_eureka:gray_balloon",
+    "vs_eureka:black_balloon",
+    "vs_eureka:red_balloon",
+    "vs_eureka:orange_balloon",
+    "vs_eureka:yellow_balloon",
+    "vs_eureka:lime_balloon",
+    "vs_eureka:green_balloon",
+    "vs_eureka:light_blue_balloon",
+    "vs_eureka:cyan_balloon",
+    "vs_eureka:blue_balloon",
+    "vs_eureka:purple_balloon",
+    "vs_eureka:magenta_balloon",
+    "vs_eureka:pink_balloon",
+    "vs_eureka:brown_balloon"
+  ]
+}

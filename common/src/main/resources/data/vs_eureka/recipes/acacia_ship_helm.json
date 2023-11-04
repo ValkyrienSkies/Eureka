@@ -22,5 +22,6 @@
   "result": {
     "item": "vs_eureka:acacia_ship_helm",
     "count": 1
-  }
+  },
+  "group": "ship_helm"
 }

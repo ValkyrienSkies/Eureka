@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "vs_eureka:oak_ship_helm",
+    "vs_eureka:spruce_ship_helm",
+    "vs_eureka:birch_ship_helm",
+    "vs_eureka:jungle_ship_helm",
+    "vs_eureka:acacia_ship_helm",
+    "vs_eureka:dark_oak_ship_helm",
+    "vs_eureka:crimson_ship_helm",
+    "vs_eureka:warped_ship_helm"
+  ]
+}

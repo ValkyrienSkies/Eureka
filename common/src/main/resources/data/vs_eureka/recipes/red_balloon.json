@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "vs_eureka:balloon"
+      "tag": "vs_eureka:balloons"
     },
     {
       "item": "minecraft:red_dye"
@@ -11,5 +11,6 @@
   "result": {
     "item": "vs_eureka:red_balloon",
     "count": 1
-  }
+  },
+  "group": "colored_balloons"
 }
