@@ -13,5 +13,6 @@
   "result": {
     "item": "vs_eureka:balloon",
     "count": 32
-  }
+  },
+  "group": "balloons"
 }
