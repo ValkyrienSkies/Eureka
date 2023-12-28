@@ -82,7 +82,7 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         if (level.isClientSide) return InteractionResult.SUCCESS
         val blockEntity = level.getBlockEntity(pos) as ShipHelmBlockEntity
 
-        return if (player.getItemInHand(InteractionHand.MAIN_HAND) == null) {
+        return if (player.getItemInHand(InteractionHand.MAIN_HAND) == null && player.isCrouching()) {
             player.openMenu(blockEntity)
             InteractionResult.CONSUME
         } else if (level.getShipManagingPos(pos) == null) {
