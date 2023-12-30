@@ -14,13 +14,16 @@ object EurekaConfig {
     class Server {
 
         @JsonSchema(description = "Movement power per engine when heated fully")
-        val enginePower: Float = 2000000f
+        val enginePowerLinear: Float = 2000000f
 
         @JsonSchema(description = "Movement power per engine with minimal heat")
-        val minEnginePower: Float = 10000f
+        val enginePowerLinearMin: Float = 10000f
 
         @JsonSchema(description = "Turning power per engine when heated fully")
-        val engineTurnPower = 1f
+        val enginePowerAngular = 1.0f
+
+        @JsonSchema(description = "Turning power per engine when minimal heat")
+        val enginePowerAngularMin = 0.0f
 
         @JsonSchema(description = "The amount of heat a engine loses per tick")
         val engineHeatLoss = 0.01f
@@ -30,6 +33,9 @@ object EurekaConfig {
 
         @JsonSchema(description = "Increases heat gained at low heat level, and increased heat decreases when at high heat and not consuming fuel")
         val engineHeatChangeExponent = 0.1f
+
+        @JsonSchema(description = "Pause fuel consumption and power when block is powered")
+        val engineRedstoneBehaviorPause = false
 
         @JsonSchema(description = "Avoids consuming fuel when heat is 100%")
         val engineFuelSaving = false
@@ -72,7 +78,7 @@ object EurekaConfig {
         @JsonSchema(description = "Allow Eureka controlled ships to be affected by fluid drag")
         var doFluidDrag = false
 
-        // Do I need to explain? the mass 1 balloon gets to float
+        // Do i need to explain? the mass 1 baloon gets to float
         @JsonSchema(description = "Amount of mass in kg a balloon can lift")
         var massPerBalloon = 5000.0
 
@@ -83,10 +89,12 @@ object EurekaConfig {
         @JsonSchema(description = "The maximum linear acceleration at any point on the ship caused by helm torque")
         var turnAcceleration = 10.0
 
-        @JsonSchema(description = "The maximum distance from center of mass to one end of the ship considered by " +
+        @JsonSchema(
+            description = "The maximum distance from center of mass to one end of the ship considered by " +
                 "the turn speed. At it's default of 16, it ensures that really large ships will turn at the same " +
                 "speed as a ship with a center of mass only 16 blocks away from the farthest point in the ship. " +
-                "That way, large ships do not turn painfully slowly")
+                "That way, large ships do not turn painfully slowly"
+        )
         var maxSizeForTurnSpeedPenalty = 16.0
 
         // The strength used when trying to level the ship
@@ -127,6 +135,8 @@ object EurekaConfig {
             "minecraft:granite",
             "minecraft:diorite",
             "minecraft:andesite",
+            "minecraft:deepslate",
+            "minecraft:tuff",
             "minecraft:crimson_nylium",
             "minecraft:warped_nylium",
             "minecraft:red_sand",
@@ -169,6 +179,7 @@ object EurekaConfig {
             "minecraft:chorus_plant",
             "minecraft:chorus_flower",
             "minecraft:snow",
+            "minecraft:snow_block",
             "minecraft:cactus",
             "minecraft:vine",
             "minecraft:sunflower",
@@ -193,25 +204,12 @@ object EurekaConfig {
             "minecraft:jungle_sapling",
             "minecraft:acacia_sapling",
             "minecraft:dark_oak_sapling",
-            "minecraft:mangrove_propagule",
-            "minecraft:cherry_sapling",
             "minecraft:oak_leaves",
             "minecraft:spruce_leaves",
             "minecraft:birch_leaves",
             "minecraft:jungle_leaves",
             "minecraft:acacia_leaves",
-            "minecraft:dark_oak_leaves",
-            "minecraft:mangrove_leaves",
-            "minecraft:cherry_leaves",
-            "minecraft:azalea_leaves",
-            "minecraft:flowering_azalea_leaves",
-            "minecraft:frog_spawn",
-            "minecraft:mangrove_roots",
-            "minecraft:mud",
-            "minecraft:muddy_mangrove_roots",
-            "minecraft:reinforced_deepslate",
-            "minecraft:sculk",
-            "minecraft:sculk_vein"
+            "minecraft:dark_oak_leaves"
         )
 
         @JsonSchema(description = "Whether the ship helm assembles diagonally connected blocks or not")
@@ -227,6 +225,6 @@ object EurekaConfig {
         val allowDisassembly = true
 
         @JsonSchema(description = "Maximum number of blocks allowed in a ship. Set to 0 for no limit")
-        val maxShipBlocks = 32*32*32
+        val maxShipBlocks = 32 * 32 * 32
     }
 }

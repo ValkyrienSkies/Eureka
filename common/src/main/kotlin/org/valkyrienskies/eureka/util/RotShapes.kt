@@ -45,7 +45,8 @@ object RotShapes {
             min(z1, z2) / 16,
             max(x1, x2) / 16,
             max(y1, y2) / 16,
-            max(z1, z2) / 16)
+            max(z1, z2) / 16
+        )
     }
 
     private class Union(val shapes: List<RotShape>) : RotShape {

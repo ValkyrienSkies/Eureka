@@ -1,0 +1,317 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "vs_eureka:black_balloon",
+      "vs_eureka:blue_balloon",
+      "vs_eureka:brown_balloon",
+      "vs_eureka:cyan_balloon",
+      "vs_eureka:gray_balloon",
+      "vs_eureka:green_balloon",
+      "vs_eureka:light_blue_balloon",
+      "vs_eureka:light_gray_balloon",
+      "vs_eureka:lime_balloon",
+      "vs_eureka:magenta_balloon",
+      "vs_eureka:orange_balloon",
+      "vs_eureka:pink_balloon",
+      "vs_eureka:purple_balloon",
+      "vs_eureka:red_balloon",
+      "vs_eureka:white_balloon",
+      "vs_eureka:yellow_balloon"
+    ]
+  },
+  "criteria": {
+    "has_black_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:black_balloon"
+          }
+        ]
+      }
+    },
+    "has_black_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:black_balloon"
+      }
+    },
+    "has_blue_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:blue_balloon"
+          }
+        ]
+      }
+    },
+    "has_blue_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:blue_balloon"
+      }
+    },
+    "has_brown_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:brown_balloon"
+          }
+        ]
+      }
+    },
+    "has_brown_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:brown_balloon"
+      }
+    },
+    "has_cyan_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:cyan_balloon"
+          }
+        ]
+      }
+    },
+    "has_cyan_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:cyan_balloon"
+      }
+    },
+    "has_gray_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:gray_balloon"
+          }
+        ]
+      }
+    },
+    "has_gray_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:gray_balloon"
+      }
+    },
+    "has_green_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:green_balloon"
+          }
+        ]
+      }
+    },
+    "has_green_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:green_balloon"
+      }
+    },
+    "has_light_blue_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:light_blue_balloon"
+          }
+        ]
+      }
+    },
+    "has_light_blue_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:light_blue_balloon"
+      }
+    },
+    "has_light_gray_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:light_gray_balloon"
+          }
+        ]
+      }
+    },
+    "has_light_gray_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:light_gray_balloon"
+      }
+    },
+    "has_lime_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:lime_balloon"
+          }
+        ]
+      }
+    },
+    "has_lime_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:lime_balloon"
+      }
+    },
+    "has_magenta_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:magenta_balloon"
+          }
+        ]
+      }
+    },
+    "has_magenta_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:magenta_balloon"
+      }
+    },
+    "has_orange_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:orange_balloon"
+          }
+        ]
+      }
+    },
+    "has_orange_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:orange_balloon"
+      }
+    },
+    "has_pink_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:pink_balloon"
+          }
+        ]
+      }
+    },
+    "has_pink_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:pink_balloon"
+      }
+    },
+    "has_purple_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:purple_balloon"
+          }
+        ]
+      }
+    },
+    "has_purple_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:purple_balloon"
+      }
+    },
+    "has_red_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:red_balloon"
+          }
+        ]
+      }
+    },
+    "has_red_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:red_balloon"
+      }
+    },
+    "has_white_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:white_balloon"
+          }
+        ]
+      }
+    },
+    "has_white_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:white_balloon"
+      }
+    },
+    "has_yellow_balloon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "vs_balloon:yellow_balloon"
+          }
+        ]
+      }
+    },
+    "has_yellow_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "vs_eureka:yellow_balloon"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_black_balloon",
+      "has_black_recipe",
+      "has_blue_balloon",
+      "has_blue_recipe",
+      "has_brown_balloon",
+      "has_brown_recipe",
+      "has_cyan_balloon",
+      "has_cyan_recipe",
+      "has_gray_balloon",
+      "has_gray_recipe",
+      "has_green_balloon",
+      "has_green_recipe",
+      "has_light_blue_balloon",
+      "has_light_blue_recipe",
+      "has_light_gray_balloon",
+      "has_light_gray_recipe",
+      "has_lime_balloon",
+      "has_lime_recipe",
+      "has_magenta_balloon",
+      "has_magenta_recipe",
+      "has_orange_balloon",
+      "has_orange_recipe",
+      "has_pink_balloon",
+      "has_pink_recipe",
+      "has_purple_balloon",
+      "has_purple_recipe",
+      "has_red_balloon",
+      "has_red_recipe",
+      "has_white_balloon",
+      "has_white_recipe",
+      "has_yellow_balloon",
+      "has_yellow_recipe"
+    ]
+  ]
+}

@@ -4,22 +4,19 @@ import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ships.PhysShip
 import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
-import org.valkyrienskies.core.impl.pipelines.SegmentUtils
 import org.valkyrienskies.eureka.EurekaConfig
-import org.valkyrienskies.physics_api.SegmentDisplacement
 
 fun stabilize(
     ship: PhysShipImpl,
     omega: Vector3dc,
     vel: Vector3dc,
-    segment: SegmentDisplacement,
     forces: PhysShip,
     linear: Boolean,
     yaw: Boolean
 ) {
     val shipUp = Vector3d(0.0, 1.0, 0.0)
     val worldUp = Vector3d(0.0, 1.0, 0.0)
-    SegmentUtils.transformDirectionWithoutScale(ship.poseVel, segment, shipUp, shipUp)
+    ship.poseVel.rot.transform(shipUp)
 
     val angleBetween = shipUp.angle(worldUp)
     val idealAngularAcceleration = Vector3d()
@@ -42,18 +39,10 @@ fun stabilize(
         omega.z()
     )
 
-    val stabilizationTorque = SegmentUtils.transformDirectionWithScale(
-        ship.poseVel,
-        segment,
+    val stabilizationTorque = ship.poseVel.rot.transform(
         ship.inertia.momentOfInertiaTensor.transform(
-            SegmentUtils.invTransformDirectionWithScale(
-                ship.poseVel,
-                segment,
-                idealAngularAcceleration,
-                idealAngularAcceleration
-            )
-        ),
-        idealAngularAcceleration
+            ship.poseVel.rot.transformInverse(idealAngularAcceleration)
+        )
     )
 
     stabilizationTorque.mul(EurekaConfig.SERVER.stabilizationTorqueConstant)

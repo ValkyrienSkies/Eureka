@@ -23,7 +23,8 @@ public class EurekaPlatformHelperForge implements EurekaPlatformHelper {
 
             @Override
             public Component getDisplayName() {
-                return Component.translatable("itemGroup." + String.format("%s.%s", id.getNamespace(), id.getPath()));
+                return Component.translatable(
+                    "itemGroup." + String.format("%s.%s", id.getNamespace(), id.getPath()));
             }
         };
     }

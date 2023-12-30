@@ -125,10 +125,10 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
     }
 
     override fun isPathfindable(
-            blockState: BlockState,
-            blockGetter: BlockGetter,
-            blockPos: BlockPos,
-            pathComputationType: PathComputationType
+        blockState: BlockState,
+        blockGetter: BlockGetter,
+        blockPos: BlockPos,
+        pathComputationType: PathComputationType
     ): Boolean {
         return false
     }

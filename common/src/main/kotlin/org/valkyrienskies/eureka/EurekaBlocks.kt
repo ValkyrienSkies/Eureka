@@ -77,87 +77,87 @@ object EurekaBlocks {
     // region Balloons
     val BALLOON = BLOCKS.register("balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.WOOL).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.WOOL).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val WHITE_BALLOON = BLOCKS.register("white_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.SNOW).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.SNOW).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val LIGHT_GRAY_BALLOON = BLOCKS.register("light_gray_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_LIGHT_GRAY).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_LIGHT_GRAY).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val GRAY_BALLOON = BLOCKS.register("gray_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_GRAY).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_GRAY).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val BLACK_BALLOON = BLOCKS.register("black_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_BLACK).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_BLACK).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val RED_BALLOON = BLOCKS.register("red_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_RED).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_RED).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val ORANGE_BALLOON = BLOCKS.register("orange_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_ORANGE).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_ORANGE).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val YELLOW_BALLOON = BLOCKS.register("yellow_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_YELLOW).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_YELLOW).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val LIME_BALLOON = BLOCKS.register("lime_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_LIGHT_GREEN).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_LIGHT_GREEN).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val GREEN_BALLOON = BLOCKS.register("green_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_GREEN).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_GREEN).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val LIGHT_BLUE_BALLOON = BLOCKS.register("light_blue_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_LIGHT_BLUE).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_LIGHT_BLUE).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val CYAN_BALLOON = BLOCKS.register("cyan_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_CYAN).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_CYAN).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val BLUE_BALLOON = BLOCKS.register("blue_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_BLUE).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_BLUE).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val PURPLE_BALLOON = BLOCKS.register("purple_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_PURPLE).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_PURPLE).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val MAGENTA_BALLOON = BLOCKS.register("magenta_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_MAGENTA).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_MAGENTA).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val PINK_BALLOON = BLOCKS.register("pink_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_PINK).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_PINK).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     val BROWN_BALLOON = BLOCKS.register("brown_balloon") {
         BalloonBlock(
-            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_BROWN).sound(SoundType.WOOL)
+            BlockBehaviour.Properties.of(Material.WOOL, MaterialColor.COLOR_BROWN).strength(0.8F).sound(SoundType.WOOL)
         )
     }
     // endregion
@@ -212,5 +212,4 @@ object EurekaBlocks {
             items.register(it.name) { BlockItem(it.get(), Item.Properties().tab(EurekaItems.TAB)) }
         }
     }
-
 }
