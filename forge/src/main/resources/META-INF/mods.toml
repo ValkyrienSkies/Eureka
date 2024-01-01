@@ -16,14 +16,14 @@ logoFile = "icon.png"
 [[dependencies.vs_eureka]]
 modId = "forge"
 mandatory = true
-versionRange = "[40.1.69,)"
+versionRange = "[43.1.47,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.vs_eureka]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.18.2,)"
+versionRange = "[1.19.2,)"
 ordering = "NONE"
 side = "BOTH"
 
