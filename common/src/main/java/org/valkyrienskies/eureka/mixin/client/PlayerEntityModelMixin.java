@@ -18,8 +18,7 @@ public abstract class PlayerEntityModelMixin<T extends LivingEntity> extends Hum
         super(model);
     }
 
-    @SuppressWarnings("unchecked")
-    @Inject(method = "setupAnim", at = @At(value = "HEAD"))
+    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "HEAD"))
     public void setupAnim(final T livingEntity,
                           final float swing,
                           final float g,
