@@ -1,9 +1,9 @@
 plugins {
     // Needed for Forge+Fabric
-    id "architectury-plugin" version "3.4.143"
-    id "dev.architectury.loom" version "1.0.306" apply false
+    id "architectury-plugin" version "3.4.146"
+    id "dev.architectury.loom" version "1.3.355" apply false
     // Kotlin
-    id "org.jetbrains.kotlin.jvm" version "1.7.21" apply false
+    id "org.jetbrains.kotlin.jvm" version "1.9.10" apply false
     // Kotlin linter
     id "org.jlleitschuh.gradle.ktlint" version "10.3.0"
     // Java linter
@@ -53,6 +53,9 @@ subprojects {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         // The following line declares the mojmap mappings, you may use other mappings as well
         mappings loom.officialMojangMappings()
+
+        implementation("org.joml:joml:1.10.4") { transitive = false }
+        implementation("org.joml:joml-primitives:1.10.0") { transitive = false }
     }
 
     checkstyle {
@@ -69,9 +72,9 @@ subprojects {
     tasks.withType(Checkstyle) {
         reports {
             // Do not output html reports
-            html.enabled = false
+            html.required = false
             // Output xml reports
-            xml.enabled = true
+            xml.required = true
         }
     }
 

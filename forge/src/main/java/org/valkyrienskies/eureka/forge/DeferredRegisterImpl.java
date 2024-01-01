@@ -1,5 +1,6 @@
 package org.valkyrienskies.eureka.forge;
 
+import java.util.Iterator;
 import kotlin.jvm.functions.Function0;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -8,19 +9,20 @@ import org.jetbrains.annotations.NotNull;
 import org.valkyrienskies.eureka.registry.DeferredRegister;
 import org.valkyrienskies.eureka.registry.RegistrySupplier;
 
-import java.util.Iterator;
-
 public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
     private final net.minecraftforge.registries.DeferredRegister<T> forge;
 
-    public DeferredRegisterImpl(String modId, ResourceKey<Registry<T>> registry) {
+    public DeferredRegisterImpl(final String modId, final ResourceKey<Registry<T>> registry) {
         forge = net.minecraftforge.registries.DeferredRegister.create(registry.location(), modId);
     }
 
     @NotNull
     @Override
-    public <I extends T> RegistrySupplier<I> register(@NotNull String name, @NotNull Function0<? extends I> builder) {
-        RegistryObject<I> result = forge.register(name, builder::invoke);
+    public <I extends T> RegistrySupplier<I> register(
+            @NotNull final String name,
+            @NotNull final Function0<? extends I> builder
+    ) {
+        final RegistryObject<I> result = forge.register(name, builder::invoke);
 
         return new RegistrySupplier<I>() {
             @NotNull
@@ -38,13 +40,13 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
 
     @Override
     public void applyAll() {
-        forge.register(EurekaModForge.MOD_BUS);
+        forge.register(EurekaModForge.Companion.getModBus());
     }
 
     @NotNull
     @Override
     public Iterator<RegistrySupplier<T>> iterator() {
-        Iterator<RegistryObject<T>> iterator = forge.getEntries().iterator();
+        final Iterator<RegistryObject<T>> iterator = forge.getEntries().iterator();
 
         return new Iterator<RegistrySupplier<T>>() {
             @Override
@@ -54,7 +56,7 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
 
             @Override
             public RegistrySupplier<T> next() {
-                RegistryObject<T> result = iterator.next();
+                final RegistryObject<T> result = iterator.next();
 
                 return new RegistrySupplier<T>() {
                     @NotNull

@@ -1,5 +1,6 @@
 {
   "itemGroup.vs_eureka.eureka_tab": "VS Eureka",
+  "itemGroup.vs_eureka.maxShipBlocks": "Ship is too big! Max size is %s blocks (changeable in the config)",
   "block.vs_eureka.oak_ship_helm": "Oak Ship Helm",
   "block.vs_eureka.spruce_ship_helm": "Spruce Ship Helm",
   "block.vs_eureka.birch_ship_helm": "Birch Ship Helm",

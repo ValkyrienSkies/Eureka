@@ -50,15 +50,22 @@ configurations {
 }
 
 dependencies {
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixin_extras_version"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:$mixin_extras_version"))
+
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
-    modApi("org.valkyrienskies:valkyrienskies-1201-forge:${rootProject.vs2_version}") { transitive = false }
-    implementation("org.valkyrienskies.core:api:1.1.0+ead972f384") { transitive = false }
+    modApi("org.valkyrienskies:valkyrienskies-120-forge:${rootProject.vs2_version}") { transitive = false }
+
+    implementation("org.valkyrienskies.core:api:$vs_core_version")
+    implementation("org.valkyrienskies.core:api-game:$vs_core_version")
+    implementation("org.valkyrienskies.core:util:$vs_core_version")
+    implementation("org.valkyrienskies.core:impl:$vs_core_version")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
     // Add Kotlin for Forge.
-    forgeRuntimeLibrary('curse.maven:kotlinforforge-351264:3925887')
+    implementation "thedarkcolour:kotlinforforge:$forge_kotlin_version"
 }
 
 processResources {
@@ -79,17 +86,17 @@ shadowJar {
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    archiveClassifier.set "dev-shadow"
 }
 
 remapJar {
     input.set shadowJar.archiveFile
             dependsOn shadowJar
-            classifier null
+    archiveClassifier.set null
 }
 
 jar {
-    classifier "dev"
+    archiveClassifier.set "dev"
 }
 
 sourcesJar {

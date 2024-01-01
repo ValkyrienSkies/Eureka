@@ -1,5 +1,8 @@
 package org.valkyrienskies.eureka.fabric;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import kotlin.jvm.functions.Function0;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -9,26 +12,24 @@ import org.jetbrains.annotations.NotNull;
 import org.valkyrienskies.eureka.registry.DeferredRegister;
 import org.valkyrienskies.eureka.registry.RegistrySupplier;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
     private final String modId;
     private final Registry<T> registry;
     private final List<RegistrySupplier<T>> everMade = new ArrayList<>();
 
-    public DeferredRegisterImpl(String modId, ResourceKey<Registry<T>> registry) {
+    public DeferredRegisterImpl(final String modId, final ResourceKey<Registry<T>> registry) {
         this.modId = modId;
         this.registry = (Registry<T>) BuiltInRegistries.REGISTRY.get(registry.location());
     }
 
     @NotNull
     @Override
-    public <I extends T> RegistrySupplier<I> register(@NotNull String name, @NotNull Function0<? extends I> builder) {
-        I result = Registry.register(registry, new ResourceLocation(modId, name), builder.invoke());
+    public <I extends T> RegistrySupplier<I> register(
+            @NotNull final String name,
+            @NotNull final Function0<? extends I> builder) {
+        final I result = Registry.register(registry, new ResourceLocation(modId, name), builder.invoke());
 
-        RegistrySupplier<I> r = new RegistrySupplier<I>() {
+        final RegistrySupplier<I> r = new RegistrySupplier<I>() {
 
             @NotNull
             @Override

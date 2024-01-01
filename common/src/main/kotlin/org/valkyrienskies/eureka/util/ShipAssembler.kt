@@ -12,10 +12,8 @@ import org.joml.AxisAngle4d
 import org.joml.Matrix4d
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ships.ServerShip
-import org.valkyrienskies.core.impl.datastructures.DenseBlockPosSet
-import org.valkyrienskies.core.impl.game.ships.ShipObjectServer
 import org.valkyrienskies.core.impl.networking.simple.sendToClient
-import org.valkyrienskies.core.impl.util.logger
+import org.valkyrienskies.core.util.datastructures.DenseBlockPosSet
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.common.assembly.createNewShipWithBlocks
 import org.valkyrienskies.mod.common.executeIf
@@ -24,6 +22,7 @@ import org.valkyrienskies.mod.common.networking.PacketRestartChunkUpdates
 import org.valkyrienskies.mod.common.networking.PacketStopChunkUpdates
 import org.valkyrienskies.mod.common.playerWrapper
 import org.valkyrienskies.mod.common.util.toJOML
+import org.valkyrienskies.mod.util.logger
 import org.valkyrienskies.mod.util.relocateBlock
 import org.valkyrienskies.mod.util.updateBlock
 import kotlin.collections.set
@@ -33,12 +32,16 @@ import kotlin.math.round
 import kotlin.math.sign
 
 object ShipAssembler {
-    fun collectBlocks(level: ServerLevel, center: BlockPos, predicate: (BlockState) -> Boolean): ServerShip {
+    fun collectBlocks(level: ServerLevel, center: BlockPos, predicate: (BlockState) -> Boolean): ServerShip? {
         val blocks = DenseBlockPosSet()
 
         blocks.add(center.toJOML())
-        bfs(level, center, blocks, predicate)
-        return createNewShipWithBlocks(center, blocks, level)
+        val result = bfs(level, center, blocks, predicate)
+        if (result) {
+            return createNewShipWithBlocks(center, blocks, level)
+        } else {
+            return null
+        }
     }
 
     private fun roundToNearestMultipleOf(number: Double, multiple: Double) = multiple * round(number / multiple)
@@ -60,8 +63,7 @@ object ShipAssembler {
     }
 
     fun unfillShip(level: ServerLevel, ship: ServerShip, direction: Direction, shipCenter: BlockPos, center: BlockPos) {
-        ship as ShipObjectServer
-        ship.shipData.isStatic = true
+        ship.isStatic = true
 
         // ship's rotation rounded to nearest 90*
         val shipToWorld = ship.transform.run {
@@ -71,7 +73,6 @@ object ShipAssembler {
                 .scale(shipToWorldScaling)
                 .translate(-positionInShip.x(), -positionInShip.y(), -positionInShip.z())
         }
-
 
         val alloc0 = Vector3d()
 
@@ -154,7 +155,7 @@ object ShipAssembler {
         start: BlockPos,
         blocks: DenseBlockPosSet,
         predicate: (BlockState) -> Boolean
-    ) {
+    ): Boolean {
 
         val blacklist = DenseBlockPosSet()
         val stack = ObjectArrayList<BlockPos>()
@@ -173,7 +174,15 @@ object ShipAssembler {
                     }
                 }
             }
+            if ((EurekaConfig.SERVER.maxShipBlocks > 0) and (blocks.size > EurekaConfig.SERVER.maxShipBlocks)) {
+                logger.info("Stopped ship assembly due too many blocks")
+                return false
+            }
         }
+        if (EurekaConfig.SERVER.maxShipBlocks > 0) {
+            logger.info("Assembled ship with ${blocks.size} blocks, out of ${EurekaConfig.SERVER.maxShipBlocks} allowed")
+        }
+        return true
     }
 
     private fun directions(center: BlockPos, lambda: (BlockPos) -> Unit) {

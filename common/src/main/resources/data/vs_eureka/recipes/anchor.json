@@ -3,17 +3,17 @@
   "pattern": [
     "#i#",
     " i ",
-    "IiI"
+    "iIi"
   ],
   "key": {
     "#": {
-      "item": "minecraft:string"
+      "item": "minecraft:lead"
     },
     "i": {
       "item": "minecraft:iron_ingot"
     },
     "I": {
-      "item": "minecraft:iron_nugget"
+      "item": "minecraft:iron_block"
     }
   },
   "result": {

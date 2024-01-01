@@ -21,6 +21,7 @@ import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.block.WoodType;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
+import org.valkyrienskies.eureka.registry.CreativeTabs;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
@@ -33,9 +34,9 @@ public class EurekaModFabric implements ModInitializer {
         EurekaMod.init();
 
         Registry.register(
-                BuiltInRegistries.CREATIVE_MODE_TAB,
-                EurekaItems.INSTANCE.getTAB(),
-                EurekaItems.INSTANCE.createCreativeTab()
+            BuiltInRegistries.CREATIVE_MODE_TAB,
+            EurekaItems.INSTANCE.getTAB(),
+            CreativeTabs.INSTANCE.create()
         );
     }
 
@@ -51,14 +52,20 @@ public class EurekaModFabric implements ModInitializer {
             );
 
             ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
-                for (WoodType woodType : WoodType.values()) {
-                    out.accept(new ResourceLocation(EurekaMod.MOD_ID, "block/" + woodType.getResourceName() + "_ship_helm_wheel"));
+                for (final WoodType woodType : WoodType.values()) {
+                    out.accept(new ResourceLocation(
+                        EurekaMod.MOD_ID,
+                        "block/" + woodType.getResourceName() + "_ship_helm_wheel"
+                    ));
                 }
             });
 
             WheelModels.INSTANCE.setModelGetter(woodType ->
                 BakedModelManagerHelper.getModel(Minecraft.getInstance().getModelManager(),
-                    new ResourceLocation(EurekaMod.MOD_ID, "block/" + woodType.getResourceName() + "_ship_helm_wheel")));
+                    new ResourceLocation(
+                            EurekaMod.MOD_ID,
+                            "block/" + woodType.getResourceName() + "_ship_helm_wheel"
+                    )));
         }
     }
 

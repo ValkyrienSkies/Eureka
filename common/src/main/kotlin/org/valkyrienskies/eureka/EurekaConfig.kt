@@ -13,11 +13,17 @@ object EurekaConfig {
 
     class Server {
 
-        @JsonSchema(description = "Movement power per engine heated fully")
-        val enginePower: Float = 2000000f
+        @JsonSchema(description = "Movement power per engine when heated fully")
+        val enginePowerLinear: Float = 2000000f
 
         @JsonSchema(description = "Movement power per engine with minimal heat")
-        val minEnginePower: Float = 700000f
+        val enginePowerLinearMin: Float = 10000f
+
+        @JsonSchema(description = "Turning power per engine when heated fully")
+        val enginePowerAngular = 1.0f
+
+        @JsonSchema(description = "Turning power per engine when minimal heat")
+        val enginePowerAngularMin = 0.0f
 
         @JsonSchema(description = "The amount of heat a engine loses per tick")
         val engineHeatLoss = 0.01f
@@ -25,8 +31,23 @@ object EurekaConfig {
         @JsonSchema(description = "The amount of heat a gain per tick (when burning)")
         val engineHeatGain = 0.03f
 
+        @JsonSchema(description = "Increases heat gained at low heat level, and increased heat decreases when at high heat and not consuming fuel")
+        val engineHeatChangeExponent = 0.1f
+
+        @JsonSchema(description = "Pause fuel consumption and power when block is powered")
+        val engineRedstoneBehaviorPause = false
+
+        @JsonSchema(description = "Avoids consuming fuel when heat is 100%")
+        val engineFuelSaving = false
+
+        @JsonSchema(description = "Increasing this value will result in more items being able to converted to fuel")
+        val engineMinCapacity = 2000
+
+        @JsonSchema(description = "Fuel burn time multiplier")
+        val engineFuelMultiplier = 2f
+
         @JsonSchema(description = "Max speed of a ship without boosting")
-        val maxCasualSpeed = 20f
+        val maxCasualSpeed = 15.0
 
         @JsonSchema(description = "The speed at which the ship stabilizes")
         var stabilizationSpeed = 10.0
@@ -44,7 +65,14 @@ object EurekaConfig {
         // Sensitivity of the up/down impulse buttons.
         // TODO maybe should be moved to VS2 client-side config?
         @JsonSchema(description = "Vertical sensitivity up ascend/descend")
-        var impulseElevationRate = 7
+        var baseImpulseElevationRate = 2.0
+
+        @JsonSchema(description = "The max elevation speed boost gained by having extra extra balloons")
+        var balloonElevationMaxSpeed = 5.5
+
+        // Higher numbers make the ship accelerate to max speed faster
+        @JsonSchema(description = "Ascend and descend acceleration")
+        var elevationSnappiness = 1.0
 
         // Allow Eureka controlled ships to be affected by fluid drag
         @JsonSchema(description = "Allow Eureka controlled ships to be affected by fluid drag")
@@ -61,10 +89,12 @@ object EurekaConfig {
         @JsonSchema(description = "The maximum linear acceleration at any point on the ship caused by helm torque")
         var turnAcceleration = 10.0
 
-        @JsonSchema(description = "The maximum distance from center of mass to one end of the ship considered by " +
+        @JsonSchema(
+            description = "The maximum distance from center of mass to one end of the ship considered by " +
                 "the turn speed. At it's default of 16, it ensures that really large ships will turn at the same " +
                 "speed as a ship with a center of mass only 16 blocks away from the farthest point in the ship. " +
-                "That way, large ships do not turn painfully slowly")
+                "That way, large ships do not turn painfully slowly"
+        )
         var maxSizeForTurnSpeedPenalty = 16.0
 
         // The strength used when trying to level the ship
@@ -105,6 +135,8 @@ object EurekaConfig {
             "minecraft:granite",
             "minecraft:diorite",
             "minecraft:andesite",
+            "minecraft:deepslate",
+            "minecraft:tuff",
             "minecraft:crimson_nylium",
             "minecraft:warped_nylium",
             "minecraft:red_sand",
@@ -119,6 +151,7 @@ object EurekaConfig {
             "minecraft:fern",
             "minecraft:dead_bush",
             "minecraft:seagrass",
+            "minecraft:tall_seagrass",
             "minecraft:sea_pickle",
             "minecraft:kelp",
             "minecraft:bamboo",
@@ -146,6 +179,7 @@ object EurekaConfig {
             "minecraft:chorus_plant",
             "minecraft:chorus_flower",
             "minecraft:snow",
+            "minecraft:snow_block",
             "minecraft:cactus",
             "minecraft:vine",
             "minecraft:sunflower",
@@ -163,7 +197,19 @@ object EurekaConfig {
             "minecraft:end_portal_frame",
             "minecraft:end_portal",
             "minecraft:end_gateway",
-            "minecraft:portal"
+            "minecraft:portal",
+            "minecraft:oak_sapling",
+            "minecraft:spruce_sapling",
+            "minecraft:birch_sapling",
+            "minecraft:jungle_sapling",
+            "minecraft:acacia_sapling",
+            "minecraft:dark_oak_sapling",
+            "minecraft:oak_leaves",
+            "minecraft:spruce_leaves",
+            "minecraft:birch_leaves",
+            "minecraft:jungle_leaves",
+            "minecraft:acacia_leaves",
+            "minecraft:dark_oak_leaves"
         )
 
         @JsonSchema(description = "Whether the ship helm assembles diagonally connected blocks or not")
@@ -177,5 +223,8 @@ object EurekaConfig {
 
         @JsonSchema(description = "Whether or not disassembly is permitted")
         val allowDisassembly = true
+
+        @JsonSchema(description = "Maximum number of blocks allowed in a ship. Set to 0 for no limit")
+        val maxShipBlocks = 32 * 32 * 32
     }
 }

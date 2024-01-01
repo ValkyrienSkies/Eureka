@@ -20,8 +20,6 @@ import net.minecraft.world.level.block.state.BlockState
 import org.joml.Math.lerp
 import org.joml.Math.min
 import org.valkyrienskies.core.api.ships.ServerShip
-import org.valkyrienskies.core.impl.api.ServerShipProvider
-import org.valkyrienskies.core.impl.api.shipValue
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaProperties.HEAT
@@ -30,20 +28,21 @@ import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.KtContainerData
 import org.valkyrienskies.mod.common.getShipManagingPos
 import kotlin.math.ceil
+import kotlin.math.max
 
 class EngineBlockEntity(pos: BlockPos, state: BlockState) :
     BaseContainerBlockEntity(EurekaBlockEntities.ENGINE.get(), pos, state),
-    ServerShipProvider,
     StackedContentsCompatible,
     WorldlyContainer {
 
-    override val ship: ServerShip? get() = (this.level as ServerLevel).getShipManagingPos(this.blockPos)
-    private val eurekaShipControl by shipValue<EurekaShipControl>()
+    private val ship: ServerShip? get() = (this.level as ServerLevel).getShipManagingPos(this.blockPos)
     val data = KtContainerData()
-    var heatLevel by data
-    var fuelLeft by data
-    var fuelTotal by data
-    private var fuel: ItemStack = ItemStack.EMPTY
+    private var heatLevel by data
+    private var fuelLeft by data
+    private var fuelTotal by data
+    var fuel: ItemStack = ItemStack.EMPTY
+    private var maxEffectiveFuel = 100f - EurekaConfig.SERVER.engineHeatGain
+    private var lastFuelValue = 1600; // coal: 1600
 
     override fun createMenu(containerId: Int, inventory: Inventory): AbstractContainerMenu =
         EngineScreenMenu(containerId, inventory, this)
@@ -52,50 +51,121 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
 
     private var heat = 0f
     fun tick() {
-        if (!this.level!!.isClientSide) {
-            // Disable engines when they are receiving a redstone signal
-            if (level!!.hasNeighborSignal(blockPos)) {
-                heatLevel = 0
-                level!!.setBlock(blockPos, this.blockState.setValue(HEAT, 0), 11)
-                return
-            }
+        if (this.level!!.isClientSide) return
 
-            if (this.fuelLeft > 0) {
-                this.fuelLeft--
+        val isPowered = level!!.hasNeighborSignal(blockPos)
+        if (EurekaConfig.SERVER.engineRedstoneBehaviorPause && isPowered) return
 
-                if (this.heat < 100f) {
-                    this.heat += EurekaConfig.SERVER.engineHeatGain
+        // Disable engine feeding when they are receiving a redstone signal
+        if (!isPowered) {
+            if (fuelLeft > 0) {
+
+                if (EurekaConfig.SERVER.engineFuelSaving) {
+                    if (heat <= maxEffectiveFuel) {
+                        heat += scaleEngineHeating(EurekaConfig.SERVER.engineHeatGain)
+                        fuelLeft--
+                    }
+                } else {
+                    fuelLeft--
+
+                    if (heat <= maxEffectiveFuel) {
+                        heat += scaleEngineHeating(EurekaConfig.SERVER.engineHeatGain)
+                    }
                 }
-            } else if (!fuel.isEmpty && this.heat < 100f) {
-                fuelTotal = (FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * 2
-                fuelLeft = fuelTotal
-                removeItem(0, 1)
-                setChanged()
-            }
 
-            val prevHeatLevel = heatLevel
-            heatLevel = min(ceil(heat * 4f / 100f).toInt(), 4)
-            if (prevHeatLevel != heatLevel) {
-                level!!.setBlock(blockPos, this.blockState.setValue(HEAT, heatLevel), 11)
+                // Refill while burning
+                if (!fuel.isEmpty && lastFuelValue <= EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
+                    consumeFuel()
+                }
+            } else if (!fuel.isEmpty) {
+                consumeFuel()
             }
+        }
 
-            if (heat > 0 && ship != null && eurekaShipControl != null) {
-                eurekaShipControl!!.power += lerp(
-                    heat / 100f,
-                    EurekaConfig.SERVER.minEnginePower,
-                    EurekaConfig.SERVER.enginePower
+        val prevHeatLevel = heatLevel
+        heatLevel = min(ceil(heat * 4f / 100f).toInt(), 4)
+        if (prevHeatLevel != heatLevel) {
+            level!!.setBlock(blockPos, this.blockState.setValue(HEAT, heatLevel), 11)
+        }
+
+        if (heat > 0) {
+            val eurekaShipControl = ship?.getAttachment(EurekaShipControl::class.java)
+            if (ship != null && eurekaShipControl != null) {
+                // Avoid fluctuations in speed
+                var effectiveHeat = 1f
+                if (heat < maxEffectiveFuel) {
+                    effectiveHeat = heat / 100f
+                }
+
+                eurekaShipControl.powerLinear += lerp(
+                    EurekaConfig.SERVER.enginePowerLinearMin,
+                    EurekaConfig.SERVER.enginePowerLinear,
+                    effectiveHeat,
                 )
 
-                heat -= eurekaShipControl!!.consumed
+                eurekaShipControl.powerAngular += lerp(
+                    EurekaConfig.SERVER.enginePowerAngularMin,
+                    EurekaConfig.SERVER.enginePowerAngular,
+                    effectiveHeat,
+                )
+
+                heat -= eurekaShipControl.consumed
             }
 
-            if (heat > 0) {
-                heat -= min(EurekaConfig.SERVER.engineHeatLoss, heat)
-            }
+            heat = max(heat - scaleEngineCooling(EurekaConfig.SERVER.engineHeatLoss), 0f)
         }
     }
 
-    fun isBurning() = fuelLeft > 0
+    fun isBurning(): Boolean = fuelLeft > 0
+
+    /**
+     * Get fuel value from the item type stored in the engine.
+     *
+     * @return scaled fuel ticks.
+     */
+    private fun getScaledFuel(): Int =
+        ((FurnaceBlockEntity.getFuel()[fuel.item] ?: 0) * EurekaConfig.SERVER.engineFuelMultiplier).toInt()
+
+    /**
+     * Absorb one fuel item into the engine.
+     */
+    private fun consumeFuel() {
+
+        lastFuelValue = getScaledFuel()
+
+        if (lastFuelValue > 0) {
+            if (fuelLeft > 0 && lastFuelValue > EurekaConfig.SERVER.engineMinCapacity - fuelLeft) {
+                return
+            }
+
+            fuelLeft += lastFuelValue
+            fuelTotal = max(lastFuelValue, EurekaConfig.SERVER.engineMinCapacity)
+
+            // Handle items like lava buckets
+            if (fuel.item.hasCraftingRemainingItem()) {
+                fuel = ItemStack(fuel.item.craftingRemainingItem!!, 1)
+            } else {
+                removeItem(0, 1)
+            }
+            setChanged()
+        }
+    }
+
+    /**
+     * Scale given heating [value] based on current heat.
+     *
+     * @return the scaled value.
+     */
+    private fun scaleEngineHeating(value: Float): Float =
+        (100 * EurekaConfig.SERVER.engineHeatChangeExponent - this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
+
+    /**
+     * Scale given cooling [value] based on current heat.
+     *
+     * @return the scaled value.
+     */
+    private fun scaleEngineCooling(value: Float): Float =
+        (this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
 
     override fun saveAdditional(tag: CompoundTag) {
         tag.put("FuelSlot", fuel.save(CompoundTag()))
@@ -122,8 +192,7 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
 
     override fun isEmpty(): Boolean = fuel.isEmpty
 
-    override fun getItem(slot: Int): ItemStack =
-        if (slot == 0) fuel else ItemStack.EMPTY
+    override fun getItem(slot: Int): ItemStack = if (slot == 0) fuel else ItemStack.EMPTY
 
     override fun removeItem(slot: Int, amount: Int): ItemStack {
         return ContainerHelper.removeItem(listOf(fuel), slot, amount)
@@ -142,19 +211,17 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
         return if (level!!.getBlockEntity(worldPosition) !== this) {
             false
         } else player.distanceToSqr(
-            worldPosition.x.toDouble() + 0.5,
-            worldPosition.y.toDouble() + 0.5,
-            worldPosition.z.toDouble() + 0.5
+            worldPosition.x.toDouble() + 0.5, worldPosition.y.toDouble() + 0.5, worldPosition.z.toDouble() + 0.5
         ) <= 64.0
     }
 
-    override fun getSlotsForFace(side: Direction?): IntArray =
+    override fun getSlotsForFace(side: Direction): IntArray =
         if (side == Direction.DOWN) intArrayOf() else intArrayOf(0)
 
     override fun canPlaceItemThroughFace(index: Int, itemStack: ItemStack, direction: Direction?): Boolean =
         direction != Direction.DOWN && canPlaceItem(index, itemStack)
 
-    override fun canTakeItemThroughFace(index: Int, stack: ItemStack?, direction: Direction?): Boolean = false
+    override fun canTakeItemThroughFace(index: Int, stack: ItemStack, direction: Direction): Boolean = false
 
     override fun canPlaceItem(index: Int, stack: ItemStack): Boolean =
         index == 0 && AbstractFurnaceBlockEntity.isFuel(stack)

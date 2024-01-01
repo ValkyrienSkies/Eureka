@@ -1,18 +1,24 @@
 package org.valkyrienskies.eureka.registry
 
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.network.chat.Component
 import net.minecraft.world.item.CreativeModeTab
 import net.minecraft.world.item.ItemStack
-import org.valkyrienskies.eureka.services.EurekaPlatformHelper
-import java.util.ServiceLoader
+import org.valkyrienskies.eureka.EurekaBlocks
+import org.valkyrienskies.eureka.EurekaItems
 
-class CreativeTabs {
-    companion object {
-        fun create(id: ResourceLocation, stack: () -> ItemStack): CreativeModeTab {
-            return ServiceLoader.load(EurekaPlatformHelper::class.java)
-                .findFirst()
-                .get()
-                .createCreativeTab(id, stack)
-        }
+object CreativeTabs {
+    fun create(): CreativeModeTab {
+        return CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
+            .title(Component.translatable("itemGroup.eureka"))
+            .icon { ItemStack(EurekaBlocks.OAK_SHIP_HELM.get().asItem()) }
+            .displayItems { _, output ->
+                EurekaItems.ITEMS.forEach {
+                    output.accept(it.get())
+                }
+                EurekaBlocks.BLOCKS.forEach {
+                    output.accept(it.get().asItem())
+                }
+            }
+            .build()
     }
 }

@@ -7,16 +7,22 @@ loom {
 }
 
 dependencies {
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixin_extras_version"))
+
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     // Remove the next line if you don't want to depend on the API
 //    modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
-    modApi("org.valkyrienskies:valkyrienskies-1201-common:${rootProject.vs2_version}")
-    implementation("org.valkyrienskies.core:api:1.1.0+ead972f384") { transitive = false }
+    modApi("org.valkyrienskies:valkyrienskies-120-common:${rootProject.vs2_version}")
 
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.21"
-    api "org.jetbrains.kotlin:kotlin-reflect:1.7.21"
+    compileOnly("org.valkyrienskies.core:api:${rootProject.vs_core_version}")
+    compileOnly("org.valkyrienskies.core:api-game:${rootProject.vs_core_version}")
+    compileOnly("org.valkyrienskies.core:util:${rootProject.vs_core_version}")
+    compileOnly("org.valkyrienskies.core:impl:${rootProject.vs_core_version}")
+
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10"
+    api "org.jetbrains.kotlin:kotlin-reflect:1.9.10"
 }
 
 publishing {

@@ -7,11 +7,12 @@
   ],
   "key": {
     "#": {
-      "item": "minecraft:white_wool"
+      "tag": "minecraft:wool"
     }
   },
   "result": {
     "item": "vs_eureka:balloon",
-    "count": 32
-  }
+    "count": 4
+  },
+  "group": "balloons"
 }
