@@ -15,9 +15,6 @@ object CreativeTabs {
                 EurekaItems.ITEMS.forEach {
                     output.accept(it.get())
                 }
-                EurekaBlocks.BLOCKS.forEach {
-                    output.accept(it.get().asItem())
-                }
             }
             .build()
     }
