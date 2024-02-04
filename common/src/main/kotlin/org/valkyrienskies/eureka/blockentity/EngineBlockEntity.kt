@@ -216,13 +216,14 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
         ) <= 64.0
     }
 
-    override fun getSlotsForFace(side: Direction): IntArray =
-        if (side == Direction.DOWN) intArrayOf() else intArrayOf(0)
+    override fun getSlotsForFace(side: Direction): IntArray = intArrayOf(0)
 
     override fun canPlaceItemThroughFace(index: Int, itemStack: ItemStack, direction: Direction?): Boolean =
         direction != Direction.DOWN && canPlaceItem(index, itemStack)
 
-    override fun canTakeItemThroughFace(index: Int, stack: ItemStack, direction: Direction): Boolean = false
+    override fun canTakeItemThroughFace(index: Int, stack: ItemStack, direction: Direction): Boolean =
+        // Allow extraction from slot 0 (fuel slot) when the hopper is below the block entity
+        index == 0 && direction == Direction.DOWN && !fuel.isEmpty && !AbstractFurnaceBlockEntity.isFuel(fuel)
 
     override fun canPlaceItem(index: Int, stack: ItemStack): Boolean =
         index == 0 && AbstractFurnaceBlockEntity.isFuel(stack)
