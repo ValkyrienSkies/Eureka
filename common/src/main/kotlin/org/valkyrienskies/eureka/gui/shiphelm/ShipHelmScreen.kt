@@ -10,6 +10,7 @@ import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.phys.BlockHitResult
+import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.mod.common.getShipManagingPos
@@ -22,6 +23,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
     private lateinit var disassembleButton: ShipHelmButton
 
     private val pos = (Minecraft.getInstance().hitResult as? BlockHitResult)?.blockPos
+    private val ship: Ship? = pos?.let { Minecraft.getInstance().level?.getShipManagingPos(it) }
 
     init {
         titleLabelX = 120
@@ -84,6 +86,9 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         }
 
         // TODO render stats
+        if (ship == null) return
+        font.draw(matrixStack, "ID: " + ship.id.toString(), 8f, 9f, 0x404040)
+        font.draw(matrixStack, String.format("%.2f",ship.velocity.length()) + "m/s", 8f, 25f, 0x404040)
     }
 
     // mojank doesn't check mouse release for their widgets for some reason
