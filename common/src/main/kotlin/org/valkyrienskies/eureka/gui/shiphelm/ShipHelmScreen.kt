@@ -75,8 +75,6 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
     }
 
     override fun renderLabels(matrixStack: PoseStack, i: Int, j: Int) {
-        font.draw(matrixStack, title, titleLabelX.toFloat(), titleLabelY.toFloat(), 0x404040)
-
         if (this.menu.aligning) {
             alignButton.message = ALIGNING_TEXT
             alignButton.active = false
@@ -87,7 +85,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
 
         // TODO render stats
         if (ship == null) return
-        font.draw(matrixStack, "ID: " + ship.id.toString(), 8f, 9f, 0x404040)
+        ship.slug?.let { font.draw(matrixStack, it, 6f, 6f, 0x404040) }
         font.draw(matrixStack, String.format("%.2f",ship.velocity.length()) + "m/s", 8f, 25f, 0x404040)
     }
 
