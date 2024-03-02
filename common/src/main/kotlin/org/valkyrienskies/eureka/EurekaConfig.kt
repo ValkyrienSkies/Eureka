@@ -105,6 +105,13 @@ object EurekaConfig {
         @JsonSchema(description = "How fast a ship will stop. 1 = fast stop, 0 = slow stop")
         var linearStabilizeMaxAntiVelocity = 1.0
 
+        @JsonSchema(description = "How fast a ship will stop and accelerate.")
+        var linearMassScaling = 0.0002
+
+        //when value is same as linearMaxMass, actual value will be 1/3. actual value will be close to linearMaxMass when 5 times over
+        @JsonSchema(description = "Max smoothing value, will smooth out before reaching max value.")
+        var linearMaxMass = 10000.0
+
         // Anti-velocity mass relevance when stopping the ship
         // Max 10.0 (means no mass irrelevance)
         @JsonSchema(description = "How much inertia affects Eureka ships. Max 10 = full inertia")

@@ -22,11 +22,7 @@ import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.*
 
 @JsonAutoDetect(
     fieldVisibility = JsonAutoDetect.Visibility.ANY,
@@ -68,6 +64,9 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
     @JsonIgnore
     var seatedPlayer: Player? = null
 
+    @JsonIgnore
+    var oldSpeed = 0.0
+
     private data class ControlData(
         val seatInDirection: Direction,
         var forwardImpulse: Float = 0.0f,
@@ -108,7 +107,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         val balloonForceProvided = balloons * forcePerBalloon
 
         val buoyantFactorPerFloater = min(
-            EurekaConfig.SERVER.floaterBuoyantFactorPerKg / 15 / mass,
+            EurekaConfig.SERVER.floaterBuoyantFactorPerKg / 15.0 / mass,
             EurekaConfig.SERVER.maxFloaterBuoyantFactor
         )
 
@@ -155,20 +154,21 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         // endregion
 
         val controllingPlayer = ship.getAttachment(SeatedControllingPlayer::class.java)
+        val validPlayer = controllingPlayer != null
         stabilize(
             physShip,
             omega,
             vel,
             physShip,
-            controllingPlayer == null && !aligning,
-            controllingPlayer == null
+            !validPlayer && !aligning,
+            !validPlayer
         )
 
         var idealUpwardVel = Vector3d(0.0, 0.0, 0.0)
 
-        val player = controllingPlayer
 
-        if (player != null) {
+        if (validPlayer) {
+            val player = controllingPlayer!!
             val currentControlData = ControlData.create(player)
 
             // If the player is currently controlling the ship
@@ -192,9 +192,12 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
             }
 
             wasCruisePressed = player.cruise
-        } else if (!isCruising) {
-            // If the player isn't controlling the ship, and not cruising, reset the control data
-            controlData = null
+        } else {
+            oldSpeed = 0.0
+            if (!isCruising) {
+                // If the player isn't controlling the ship, and not cruising, reset the control data
+                controlData = null
+            }
         }
 
         controlData?.let { control ->
@@ -259,10 +262,12 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
             // region Player controlled forward and backward thrust
             val forwardVector = control.seatInDirection.normal.toJOMLD()
             physShip.poseVel.rot.transform(forwardVector)
-            forwardVector.y *= 0.1 // Reduce vertical thrust
+            //forwardVector.y *= 0.1 // Reduce vertical thrust
             forwardVector.normalize()
 
-            forwardVector.mul(control.forwardImpulse.toDouble())
+            val s = 1 / smoothingATanMax(EurekaConfig.SERVER.linearMaxMass, physShip.inertia.shipMass * EurekaConfig.SERVER.linearMassScaling + 1.0)
+            oldSpeed = oldSpeed * (1-s) + control.forwardImpulse.toDouble() * s
+            forwardVector.mul(oldSpeed)
 
             val playerUpDirection = physShip.poseVel.transformDirection(Vector3d(0.0, 1.0, 0.0))
             val velOrthogonalToPlayerUp =
@@ -355,6 +360,14 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
      * f(x) = max - smoothing / (x + (smoothing / max))
      */
     private fun smoothing(smoothing: Double, max: Double, x: Double): Double = max - smoothing / (x + (smoothing / max))
+
+    /**
+     * g(x) = (tan^(-1)(x * smoothing)) / smoothing
+     */
+    private fun smoothingATan(smoothing: Double, x: Double): Double = atan(x * smoothing) / smoothing
+
+    // limit x to max using ATan
+    private fun smoothingATanMax(max: Double, x: Double): Double = smoothingATan(1 / (max * 0.638), x)
 
     companion object {
         fun getOrCreate(ship: ServerShip): EurekaShipControl {

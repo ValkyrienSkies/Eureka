@@ -5,6 +5,7 @@ import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ships.PhysShip
 import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
 import org.valkyrienskies.eureka.EurekaConfig
+import kotlin.math.atan
 
 fun stabilize(
     ship: PhysShipImpl,
@@ -52,10 +53,16 @@ fun stabilize(
         val idealVelocity = Vector3d(vel).negate()
         idealVelocity.y = 0.0
 
-        if (idealVelocity.lengthSquared() > (EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity * EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity))
-            idealVelocity.normalize(EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity)
+        // ideally this should work the same way as input is scaled
+        val s = EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity * (1 - 1 / smoothingATanMax(EurekaConfig.SERVER.linearMaxMass, ship.inertia.shipMass * EurekaConfig.SERVER.linearMassScaling + 1.0)) / 10.0
+
+        if (idealVelocity.lengthSquared() > s * s)
+            idealVelocity.normalize(s)
 
         idealVelocity.mul(ship.inertia.shipMass * (10 - EurekaConfig.SERVER.antiVelocityMassRelevance))
         forces.applyInvariantForce(idealVelocity)
     }
 }
+
+private fun smoothingATan(smoothing: Double, x: Double): Double = atan(x * smoothing) / smoothing
+private fun smoothingATanMax(max: Double, x: Double): Double = smoothingATan(1 / (max * 0.638), x)
