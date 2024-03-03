@@ -26,7 +26,8 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
     private val ship: Ship? = pos?.let { Minecraft.getInstance().level?.getShipManagingPos(it) }
 
     init {
-        titleLabelX = 120
+        titleLabelX = 6
+        titleLabelY = 6
     }
 
     override fun init() {
@@ -85,7 +86,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
 
         // TODO render stats
         if (ship == null) return
-        ship.slug?.let { font.draw(matrixStack, it, 6f, 6f, 0x404040) }
+        ship.slug?.let { font.draw(matrixStack, it, titleLabelX.toFloat(), titleLabelY.toFloat(), 0x404040) }
         font.draw(matrixStack, String.format("%.2f",ship.velocity.length()) + "m/s", 8f, 25f, 0x404040)
     }
 
