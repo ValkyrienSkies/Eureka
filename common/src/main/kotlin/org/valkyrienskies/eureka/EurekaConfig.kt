@@ -14,7 +14,7 @@ object EurekaConfig {
     class Server {
 
         @JsonSchema(description = "Movement power per engine when heated fully")
-        val enginePowerLinear: Float = 2000000f
+        val enginePowerLinear: Float = 500000f
 
         @JsonSchema(description = "Movement power per engine with minimal heat")
         val enginePowerLinearMin: Float = 10000f
@@ -108,9 +108,16 @@ object EurekaConfig {
         @JsonSchema(description = "How fast a ship will stop and accelerate.")
         var linearMassScaling = 0.0002
 
+        // Must be positive. higher value will case slower acceleration and deceleration.
+        @JsonSchema(description = "Base mass for linear acceleration in Kg.")
+        var linearBaseMass = 50.0
+
         //when value is same as linearMaxMass, actual value will be 1/3. actual value will be close to linearMaxMass when 5 times over
         @JsonSchema(description = "Max smoothing value, will smooth out before reaching max value.")
         var linearMaxMass = 10000.0
+
+        @JsonSchema(description = "Max unscaled speed in m/s.")
+        var linearMaxSpeed = 15.0
 
         // Anti-velocity mass relevance when stopping the ship
         // Max 10.0 (means no mass irrelevance)
