@@ -193,10 +193,10 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
             wasCruisePressed = player.cruise
         } else {
-            oldSpeed = 0.0
             if (!isCruising) {
                 // If the player isn't controlling the ship, and not cruising, reset the control data
                 controlData = null
+                oldSpeed = 0.0
             }
         }
 
@@ -265,8 +265,13 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
             //forwardVector.y *= 0.1 // Reduce vertical thrust
             forwardVector.normalize()
 
-            val s = 1 / smoothingATanMax(EurekaConfig.SERVER.linearMaxMass, physShip.inertia.shipMass * EurekaConfig.SERVER.linearMassScaling + 1.0)
-            oldSpeed = oldSpeed * (1-s) + control.forwardImpulse.toDouble() * s
+            val s = 1 / smoothingATanMax(
+                EurekaConfig.SERVER.linearMaxMass,
+                physShip.inertia.shipMass * EurekaConfig.SERVER.linearMassScaling + EurekaConfig.SERVER.linearBaseMass
+            )
+
+            val maxSpeed = EurekaConfig.SERVER.linearMaxSpeed / 15;
+            oldSpeed = max(min(oldSpeed * (1-s) + control.forwardImpulse.toDouble() * s, maxSpeed), -maxSpeed)
             forwardVector.mul(oldSpeed)
 
             val playerUpDirection = physShip.poseVel.transformDirection(Vector3d(0.0, 1.0, 0.0))
