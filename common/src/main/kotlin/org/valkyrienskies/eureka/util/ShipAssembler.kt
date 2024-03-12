@@ -77,11 +77,11 @@ object ShipAssembler {
         val eps = 0.001
         if (axis.angle < eps)
             return Rotation.NONE
-        else if (axis.angle - PI / 2.0 < eps)
+        else if ((axis.angle - PI / 2.0).absoluteValue < eps)
             return Rotation.COUNTERCLOCKWISE_90
-        else if (axis.angle - PI < eps)
+        else if ((axis.angle - PI).absoluteValue < eps)
             return Rotation.CLOCKWISE_180
-        else if (axis.angle - 3.0 * PI / 2.0 < eps)
+        else if ((axis.angle - 3.0 * PI / 2.0).absoluteValue < eps)
             return Rotation.CLOCKWISE_90
         else {
             logger.warn("failed to convert $axis into a rotation")
