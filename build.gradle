@@ -100,6 +100,10 @@ allprojects {
     repositories {
         mavenLocal()
         maven {
+            name = 'Kotlin for Forge'
+            url = 'https://thedarkcolour.github.io/KotlinForForge/'
+        }
+        maven {
             name = "Valkyrien Skies Internal"
             url = project.vs_maven_url ?: 'https://maven.valkyrienskies.org'
             if (project.vs_maven_username && project.vs_maven_password) {
