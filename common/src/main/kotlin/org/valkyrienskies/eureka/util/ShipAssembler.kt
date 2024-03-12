@@ -47,7 +47,7 @@ object ShipAssembler {
     private fun roundToNearestMultipleOf(number: Double, multiple: Double) = multiple * round(number / multiple)
 
     // modified from https://gamedev.stackexchange.com/questions/83601/from-3d-rotation-snap-to-nearest-90-directions
-    private fun snapRotation(direction: AxisAngle4d): AxisAngle4d {
+    fun snapRotation(direction: AxisAngle4d): AxisAngle4d {
         val x = abs(direction.x)
         val y = abs(direction.y)
         val z = abs(direction.z)
@@ -62,7 +62,7 @@ object ShipAssembler {
         }
     }
 
-    fun unfillShip(level: ServerLevel, ship: ServerShip, direction: Direction, shipCenter: BlockPos, center: BlockPos) {
+    fun unfillShip(level: ServerLevel, ship: ServerShip, rotation: Rotation, shipCenter: BlockPos, center: BlockPos) {
         ship.isStatic = true
 
         // ship's rotation rounded to nearest 90*
@@ -75,18 +75,6 @@ object ShipAssembler {
         }
 
         val alloc0 = Vector3d()
-
-        // Direction comes from direction ship is aligning to
-        // We can assume that the ship in shipspace is always facing north, because it has to be
-        val rotation: Rotation = when (direction) {
-            Direction.SOUTH -> Rotation.NONE // Bug in Direction.from2DDataValue() can return south/north as opposite
-            Direction.NORTH -> Rotation.CLOCKWISE_180
-            Direction.EAST -> Rotation.CLOCKWISE_90
-            Direction.WEST -> Rotation.COUNTERCLOCKWISE_90
-            else -> {
-                Rotation.NONE
-            }
-        }
 
         val chunksToBeUpdated = mutableMapOf<ChunkPos, Pair<ChunkPos, ChunkPos>>()
 
