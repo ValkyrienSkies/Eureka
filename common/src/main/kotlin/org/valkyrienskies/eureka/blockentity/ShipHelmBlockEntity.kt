@@ -2,6 +2,7 @@ package org.valkyrienskies.eureka.blockentity
 
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
@@ -11,11 +12,13 @@ import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
+import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING
 import net.minecraft.world.level.block.state.properties.Half
+import org.joml.AxisAngle4d
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ships.ServerShip
@@ -32,6 +35,9 @@ import org.valkyrienskies.mod.common.entity.ShipMountingEntity
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOMLD
+import kotlin.math.PI
+import kotlin.math.absoluteValue
+import kotlin.math.sign
 
 class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(EurekaBlockEntities.SHIP_HELM.get(), pos, state), MenuProvider {
@@ -84,7 +90,6 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     fun startRiding(player: Player, force: Boolean, blockPos: BlockPos, state: BlockState, level: ServerLevel): Boolean {
-
         for (i in seats.size - 1 downTo 0) {
             if (!seats[i].isVehicle) {
                 seats[i].kill()
@@ -126,7 +131,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         ) { !it.isAir && !EurekaConfig.SERVER.blockBlacklist.contains(BuiltInRegistries.BLOCK.getKey(it.block).toString()) }
 
         if (builtShip == null) {
-            player.displayClientMessage(Component.translatable("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks (changable in the config)"), true)
+            player.displayClientMessage(Component.translatable("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks (changeable in the config)"), true)
             logger.warn("Failed to assemble ship for ${player.name.string}")
         }
     }
@@ -148,7 +153,6 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         ShipAssembler.unfillShip(
             level as ServerLevel,
             ship,
-            control.aligningTo,
             this.blockPos,
             BlockPos.containing(inWorld.x, inWorld.y, inWorld.z)
         )
@@ -163,7 +167,6 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     override fun setRemoved() {
-
         if (level?.isClientSide == false) {
             for (i in seats.indices) {
                 seats[i].kill()

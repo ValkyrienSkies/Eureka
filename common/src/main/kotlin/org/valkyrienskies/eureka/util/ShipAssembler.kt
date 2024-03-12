@@ -26,10 +26,7 @@ import org.valkyrienskies.mod.util.logger
 import org.valkyrienskies.mod.util.relocateBlock
 import org.valkyrienskies.mod.util.updateBlock
 import kotlin.collections.set
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.round
-import kotlin.math.sign
+import kotlin.math.*
 
 object ShipAssembler {
     fun collectBlocks(level: ServerLevel, center: BlockPos, predicate: (BlockState) -> Boolean): ServerShip? {
@@ -62,8 +59,43 @@ object ShipAssembler {
         }
     }
 
-    fun unfillShip(level: ServerLevel, ship: ServerShip, direction: Direction, shipCenter: BlockPos, center: BlockPos) {
+    private fun rotationFromAxisAngle(axis: AxisAngle4d): Rotation {
+        if (axis.y.absoluteValue < 0.1) {
+            // if the axis isn't Y, either we're tilted up/down (which should not happen often) or we haven't moved and it's
+            // along the z axis with a magnitude of 0 for some reason. In these cases, we don't rotate.
+            return Rotation.NONE
+        }
+
+        // normalize into counterclockwise rotation (i.e. positive y-axis, according to testing + right hand rule)
+        if (axis.y.sign < 0.0) {
+            axis.y = 1.0
+            // the angle is always positive and < 2pi coming in
+            axis.angle = 2.0 * PI - axis.angle
+            axis.angle %= (2.0 * PI)
+        }
+
+        val eps = 0.001
+        if (axis.angle < eps)
+            return Rotation.NONE
+        else if ((axis.angle - PI / 2.0).absoluteValue < eps)
+            return Rotation.COUNTERCLOCKWISE_90
+        else if ((axis.angle - PI).absoluteValue < eps)
+            return Rotation.CLOCKWISE_180
+        else if ((axis.angle - 3.0 * PI / 2.0).absoluteValue < eps)
+            return Rotation.CLOCKWISE_90
+        else {
+            logger.warn("failed to convert $axis into a rotation")
+            return Rotation.NONE
+        }
+    }
+
+    fun unfillShip(level: ServerLevel, ship: ServerShip, shipCenter: BlockPos, center: BlockPos) {
         ship.isStatic = true
+
+        val rotation: Rotation = ship.transform.shipToWorldRotation
+            .let(::AxisAngle4d)
+            .let(ShipAssembler::snapRotation)
+            .let(::rotationFromAxisAngle)
 
         // ship's rotation rounded to nearest 90*
         val shipToWorld = ship.transform.run {
@@ -75,18 +107,6 @@ object ShipAssembler {
         }
 
         val alloc0 = Vector3d()
-
-        // Direction comes from direction ship is aligning to
-        // We can assume that the ship in shipspace is always facing north, because it has to be
-        val rotation: Rotation = when (direction) {
-            Direction.SOUTH -> Rotation.NONE // Bug in Direction.from2DDataValue() can return south/north as opposite
-            Direction.NORTH -> Rotation.CLOCKWISE_180
-            Direction.EAST -> Rotation.CLOCKWISE_90
-            Direction.WEST -> Rotation.COUNTERCLOCKWISE_90
-            else -> {
-                Rotation.NONE
-            }
-        }
 
         val chunksToBeUpdated = mutableMapOf<ChunkPos, Pair<ChunkPos, ChunkPos>>()
 
