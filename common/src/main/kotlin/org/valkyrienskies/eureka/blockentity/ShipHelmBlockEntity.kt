@@ -117,36 +117,6 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         control?.ship = ship
     }
 
-    fun rotationFromAxisAngle(axis: AxisAngle4d): Rotation {
-        if (axis.y.absoluteValue < 0.1) {
-            // if the axis isn't Y, either we're tilted up/down (which should not happen often) or we haven't moved and it's
-            // along the z axis with a magnitude of 0 for some reason. In these cases, we don't rotate.
-            return Rotation.NONE
-        }
-
-        // normalize into counterclockwise rotation (i.e. positive y-axis, according to testing + right hand rule)
-        if (axis.y.sign < 0.0) {
-            axis.y = 1.0
-            // the angle is always positive and < 2pi coming in
-            axis.angle = 2.0 * PI - axis.angle
-            axis.angle %= (2.0 * PI)
-        }
-
-        val eps = 0.001
-        if (axis.angle < eps)
-            return Rotation.NONE
-        else if (axis.angle - PI / 2.0 < eps)
-            return Rotation.COUNTERCLOCKWISE_90
-        else if (axis.angle - PI < eps)
-            return Rotation.CLOCKWISE_180
-        else if (axis.angle - 3.0 * PI / 2.0 < eps)
-            return Rotation.CLOCKWISE_90
-        else {
-            logger.warn("failed to convert $axis into a rotation")
-            return Rotation.NONE
-        }
-    }
-
     // Needs to get called server-side
     fun assemble(player: Player) {
         val level = level as ServerLevel
@@ -180,15 +150,9 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
 
         val inWorld = ship.shipToWorld.transformPosition(this.blockPos.toJOMLD())
 
-        val rotation: Rotation = ship.transform.shipToWorldRotation
-            .let(::AxisAngle4d)
-            .let(ShipAssembler::snapRotation)
-            .let(::rotationFromAxisAngle)
-
         ShipAssembler.unfillShip(
             level as ServerLevel,
             ship,
-            rotation,
             this.blockPos,
             BlockPos.containing(inWorld.x, inWorld.y, inWorld.z)
         )
