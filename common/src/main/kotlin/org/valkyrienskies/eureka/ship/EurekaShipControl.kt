@@ -50,13 +50,11 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
     private var angleUntilAligned = 0.0
     private var positionUntilAligned = Vector3d()
-    private var alignTarget = 0
     val canDisassemble
         get() = ship != null &&
             disassembling &&
             abs(angleUntilAligned) < DISASSEMBLE_THRESHOLD &&
             positionUntilAligned.distanceSquared(this.ship!!.transform.positionInWorld) < 4.0
-    val aligningTo: Direction get() = Direction.from2DDataValue(alignTarget)
     var consumed = 0f
         private set
 
@@ -132,7 +130,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         val invRotation = physShip.poseVel.rot.invert(Quaterniond())
         val invRotationAxisAngle = AxisAngle4d(invRotation)
         // Floor makes a number 0 to 3, which corresponds to direction
-        alignTarget = floor((invRotationAxisAngle.angle / (PI * 0.5)) + 4.5).toInt() % 4
+        val alignTarget = floor((invRotationAxisAngle.angle / (PI * 0.5)) + 4.5).toInt() % 4
         angleUntilAligned = (alignTarget.toDouble() * (0.5 * PI)) - invRotationAxisAngle.angle
         if (disassembling) {
             val pos = ship.transform.positionInWorld
