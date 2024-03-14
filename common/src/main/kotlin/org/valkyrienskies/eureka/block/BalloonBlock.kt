@@ -33,8 +33,8 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         EurekaShipControl.getOrCreate(ship).balloons += 1
     }
 
-    override fun destroy(level: LevelAccessor, pos: BlockPos, state: BlockState) {
-        super.destroy(level, pos, state)
+    override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
+        super.onRemove(state, level, pos, newState, isMoving)
 
         if (level.isClientSide) return
         level as ServerLevel
