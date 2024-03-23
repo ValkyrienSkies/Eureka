@@ -324,7 +324,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         // endregion
 
         // Add drag to the y-component
-        physShip.applyInvariantForce(Vector3d(vel.y()).mul(-mass))
+        physShip.applyInvariantForce(Vector3d(0.0, vel.y(),0.0).mul(-mass))
     }
 
     private fun showCruiseStatus() {
