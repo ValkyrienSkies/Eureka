@@ -91,8 +91,9 @@ class AnchorBlock :
         attachment.anchorsActive += if (bl) 1 else 0
     }
 
-    override fun destroy(level: LevelAccessor, pos: BlockPos, state: BlockState) {
-        super.destroy(level, pos, state)
+    override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
+        super.onRemove(state, level, pos, newState, isMoving)
+
         if (level.isClientSide) return
         level as ServerLevel
 
