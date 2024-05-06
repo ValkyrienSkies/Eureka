@@ -46,6 +46,15 @@ object EurekaConfig {
         @JsonSchema(description = "Fuel burn time multiplier")
         val engineFuelMultiplier = 2f
 
+        @JsonSchema(description = "Extra engine power for when having multiple engines per engine")
+        val engineBoost = 0.2
+
+        @JsonSchema(description = "At what amount of engines the boost will start taking effect")
+        val engineBoostOffset = 2.5
+
+        @JsonSchema(description = "The final linear boost will be raised to the power of 2, and the result of the delta is multiple by this value")
+        val engineBoostExponentialPower = 0.000001
+
         @JsonSchema(description = "Max speed of a ship without boosting")
         val maxCasualSpeed = 15.0
 
@@ -57,6 +66,9 @@ object EurekaConfig {
 
         @JsonSchema(description = "The maximum amount extra each floater will multiply the buoyant force by, irrespective of mass")
         var maxFloaterBuoyantFactor = 1.0
+
+        @JsonSchema(description = "how much the mass decreases the speed.")
+        var speedMassScale = 5.0
 
         // The velocity any ship at least can move at.
         @JsonSchema(description = "The speed a ship with no engines can move at")

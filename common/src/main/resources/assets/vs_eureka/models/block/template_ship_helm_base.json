@@ -1,0 +1,130 @@
+{
+	"parent": "block/block",
+	"textures": {
+		"log": "block/oak_log",
+		"log_top": "block/oak_log_top",
+		"planks": "block/oak_planks",
+		"particle": "block/oak_planks"
+	},
+	"elements": [
+		{
+			"name": "Main section 2",
+			"from": [5, 7, 5],
+			"to": [11, 13, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 5, 8]},
+			"faces": {
+				"north": {"uv": [2, 10, 8, 16], "texture": "#planks"},
+				"east": {"uv": [8, 10, 16, 16], "texture": "#planks"},
+				"south": {"uv": [2, 10, 8, 16], "texture": "#planks"},
+				"west": {"uv": [8, 10, 16, 16], "texture": "#planks"},
+				"up": {"uv": [8, 4, 16, 10], "rotation": 90, "texture": "#planks"},
+				"down": {"uv": [8, 4, 16, 10], "rotation": 90, "texture": "#planks"}
+			}
+		},
+		{
+			"name": "Main section 1",
+			"from": [4, 3, 6],
+			"to": [12, 7, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 7]},
+			"faces": {
+				"north": {"uv": [8, 10, 16, 14], "texture": "#planks"},
+				"east": {"uv": [2, 10, 8, 14], "texture": "#planks"},
+				"south": {"uv": [8, 10, 16, 14], "texture": "#planks"},
+				"west": {"uv": [2, 10, 8, 14], "texture": "#planks"},
+				"up": {"uv": [8, 4, 16, 10], "rotation": 180, "texture": "#planks"},
+				"down": {"uv": [8, 4, 16, 10], "texture": "#planks"}
+			}
+		},
+		{
+			"name": "Foundation 2",
+			"from": [3, 2, 5],
+			"to": [13, 3, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 7]},
+			"faces": {
+				"north": {"uv": [5, 10, 15, 11], "texture": "#planks"},
+				"east": {"uv": [4, 2, 5, 10], "rotation": 270, "texture": "#planks"},
+				"south": {"uv": [15, 1, 5, 2], "texture": "#planks"},
+				"west": {"uv": [15, 2, 16, 10], "rotation": 90, "texture": "#planks"},
+				"up": {"uv": [5, 2, 15, 10], "rotation": 180, "texture": "#planks"},
+				"down": {"uv": [5, 2, 15, 10], "texture": "#planks"}
+			}
+		},
+		{
+			"name": "Foundation 1",
+			"from": [3, 0, 3],
+			"to": [13, 2, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 7]},
+			"faces": {
+				"up": {"uv": [2, 2, 14, 14], "rotation": 180, "texture": "#log_top"},
+				"down": {"uv": [2, 2, 14, 14], "rotation": 180, "texture": "#log_top"}
+			}
+		},
+		{
+			"name": "north",
+			"from": [3, 0, 2],
+			"to": [13, 2, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 7]},
+			"faces": {
+				"north": {"uv": [3, 14, 13, 16], "texture": "#log"},
+				"up": {"uv": [3, 15, 13, 16], "rotation": 180, "texture": "#log_top"},
+				"down": {"uv": [3, 15, 13, 16], "rotation": 180, "texture": "#log_top"}
+			}
+		},
+		{
+			"name": "east",
+			"from": [13, 0, 2],
+			"to": [14, 2, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 7]},
+			"faces": {
+				"north": {"uv": [2, 14, 3, 16], "texture": "#log"},
+				"east": {"uv": [2, 8, 14, 10], "texture": "#log"},
+				"south": {"uv": [13, 12, 14, 14], "texture": "#log"},
+				"up": {"uv": [0, 2, 1, 14], "rotation": 180, "texture": "#log_top"},
+				"down": {"uv": [0, 2, 1, 14], "rotation": 180, "texture": "#log_top"}
+			}
+		},
+		{
+			"name": "west",
+			"from": [2, 0, 2],
+			"to": [3, 2, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 7]},
+			"faces": {
+				"north": {"uv": [13, 14, 14, 16], "texture": "#log"},
+				"south": {"uv": [2, 12, 3, 14], "texture": "#log"},
+				"west": {"uv": [2, 10, 14, 12], "texture": "#log"},
+				"up": {"uv": [15, 2, 16, 14], "rotation": 180, "texture": "#log_top"},
+				"down": {"uv": [15, 2, 16, 14], "rotation": 180, "texture": "#log_top"}
+			}
+		},
+		{
+			"name": "south",
+			"from": [3, 0, 13],
+			"to": [13, 2, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 7]},
+			"faces": {
+				"south": {"uv": [3, 12, 13, 14], "texture": "#log"},
+				"up": {"uv": [3, 0, 13, 1], "rotation": 180, "texture": "#log_top"},
+				"down": {"uv": [3, 0, 13, 1], "rotation": 180, "texture": "#log_top"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "base",
+			"origin": [0, 0, 0],
+			"color": 0,
+			"children": [
+				0,
+				1,
+				2,
+				3,
+				{
+					"name": "Foundation 1 Outline",
+					"origin": [8, 8, 7],
+					"color": 0,
+					"children": [4, 5, 6, 7]
+				}
+			]
+		}
+	]
+}
