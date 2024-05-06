@@ -1,22 +1,17 @@
 package org.valkyrienskies.eureka
 
-import net.minecraft.core.Registry
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
 import net.minecraft.world.item.Item
-import net.minecraft.world.item.ItemStack
-import org.valkyrienskies.eureka.registry.CreativeTabs
 import org.valkyrienskies.eureka.registry.DeferredRegister
 
 @Suppress("unused")
 object EurekaItems {
-    private val ITEMS = DeferredRegister.create(EurekaMod.MOD_ID, Registry.ITEM_REGISTRY)
-    val TAB: CreativeModeTab = CreativeTabs.create(
-        ResourceLocation(
-            EurekaMod.MOD_ID,
-            "eureka_tab"
-        )
-    ) { ItemStack(EurekaBlocks.OAK_SHIP_HELM.get()) }
+    internal val ITEMS = DeferredRegister.create(EurekaMod.MOD_ID, Registries.ITEM)
+    val TAB: ResourceKey<CreativeModeTab> =
+        ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation(EurekaMod.MOD_ID, "eureka_tab"))
 
     fun register() {
         EurekaBlocks.registerItems(ITEMS)

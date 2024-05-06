@@ -8,20 +8,24 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
+import org.valkyrienskies.eureka.EurekaItems;
 import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.block.WoodType;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
+import org.valkyrienskies.eureka.registry.CreativeTabs;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
@@ -32,6 +36,12 @@ public class EurekaModFabric implements ModInitializer {
         new ValkyrienSkiesModFabric().onInitialize();
 
         EurekaMod.init();
+
+        Registry.register(
+            BuiltInRegistries.CREATIVE_MODE_TAB,
+            EurekaItems.INSTANCE.getTAB(),
+            CreativeTabs.INSTANCE.create()
+        );
 
         // TODO: make resources packs work
         ModContainer eureka = FabricLoader.getInstance().getModContainer(EurekaMod.MOD_ID)
@@ -46,13 +56,13 @@ public class EurekaModFabric implements ModInitializer {
         @Override
         public void onInitializeClient() {
             EurekaMod.initClient();
-            BlockEntityRendererRegistry.INSTANCE.register(
+            BlockEntityRenderers.register(
                     EurekaBlockEntities.INSTANCE.getSHIP_HELM().get(),
                     ShipHelmBlockEntityRenderer::new
             );
 
             ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
-                for (final WoodType woodType : WoodType.values()) {
+                for (final WoodType woodType : WoodType.getEntries()) {
                     out.accept(new ResourceLocation(
                         EurekaMod.MOD_ID,
                         "block/" + woodType.getResourceName() + "_ship_helm_wheel"

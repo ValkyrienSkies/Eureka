@@ -46,15 +46,16 @@ subprojects {
             name = "ParchmentMC"
             url = "https://maven.parchmentmc.org"
         }
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+        }
     }
 
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         // The following line declares the mojmap mappings, you may use other mappings as well
-        mappings(loom.layered {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-1.18.2:2022.09.04@zip")
-        })
+        mappings loom.officialMojangMappings()
 
         implementation("org.joml:joml:1.10.4") { transitive = false }
         implementation("org.joml:joml-primitives:1.10.0") { transitive = false }
@@ -108,7 +109,6 @@ allprojects {
         maven {
             name = 'Kotlin for Forge'
             url = 'https://thedarkcolour.github.io/KotlinForForge/'
-            content { includeGroup "thedarkcolour" }
         }
         maven {
             name = "Valkyrien Skies Internal"
