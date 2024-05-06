@@ -57,8 +57,14 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
     }
 
     private fun updateButtons() {
-        pos = (Minecraft.getInstance().hitResult as? BlockHitResult)?.blockPos
-        ship = pos?.let { Minecraft.getInstance().level?.getShipManagingPos(it) }
+        val newPos = (Minecraft.getInstance().hitResult as? BlockHitResult)?.blockPos
+        if (newPos != null){
+            pos = newPos
+        }
+        val newShip = pos?.let { Minecraft.getInstance().level?.getShipManagingPos(it) }
+        if (newShip != null){
+            ship = newShip
+        }
 
         val isLookingAtShip = ship != null
 

@@ -21,6 +21,12 @@ body:
       - 1.20​
   validations:
     required: true
+- type: input
+  attributes:
+    label: Eureka version
+    description: The version of Eureka ships
+  validations:
+    required: true
 - type: dropdown
   attributes:
     label: Mod Loader

@@ -36,8 +36,8 @@ import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import java.awt.TextComponent
 
 class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntityBlock(properties) {
-    val HELM_BASE = RotShapes.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0)
-    val HELM_POLE = RotShapes.box(4.0, 1.0, 7.0, 12.0, 12.0, 13.0)
+    val HELM_BASE = RotShapes.box(2.0, 0.0, 2.0, 14.0, 2.0, 14.0)
+    val HELM_POLE = RotShapes.box(4.0, 2.0, 5.0, 12.0, 13.0, 13.0)
 
     val HELM_SHAPE = DirectionalShape(RotShapes.or(HELM_BASE, HELM_POLE))
 
