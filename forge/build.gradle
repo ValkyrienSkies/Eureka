@@ -34,13 +34,6 @@ loom {
     }
 }
 
-repositories {
-    maven {
-        name = 'Kotlin for Forge'
-        url = 'https://thedarkcolour.github.io/KotlinForForge/'
-    }
-}
-
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -50,11 +43,8 @@ configurations {
 }
 
 dependencies {
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixin_extras_version"))
-    implementation(include("io.github.llamalad7:mixinextras-forge:$mixin_extras_version"))
-
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
-    modApi("org.valkyrienskies:valkyrienskies-120-forge:${rootProject.vs2_version}") { transitive = false }
+    forge "net.minecraftforge:forge:$forge_version"
+    modApi("org.valkyrienskies:valkyrienskies-118-forge:$vs2_version") { transitive = false }
 
     implementation("org.valkyrienskies.core:api:$vs_core_version")
     implementation("org.valkyrienskies.core:api-game:$vs_core_version")
@@ -64,7 +54,6 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    // Add Kotlin for Forge.
     implementation "thedarkcolour:kotlinforforge:$forge_kotlin_version"
 }
 

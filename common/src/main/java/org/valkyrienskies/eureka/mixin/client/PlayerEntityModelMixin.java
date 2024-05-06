@@ -18,7 +18,8 @@ public abstract class PlayerEntityModelMixin<T extends LivingEntity> extends Hum
         super(model);
     }
 
-    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "HEAD"))
+    @SuppressWarnings("unchecked")
+    @Inject(method = "setupAnim", at = @At(value = "HEAD"))
     public void setupAnim(final T livingEntity,
                           final float swing,
                           final float g,
@@ -28,7 +29,7 @@ public abstract class PlayerEntityModelMixin<T extends LivingEntity> extends Hum
                           final CallbackInfo info) {
         final Entity vehicle = livingEntity.getVehicle();
         if (vehicle instanceof ShipMountingEntity) {
-            if (vehicle.level().getBlockState(vehicle.blockPosition()).isAir()) {
+            if (vehicle.level.getBlockState(vehicle.blockPosition()).isAir()) {
                 this.riding = false;
             }
         }

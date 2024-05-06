@@ -1,11 +1,12 @@
 package org.valkyrienskies.eureka.gui.shiphelm
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.phys.BlockHitResult
@@ -73,7 +74,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         alignButton.active = disassembleButton.active
     }
 
-    override fun renderBg(guiGraphics: GuiGraphics, partialTicks: Float, mouseX: Int, mouseY: Int) {
+    override fun renderBg(matrixStack: PoseStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
         updateButtons()
 
         RenderSystem.setShader { GameRenderer.getPositionTexShader() }
@@ -81,10 +82,10 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         RenderSystem.setShaderTexture(0, TEXTURE)
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
-        guiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight)
+        blit(matrixStack, x, y, 0, 0, imageWidth, imageHeight)
     }
 
-    override fun renderLabels(guiGraphics: GuiGraphics, i: Int, j: Int) {
+    override fun renderLabels(matrixStack: PoseStack, i: Int, j: Int) {
         if (this.menu.aligning) {
             alignButton.message = ALIGNING_TEXT
             alignButton.active = false
@@ -95,8 +96,8 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
 
         // TODO render stats
         if (ship == null) return
-        ship!!.slug?.let { guiGraphics.drawString(font, it, titleLabelX, titleLabelY, 0x404040, false) }
-        guiGraphics.drawString(font, String.format("%.2f", ship!!.velocity.length()) + "m/s", 8, 25, 0x404040, false)
+        ship!!.slug?.let { font.draw(matrixStack, it, titleLabelX.toFloat(), titleLabelY.toFloat(), 0x404040) }
+        font.draw(matrixStack, String.format("%.2f", ship!!.velocity.length()) + "m/s", 8f, 25f, 0x404040)
     }
 
     // mojank doesn't check mouse release for their widgets for some reason
@@ -117,10 +118,10 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         private const val BUTTON_3_X = 10
         private const val BUTTON_3_Y = 133
 
-        private val ASSEMBLE_TEXT = Component.translatable("gui.vs_eureka.assemble")
-        private val DISSEMBLE_TEXT = Component.translatable("gui.vs_eureka.disassemble")
-        private val ALIGN_TEXT = Component.translatable("gui.vs_eureka.align")
-        private val ALIGNING_TEXT = Component.translatable("gui.vs_eureka.aligning")
-        private val TODO_TEXT = Component.translatable("gui.vs_eureka.todo")
+        private val ASSEMBLE_TEXT = TranslatableComponent("gui.vs_eureka.assemble")
+        private val DISSEMBLE_TEXT = TranslatableComponent("gui.vs_eureka.disassemble")
+        private val ALIGN_TEXT = TranslatableComponent("gui.vs_eureka.align")
+        private val ALIGNING_TEXT = TranslatableComponent("gui.vs_eureka.aligning")
+        private val TODO_TEXT = TranslatableComponent("gui.vs_eureka.todo")
     }
 }

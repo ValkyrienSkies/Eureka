@@ -3,8 +3,6 @@ package org.valkyrienskies.eureka
 import net.minecraft.Util
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Registry
-import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.core.registries.Registries
 import net.minecraft.util.datafix.fixes.References
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -17,7 +15,7 @@ import org.valkyrienskies.eureka.registry.RegistrySupplier
 
 @Suppress("unused")
 object EurekaBlockEntities {
-    private val BLOCKENTITIES = DeferredRegister.create(EurekaMod.MOD_ID, Registries.BLOCK_ENTITY_TYPE)
+    private val BLOCKENTITIES = DeferredRegister.create(EurekaMod.MOD_ID, Registry.BLOCK_ENTITY_TYPE_REGISTRY)
 
     val SHIP_HELM = setOf(
         EurekaBlocks.OAK_SHIP_HELM,

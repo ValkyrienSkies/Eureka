@@ -1,6 +1,5 @@
 {
   "itemGroup.vs_eureka.eureka_tab": "VS Eureka",
-  "itemGroup.vs_eureka.maxShipBlocks": "Ship is too big! Max size is %s blocks (changeable in the config)",
   "block.vs_eureka.oak_ship_helm": "Oak Ship Helm",
   "block.vs_eureka.spruce_ship_helm": "Spruce Ship Helm",
   "block.vs_eureka.birch_ship_helm": "Birch Ship Helm",
@@ -38,6 +37,5 @@
   "gui.vs_eureka.aligning": "Aligning...",
   "gui.vs_eureka.todo": "Disassemble",
   "hud.vs_eureka.start_cruising": "Cruise control enabled",
-  "hud.vs_eureka.stop_cruising": "Cruise control disabled",
-  "itemGroup.eureka": "Eureka"
+  "hud.vs_eureka.stop_cruising": "Cruise control disabled"
 }

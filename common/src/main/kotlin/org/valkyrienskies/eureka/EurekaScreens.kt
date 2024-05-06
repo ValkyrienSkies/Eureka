@@ -1,8 +1,7 @@
 package org.valkyrienskies.eureka
 
-import net.minecraft.core.registries.Registries
+import net.minecraft.core.Registry
 import net.minecraft.world.entity.player.Inventory
-import net.minecraft.world.flag.FeatureFlags
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.MenuType
 import org.valkyrienskies.eureka.gui.engine.EngineScreenMenu
@@ -13,7 +12,7 @@ private typealias HFactory<T> = (syncId: Int, playerInv: Inventory) -> T
 
 @Suppress("unused")
 object EurekaScreens {
-    private val SCREENS = DeferredRegister.create(EurekaMod.MOD_ID, Registries.MENU)
+    private val SCREENS = DeferredRegister.create(EurekaMod.MOD_ID, Registry.MENU_REGISTRY)
 
     val SHIP_HELM = ShipHelmScreenMenu.factory withName "ship_helm"
     val ENGINE = EngineScreenMenu.factory withName "engine"
@@ -23,5 +22,5 @@ object EurekaScreens {
     }
 
     private infix fun <T : AbstractContainerMenu> HFactory<T>.withName(name: String) =
-        SCREENS.register(name) { MenuType(this, FeatureFlags.VANILLA_SET) }
+        SCREENS.register(name) { MenuType(this) }
 }

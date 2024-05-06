@@ -1,15 +1,15 @@
 package org.valkyrienskies.eureka.gui.shiphelm
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.gui.Font
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.util.FormattedCharSequence
 
 class ShipHelmButton(x: Int, y: Int, text: Component, private val font: Font, onPress: OnPress) :
-    Button(x, y, 156, 23, text, onPress, DEFAULT_NARRATION) {
+    Button(x, y, 156, 23, text, onPress) {
 
     var isPressed = false
 
@@ -17,7 +17,7 @@ class ShipHelmButton(x: Int, y: Int, text: Component, private val font: Font, on
         active = true
     }
 
-    override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun renderButton(poseStack: PoseStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!isHovered) isPressed = false
 
         RenderSystem.setShader { GameRenderer.getPositionTexShader() }
@@ -29,20 +29,19 @@ class ShipHelmButton(x: Int, y: Int, text: Component, private val font: Font, on
         RenderSystem.enableDepthTest()
 
         if (this.isPressed || !this.active) {
-            guiGraphics.blit(ShipHelmScreen.TEXTURE, x, y, BUTTON_P_X, BUTTON_P_Y, width, height)
+            this.blit(poseStack, x, y, BUTTON_P_X, BUTTON_P_Y, width, height)
         } else if (this.isHovered) {
-            guiGraphics.blit(ShipHelmScreen.TEXTURE, x, y, BUTTON_H_X, BUTTON_H_Y, width, height)
+            this.blit(poseStack, x, y, BUTTON_H_X, BUTTON_H_Y, width, height)
         }
 
         val color = 0x404040
         val formattedCharSequence: FormattedCharSequence = message.visualOrderText
-        guiGraphics.drawString(
-            font,
+        font.draw(
+            poseStack,
             formattedCharSequence,
-            ((x + width / 2) - font.width(formattedCharSequence) / 2),
-            (y + (height - 8) / 2),
-            color,
-            false
+            ((x + width / 2) - font.width(formattedCharSequence) / 2).toFloat(),
+            (y + (height - 8) / 2).toFloat(),
+            color
         )
     }
 

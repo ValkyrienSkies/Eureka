@@ -33,9 +33,6 @@
     ],
     "modmenu": [
       "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}ModMenu"
-    ],
-    "fabric-datagen": [
-      "org.valkyrienskies.eureka.fabric.EurekaDataGenerator"
     ]
   },
   "mixins": [
@@ -43,7 +40,7 @@
     "vs_eureka.mixins.json"
   ],
   "depends": {
-    "minecraft": ">=1.20.1",
+    "minecraft": ">=1.18.2",
     "valkyrienskies": ">=${vs2_version}",
     "fabricloader": ">=0.14.21"
   }

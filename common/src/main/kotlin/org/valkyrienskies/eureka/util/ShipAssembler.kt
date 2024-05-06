@@ -129,13 +129,8 @@ object ShipAssembler {
 
         ship.activeChunksSet.forEach { chunkX, chunkZ ->
             val chunk = level.getChunk(chunkX, chunkZ)
-            for (sectionIndex in 0 until chunk.sections.size) {
-                val section = chunk.sections[sectionIndex]
-
+            for (section in chunk.sections) {
                 if (section == null || section.hasOnlyAir()) continue
-
-                val bottomY = sectionIndex shl 4
-
                 for (x in 0..15) {
                     for (y in 0..15) {
                         for (z in 0..15) {
@@ -143,7 +138,7 @@ object ShipAssembler {
                             if (state.isAir) continue
 
                             val realX = (chunkX shl 4) + x
-                            val realY = bottomY + y + level.minBuildHeight
+                            val realY = section.bottomBlockY() + y
                             val realZ = (chunkZ shl 4) + z
 
                             val inWorldPos = shipToWorld.transformPosition(alloc0.set(realX + 0.5, realY + 0.5, realZ + 0.5)).floor()
