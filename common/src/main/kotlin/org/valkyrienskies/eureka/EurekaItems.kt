@@ -20,7 +20,7 @@ object EurekaItems {
     ) { ItemStack(EurekaBlocks.OAK_SHIP_HELM.get()) }
 
     val ENDER_TETHER = ITEMS.register("ender_tether") {
-        EnderTether(Item.Properties().tab(TAB))
+        EnderTether(Item.Properties().tab(TAB).stacksTo(1))
     }
 
     fun register() {

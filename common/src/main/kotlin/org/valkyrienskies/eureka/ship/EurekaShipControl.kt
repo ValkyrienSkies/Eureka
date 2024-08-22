@@ -11,18 +11,22 @@ import net.minecraft.world.entity.player.Player
 import org.joml.AxisAngle4d
 import org.joml.Matrix3dc
 import org.joml.Quaterniond
+import org.joml.Quaterniondc
 import org.joml.Vector3d
 import org.joml.Vector3dc
+import org.joml.Vector3ic
 import org.valkyrienskies.core.api.VSBeta
 import org.valkyrienskies.core.api.ships.PhysShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.ServerTickListener
 import org.valkyrienskies.core.api.ships.ShipForcesInducer
 import org.valkyrienskies.core.api.ships.getAttachment
+import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.api.ships.saveAttachment
 import org.valkyrienskies.core.apigame.ShipTeleportData
-import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
+import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
+import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod.currentServer
@@ -81,7 +85,13 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
     var oldSpeed = 0.0
 
     // Follow this player!
-    var followingPlayerId: UUID? = null
+    var enderTetherControlData: EnderTetherControlData? = null
+
+    data class EnderTetherControlData(
+        val followingPlayerId: UUID,
+        val enderAnchorBlockPos: Vector3ic,
+        val followingPlayerDistance: Double,
+    )
 
     private data class ControlData(
         val seatInDirection: Direction,
@@ -425,19 +435,6 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
     // limit x to max using ATan
     private fun smoothingATanMax(max: Double, x: Double): Double = smoothingATan(1 / (max * 0.638), x)
 
-    companion object {
-        fun getOrCreate(ship: ServerShip): EurekaShipControl {
-            return ship.getAttachment<EurekaShipControl>()
-                ?: EurekaShipControl().also { ship.saveAttachment(it) }
-        }
-
-        private const val ALIGN_THRESHOLD = 0.01
-        private const val DISASSEMBLE_THRESHOLD = 0.02
-        private val forcePerBalloon get() = EurekaConfig.SERVER.massPerBalloon * -GRAVITY
-
-        private const val GRAVITY = -10.0
-    }
-
     override fun onServerTick() {
         extraForceLinear = powerLinear
         powerLinear = 0.0
@@ -452,36 +449,37 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         val ship = ship
         if (ship is ServerShip) {
             // TODO: What to do when the ship is not loaded?
-            val followingPlayerId = followingPlayerId
-            if (followingPlayerId != null) {
+            val enderTetherControlData = enderTetherControlData
+            if (enderTetherControlData != null) {
                 ship.isStatic = true
                 ship.enableKinematicVelocity = true
 
                 val dimensionId = ship.chunkClaimDimension
-                val playerEntity = currentServer!!.getLevelFromDimensionId(dimensionId)?.getEntity(followingPlayerId)
+                val playerEntity = currentServer!!.getLevelFromDimensionId(dimensionId)?.getEntity(enderTetherControlData.followingPlayerId)
 
                 if (playerEntity != null) {
                     val playerPos: Vector3dc = playerEntity.position().toJOML()
-                    val shipPos: Vector3dc = ship.transform.positionInWorld
-                    val posDiff: Vector3dc = shipPos.sub(playerPos, Vector3d())
+                    val anchorPos: Vector3dc = ship.transform.shipToWorld.transformPosition(Vector3d(enderTetherControlData.enderAnchorBlockPos.x() + .5, enderTetherControlData.enderAnchorBlockPos.y() + .5, enderTetherControlData.enderAnchorBlockPos.z() + .5))
+                    val posDiff: Vector3dc = anchorPos.sub(playerPos, Vector3d())
                     val dist = posDiff.length()
                     // Avoid the zeroes
                     if (dist > 1e-4) {
-                        val maxDist = 10.0
+                        val maxDist = enderTetherControlData.followingPlayerDistance
                         val correctionLen = max(0.0, dist - maxDist)
                         val correction: Vector3dc = posDiff.mul(-correctionLen / dist, Vector3d())
-                        val newPos: Vector3dc = shipPos.add(correction, Vector3d())
+                        val newPos: Vector3dc = ship.transform.positionInWorld.add(correction, Vector3d())
 
                         val shipTeleportData: ShipTeleportData =
-                            ShipTeleportDataImpl(
+                            ShipTeleportDataBetter(
                                 newPos = newPos,
                                 newRot = ship.transform.shipToWorldRotation,
                                 newDimension = dimensionId,
                                 newScale = ship.transform.shipToWorldScaling.x(),
+                                newPosInShip = ship.inertiaData.centerOfMassInShip.add(0.5, 0.5, 0.5, Vector3d()),
                             )
-                            vsCore.teleportShip(
-                                (playerEntity.level as ServerLevel).shipObjectWorld, ship, shipTeleportData
-                            )
+                        vsCore.teleportShip(
+                            (playerEntity.level as ServerLevel).shipObjectWorld, ship, shipTeleportData
+                        )
                     }
                 }
             } else {
@@ -489,6 +487,37 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
                 ship.isStatic = false
                 ship.enableKinematicVelocity = false
             }
+        }
+    }
+
+    companion object {
+        fun getOrCreate(ship: ServerShip): EurekaShipControl {
+            return ship.getAttachment<EurekaShipControl>()
+                ?: EurekaShipControl().also { ship.saveAttachment(it) }
+        }
+
+        private const val ALIGN_THRESHOLD = 0.01
+        private const val DISASSEMBLE_THRESHOLD = 0.02
+        private val forcePerBalloon get() = EurekaConfig.SERVER.massPerBalloon * -GRAVITY
+
+        private const val GRAVITY = -10.0
+
+        // Use this instead of ShipTransformImpl to fix the ship moving when placing blocks
+        data class ShipTeleportDataBetter(
+            override val newPos: Vector3dc = Vector3d(),
+            override val newRot: Quaterniondc = Quaterniond(),
+            override val newVel: Vector3dc = Vector3d(),
+            override val newOmega: Vector3dc = Vector3d(),
+            override val newDimension: DimensionId? = null,
+            override val newScale: Double? = null,
+            val newPosInShip: Vector3dc,
+        ) : ShipTeleportData {
+            override fun createNewShipTransform(oldShipTransform: ShipTransform): ShipTransform = ShipTransformImpl(
+                positionInWorld = newPos.add(newPosInShip.sub(oldShipTransform.positionInShip, Vector3d()).mul(newScale ?: 1.0).rotate(newRot), Vector3d()),
+                positionInShip = newPosInShip,
+                shipToWorldRotation = newRot,
+                shipToWorldScaling = newScale?.let { Vector3d(it) } ?: oldShipTransform.shipToWorldScaling,
+            )
         }
     }
 }
