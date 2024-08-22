@@ -6,8 +6,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import net.minecraft.core.Direction
 import net.minecraft.network.chat.TranslatableComponent
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.player.Player
-import org.joml.*
+import org.joml.AxisAngle4d
+import org.joml.Matrix3dc
+import org.joml.Quaterniond
+import org.joml.Vector3d
+import org.joml.Vector3dc
 import org.valkyrienskies.core.api.VSBeta
 import org.valkyrienskies.core.api.ships.PhysShip
 import org.valkyrienskies.core.api.ships.ServerShip
@@ -15,11 +20,24 @@ import org.valkyrienskies.core.api.ships.ServerTickListener
 import org.valkyrienskies.core.api.ships.ShipForcesInducer
 import org.valkyrienskies.core.api.ships.getAttachment
 import org.valkyrienskies.core.api.ships.saveAttachment
+import org.valkyrienskies.core.apigame.ShipTeleportData
+import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
 import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod.currentServer
+import org.valkyrienskies.mod.common.getLevelFromDimensionId
+import org.valkyrienskies.mod.common.shipObjectWorld
+import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.util.toJOMLD
-import kotlin.math.*
+import org.valkyrienskies.mod.common.vsCore
+import java.util.UUID
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.atan
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.min
 
 @JsonAutoDetect(
     fieldVisibility = JsonAutoDetect.Visibility.ANY,
@@ -61,6 +79,9 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
     @JsonIgnore
     var oldSpeed = 0.0
+
+    // Follow this player!
+    var followingPlayerId: UUID? = null
 
     private data class ControlData(
         val seatInDirection: Direction,
@@ -321,8 +342,8 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
         if (extraForceLinear != 0.0) {
             // engine boost
-            val boost = max((extraForceLinear - EurekaConfig.SERVER.enginePowerLinear * EurekaConfig.SERVER.engineBoostOffset) * EurekaConfig.SERVER.engineBoost, 0.0);
-            extraForceLinear += boost + boost * boost * EurekaConfig.SERVER.engineBoostExponentialPower;
+            val boost = max((extraForceLinear - EurekaConfig.SERVER.enginePowerLinear * EurekaConfig.SERVER.engineBoostOffset) * EurekaConfig.SERVER.engineBoost, 0.0)
+            extraForceLinear += boost + boost * boost * EurekaConfig.SERVER.engineBoostExponentialPower
 
             // This is the maximum speed we want to go in any scenario (when not sprinting)
             val idealForwardVel = Vector3d(forwardVector).mul(EurekaConfig.SERVER.maxCasualSpeed)
@@ -426,5 +447,48 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
         consumed = physConsumption * /* should be physics ticks based*/ 0.1f
         physConsumption = 0.0f
+
+        // If we are following a player, then set ship to static and move it to follow the player
+        val ship = ship
+        if (ship is ServerShip) {
+            // TODO: What to do when the ship is not loaded?
+            val followingPlayerId = followingPlayerId
+            if (followingPlayerId != null) {
+                ship.isStatic = true
+                ship.enableKinematicVelocity = true
+
+                val dimensionId = ship.chunkClaimDimension
+                val playerEntity = currentServer!!.getLevelFromDimensionId(dimensionId)?.getEntity(followingPlayerId)
+
+                if (playerEntity != null) {
+                    val playerPos: Vector3dc = playerEntity.position().toJOML()
+                    val shipPos: Vector3dc = ship.transform.positionInWorld
+                    val posDiff: Vector3dc = shipPos.sub(playerPos, Vector3d())
+                    val dist = posDiff.length()
+                    // Avoid the zeroes
+                    if (dist > 1e-4) {
+                        val maxDist = 10.0
+                        val correctionLen = max(0.0, dist - maxDist)
+                        val correction: Vector3dc = posDiff.mul(-correctionLen / dist, Vector3d())
+                        val newPos: Vector3dc = shipPos.add(correction, Vector3d())
+
+                        val shipTeleportData: ShipTeleportData =
+                            ShipTeleportDataImpl(
+                                newPos = newPos,
+                                newRot = ship.transform.shipToWorldRotation,
+                                newDimension = dimensionId,
+                                newScale = ship.transform.shipToWorldScaling.x(),
+                            )
+                            vsCore.teleportShip(
+                                (playerEntity.level as ServerLevel).shipObjectWorld, ship, shipTeleportData
+                            )
+                    }
+                }
+            } else {
+                // Stop being static
+                ship.isStatic = false
+                ship.enableKinematicVelocity = false
+            }
+        }
     }
 }

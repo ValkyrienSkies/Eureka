@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import org.valkyrienskies.eureka.item.EnderTether
 import org.valkyrienskies.eureka.registry.CreativeTabs
 import org.valkyrienskies.eureka.registry.DeferredRegister
 
@@ -17,6 +18,10 @@ object EurekaItems {
             "eureka_tab"
         )
     ) { ItemStack(EurekaBlocks.OAK_SHIP_HELM.get()) }
+
+    val ENDER_TETHER = ITEMS.register("ender_tether") {
+        EnderTether(Item.Properties().tab(TAB))
+    }
 
     fun register() {
         EurekaBlocks.registerItems(ITEMS)

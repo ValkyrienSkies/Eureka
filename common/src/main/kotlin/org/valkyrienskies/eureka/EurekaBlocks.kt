@@ -22,6 +22,7 @@ object EurekaBlocks {
     val ENGINE = BLOCKS.register("engine", ::EngineBlock)
     val FLOATER = BLOCKS.register("floater", ::FloaterBlock)
     val BALLAST = BLOCKS.register("ballast", ::BallastBlock)
+    val ENDER_ANCHOR = BLOCKS.register("ender_anchor", ::EnderAnchorBlock)
 
     // region Ship Helms
     val OAK_SHIP_HELM = BLOCKS.register("oak_ship_helm") {
