@@ -7,12 +7,14 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.Level
 import org.valkyrienskies.eureka.EurekaBlocks
+import org.valkyrienskies.eureka.EurekaItems
 import org.valkyrienskies.eureka.gui.ender_tether.EnderTetherEditScreen
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.mod.common.getShipManagingPos
@@ -21,14 +23,32 @@ import org.valkyrienskies.mod.common.util.toJOML
 class EnderTether(
     properties: Properties
 ) : Item(properties) {
-    // TODO: Add data to this item when the ship is tethered?
+
+    fun getTetherDistance(itemStack: ItemStack): Double? {
+        return if (itemStack.getOrCreateTag().contains(NBT_TAG)) {
+            itemStack.getOrCreateTag().getDouble(NBT_TAG)
+        } else {
+            null
+        }
+    }
+
+    fun setTetherDistance(itemStack: ItemStack, inventory: Inventory?, tetherDistance: Double) {
+        itemStack.getOrCreateTag().putDouble(NBT_TAG, sanitizeInput(tetherDistance))
+        inventory?.setChanged()
+    }
+
     override fun isFoil(stack: ItemStack): Boolean {
         return true
     }
 
     override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {
         if (level.isClientSide) {
-            Minecraft.getInstance().setScreen(EnderTetherEditScreen())
+            Minecraft.getInstance().setScreen(
+                EnderTetherEditScreen(
+                    EurekaItems.ENDER_TETHER.get().getTetherDistance(player.getItemInHand(usedHand))
+                        ?: DEFAULT_TETHER_DISTANCE
+                )
+            )
         }
         return super.use(level, player, usedHand)
     }
@@ -59,8 +79,7 @@ class EnderTether(
         eurekaControl.enderTetherControlData = EurekaShipControl.EnderTetherControlData(
             followingPlayerId = player.uuid,
             enderAnchorBlockPos = pos.toJOML(),
-            // TODO: Store this in item NBT
-            followingPlayerDistance = 10.0,
+            followingPlayerDistance = getTetherDistance(ctx.itemInHand) ?: DEFAULT_TETHER_DISTANCE,
         )
 
         player.sendMessage(TETHER_SUCCESSFUL, Util.NIL_UUID)
@@ -72,5 +91,12 @@ class EnderTether(
         // TODO: Translation files
         private val SHIP_HELM_NECESSARY = TranslatableComponent("Ship Helm is necessary for Ender Anchors to function!")
         private val TETHER_SUCCESSFUL = TranslatableComponent("Ender Anchor tethered successfully!")
+        private const val DEFAULT_TETHER_DISTANCE = 10.0
+        const val MIN_TETHER_DISTANCE = 1.0
+        const val MAX_TETHER_DISTANCE = 100.0
+        private const val NBT_TAG = "tether_distance"
+
+        fun sanitizeInput(tetherDistance: Double) =
+            tetherDistance.coerceIn(MIN_TETHER_DISTANCE, MAX_TETHER_DISTANCE)
     }
 }

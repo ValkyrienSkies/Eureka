@@ -8,29 +8,32 @@ import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.TranslatableComponent
 import org.valkyrienskies.core.impl.networking.simple.sendToServer
+import org.valkyrienskies.eureka.item.EnderTether
 import org.valkyrienskies.eureka.networking.PacketSetTetherDistance
 
-class EnderTetherEditScreen : Screen(SCREEN_TITLE) {
+class EnderTetherEditScreen(private val initialTetherDistance: Double) : Screen(SCREEN_TITLE) {
 
     private lateinit var numberField: EditBox
     private lateinit var doneButton: Button
 
     override fun init() {
-        val numBoxWidth = 100
-        val numBoxHeight = 20
         // Put this in the center of the screen
         numberField = EditBox(
             this.font,
-            (this.width - numBoxWidth) / 2,
-            (this.height - numBoxHeight) / 2,
-            numBoxWidth,
-            numBoxHeight,
+            (this.width - NUM_BOX_WIDTH) / 2,
+            (this.height - NUM_BOX_HEIGHT) / 2,
+            NUM_BOX_WIDTH,
+            NUM_BOX_HEIGHT,
             EDIT_BOX_DESCRIPTION,
         ).apply {
             setMaxLength(10)
             setFilter { s -> s.matches(REGEX) }
-            // TODO: Get this value from the item NBT
-            value = "10"
+            value = if (::numberField.isInitialized) {
+                // Copy val from prev box
+                numberField.value
+            } else {
+                initialTetherDistance.toString()
+            }
         }
         doneButton = Button(
             width / 2 - 50,
@@ -63,6 +66,18 @@ class EnderTetherEditScreen : Screen(SCREEN_TITLE) {
         // Render the title
         drawCenteredString(poseStack, font, title.string, width / 2, 20, 0xFFFFFF)
 
+        // Render the invalid text
+        if (!isInputValid()) {
+            drawCenteredString(
+                poseStack,
+                font,
+                OUT_OF_RANGE_TEXT.string + " {${EnderTether.MIN_TETHER_DISTANCE}, ${EnderTether.MAX_TETHER_DISTANCE}}",
+                this.width / 2,
+                this.height / 2 + 15,
+                0xFF008D,
+            )
+        }
+
         // Render the edit box description
         drawCenteredString(
             poseStack,
@@ -84,8 +99,15 @@ class EnderTetherEditScreen : Screen(SCREEN_TITLE) {
 
     private fun sendTetherDistanceToServer() {
         // Handle the number entered (you can add logic to process the input here)
-        val enteredNumber = numberField.value
-        PacketSetTetherDistance(enteredNumber.toDouble(), minecraft!!.player!!.usedItemHand).sendToServer()
+        if (isInputValid()) {
+            val enteredNumber = numberField.value.toDouble()
+            PacketSetTetherDistance(enteredNumber, minecraft!!.player!!.usedItemHand).sendToServer()
+        }
+    }
+
+    private fun isInputValid(): Boolean {
+        val enteredNumber = numberField.value.toDouble()
+        return enteredNumber == enteredNumber.coerceIn(EnderTether.MIN_TETHER_DISTANCE, EnderTether.MAX_TETHER_DISTANCE)
     }
 
     override fun onClose() {
@@ -94,7 +116,7 @@ class EnderTetherEditScreen : Screen(SCREEN_TITLE) {
     }
 
     companion object {
-        private val REGEX = Regex("\\d*")
+        private val REGEX = Regex("^(\\d*)(\\.\\d+)?\$")
         // TODO: Custom background texture
         private val BACKGROUND_TEXTURE =
             GuiComponent.BACKGROUND_LOCATION // ResourceLocation("mymod", "textures/gui/number_input.png")
@@ -102,5 +124,8 @@ class EnderTetherEditScreen : Screen(SCREEN_TITLE) {
         private val SCREEN_TITLE = TranslatableComponent("Ender Tether")
         private val EDIT_BOX_DESCRIPTION = TranslatableComponent("Tether Distance")
         private val DONE_BOX_TEXT = TranslatableComponent("Done")
+        private val OUT_OF_RANGE_TEXT = TranslatableComponent("Out Of Range")
+        private const val NUM_BOX_WIDTH = 100
+        private const val NUM_BOX_HEIGHT = 20
     }
 }

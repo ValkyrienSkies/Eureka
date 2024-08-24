@@ -12,14 +12,14 @@ object EurekaGamePackets {
     }
 
     fun registerHandlers() {
-        PacketSetTetherDistance::class.registerServerHandler { tetherDistance, iPlayer ->
+        PacketSetTetherDistance::class.registerServerHandler { tetherDistancePacket, iPlayer ->
             val player = (iPlayer as MinecraftPlayer).player as ServerPlayer
-            val heldItem = player.getItemInHand(tetherDistance.itemHandSlot)
-            if (heldItem.item != EurekaItems.ENDER_TETHER.get()) {
+            val heldItemStack = player.getItemInHand(tetherDistancePacket.itemHandSlot)
+            if (heldItemStack.item != EurekaItems.ENDER_TETHER.get()) {
                 return@registerServerHandler
             }
-            // TODO: Clamp this value to be between 0 and 100 or something, then store it in item NBT
-            println("Server got packet with tetherDistance $tetherDistance from player $player")
+            EurekaItems.ENDER_TETHER.get()
+                .setTetherDistance(heldItemStack, player.inventory, tetherDistancePacket.tetherDistance)
         }
     }
 }
