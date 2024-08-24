@@ -2,7 +2,7 @@ package org.valkyrienskies.eureka.item
 
 import net.minecraft.Util
 import net.minecraft.client.Minecraft
-import net.minecraft.network.chat.TextComponent
+import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -12,7 +12,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.Level
-import org.valkyrienskies.eureka.block.EnderAnchorBlock
+import org.valkyrienskies.eureka.EurekaBlocks
 import org.valkyrienskies.eureka.gui.ender_tether.EnderTetherEditScreen
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.mod.common.getShipManagingPos
@@ -38,11 +38,9 @@ class EnderTether(
         val level = ctx.level
         val pos = ctx.clickedPos
         val blockState = level.getBlockState(pos)
-        val isBlockAnAnchor = blockState.block is EnderAnchorBlock
+        val isBlockAnAnchor = blockState.block == EurekaBlocks.ENDER_ANCHOR.get()
         if (ctx.level.isClientSide) {
-            if (!isBlockAnAnchor) {
-                // Open the gui if we didn't click an anchor
-                Minecraft.getInstance().setScreen(EnderTetherEditScreen())
+            if (isBlockAnAnchor) {
                 return InteractionResult.SUCCESS
             }
             return super.useOn(ctx)
@@ -54,20 +52,25 @@ class EnderTether(
 
         if (eurekaControl == null) {
             // Tell player they need to place a helm for the ender anchor to work
-            // TODO: Put this message in translation file
-            player.sendMessage(TextComponent("Ship Helm is necessary for Ender Anchors to function!"), Util.NIL_UUID)
+            player.sendMessage(SHIP_HELM_NECESSARY, Util.NIL_UUID)
             return super.useOn(ctx)
         }
 
         eurekaControl.enderTetherControlData = EurekaShipControl.EnderTetherControlData(
             followingPlayerId = player.uuid,
             enderAnchorBlockPos = pos.toJOML(),
+            // TODO: Store this in item NBT
             followingPlayerDistance = 10.0,
         )
 
-        // TODO: Put this message in translation file
-        player.sendMessage(TextComponent("Ender Anchor tethered successfully!"), Util.NIL_UUID)
+        player.sendMessage(TETHER_SUCCESSFUL, Util.NIL_UUID)
 
         return InteractionResult.SUCCESS
+    }
+
+    companion object {
+        // TODO: Translation files
+        private val SHIP_HELM_NECESSARY = TranslatableComponent("Ship Helm is necessary for Ender Anchors to function!")
+        private val TETHER_SUCCESSFUL = TranslatableComponent("Ender Anchor tethered successfully!")
     }
 }
