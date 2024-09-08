@@ -54,7 +54,7 @@ public class EurekaModFabric implements ModInitializer {
             );
 
             ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
-                for (final WoodType woodType : WoodType.values()) {
+                for (final WoodType woodType : WoodType.getEntries()) {
                     out.accept(new ResourceLocation(
                         EurekaMod.MOD_ID,
                         "block/" + woodType.getResourceName() + "_ship_helm_wheel"

@@ -87,7 +87,7 @@ class EurekaModForge {
     }
 
     private fun onModelRegistry(event: ModelRegistryEvent?) {
-        for (woodType in WoodType.values()) {
+        for (woodType in WoodType.entries) {
             ForgeModelBakery.addSpecialModel(
                 ResourceLocation(
                     EurekaMod.MOD_ID, "block/" + woodType.resourceName + "_ship_helm_wheel"
