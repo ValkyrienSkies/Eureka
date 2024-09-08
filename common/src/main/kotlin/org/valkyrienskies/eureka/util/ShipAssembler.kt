@@ -210,7 +210,7 @@ object ShipAssembler {
     }
 
     private fun directions(center: BlockPos, lambda: (BlockPos) -> Unit) {
-        if (!EurekaConfig.SERVER.diagonals) Direction.values().forEach { lambda(center.relative(it)) }
+        if (!EurekaConfig.SERVER.diagonals) Direction.entries.forEach { lambda(center.relative(it)) }
         for (x in -1..1) {
             for (y in -1..1) {
                 for (z in -1..1) {
