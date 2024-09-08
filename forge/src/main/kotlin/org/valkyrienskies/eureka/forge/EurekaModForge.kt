@@ -11,7 +11,6 @@ import net.minecraftforge.client.model.ForgeModelBakery
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
-import org.valkyrienskies.core.impl.config.VSConfigClass.Companion.getRegisteredConfig
 import org.valkyrienskies.eureka.EurekaBlockEntities.SHIP_HELM
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
@@ -51,7 +50,7 @@ class EurekaModForge {
             ConfigGuiFactory { _: Minecraft?, parent: Screen? ->
                 createConfigScreenFor(
                     parent!!,
-                    getRegisteredConfig(EurekaConfig::class.java)
+                    EurekaConfig::class.java,
                 )
             }
         }
