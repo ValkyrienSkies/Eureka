@@ -26,7 +26,6 @@ import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.getAttachment
-import org.valkyrienskies.core.impl.util.logger
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
@@ -39,6 +38,7 @@ import org.valkyrienskies.mod.common.entity.ShipMountingEntity
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOMLD
+import org.valkyrienskies.mod.util.logger
 
 var ASSEMBLE_BLACKLIST: TagKey<Block> =
     TagKey.create(Registry.BLOCK_REGISTRY, ResourceLocation(EurekaMod.MOD_ID, "assemble_blacklist"))
