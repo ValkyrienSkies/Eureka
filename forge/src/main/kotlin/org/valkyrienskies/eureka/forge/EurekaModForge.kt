@@ -17,6 +17,7 @@ import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.eureka.EurekaMod.init
 import org.valkyrienskies.eureka.EurekaMod.initClient
+import org.valkyrienskies.eureka.block.IWoodType
 import org.valkyrienskies.eureka.block.WoodType
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels.setModelGetter
@@ -66,13 +67,13 @@ class EurekaModForge {
         }
         happendClientSetup = true
         initClient()
-        setModelGetter { woodType: WoodType ->
+        setModelGetter { woodType: IWoodType ->
             ForgeModelBakery.instance()!!
                 .bakedTopLevelModels
                 .getOrDefault(
                     ResourceLocation(
                         EurekaMod.MOD_ID,
-                        "block/" + woodType.resourceName + "_ship_helm_wheel"
+                        "block/" + woodType.getSerializedName().lowercase() + "_ship_helm_wheel"
                     ),
                     Minecraft.getInstance().modelManager.missingModel
                 )
@@ -91,7 +92,7 @@ class EurekaModForge {
         for (woodType in WoodType.values()) {
             ForgeModelBakery.addSpecialModel(
                 ResourceLocation(
-                    EurekaMod.MOD_ID, "block/" + woodType.resourceName + "_ship_helm_wheel"
+                    EurekaMod.MOD_ID, "block/" + woodType.getSerializedName().lowercase() + "_ship_helm_wheel"
                 )
             )
         }
