@@ -8,11 +8,14 @@ import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.TextComponent
 import net.minecraft.network.chat.TranslatableComponent
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.tags.TagKey
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -26,6 +29,7 @@ import org.valkyrienskies.core.api.ships.getAttachment
 import org.valkyrienskies.core.impl.util.logger
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
+import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
@@ -35,6 +39,9 @@ import org.valkyrienskies.mod.common.entity.ShipMountingEntity
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOMLD
+
+var ASSEMBLE_BLACKLIST: TagKey<Block> =
+    TagKey.create(Registry.BLOCK_REGISTRY, ResourceLocation(EurekaMod.MOD_ID, "assemble_blacklist"))
 
 class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(EurekaBlockEntities.SHIP_HELM.get(), pos, state), MenuProvider {
@@ -125,7 +132,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         val builtShip = ShipAssembler.collectBlocks(
             level,
             blockPos
-        ) { !it.isAir && !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
+        ) { !it.isAir && !it.`is`(ASSEMBLE_BLACKLIST) }
 
         if (builtShip == null) {
             player.sendMessage(TextComponent("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks (changeable in the config)"), Util.NIL_UUID)
