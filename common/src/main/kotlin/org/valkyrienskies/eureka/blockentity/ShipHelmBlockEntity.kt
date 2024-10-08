@@ -134,7 +134,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
             blockPos
         ) { !it.isAir && !it.`is`(ASSEMBLE_BLACKLIST) &&
             // TODO: Remove blockBlacklist
-            (EurekaConfig.SERVER.blockBlacklist.isNotEmpty() && !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()))
+            !(EurekaConfig.SERVER.blockBlacklist.isNotEmpty() && EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()))
         }
 
         if (builtShip == null) {
