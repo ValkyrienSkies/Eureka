@@ -165,5 +165,10 @@ object EurekaConfig {
 
         @JsonSchema(description = "Maximum number of blocks allowed in a ship. Set to 0 for no limit")
         val maxShipBlocks = 32 * 32 * 32
+
+        // TODO: Remove blockBlacklist
+        // Blacklist of blocks that don't get added for ship building
+        @JsonSchema(description = "Blacklist of blocks that don't get assembled (Use Block Tag instead)")
+        var blockBlacklist : Set<String> = emptySet()
     }
 }

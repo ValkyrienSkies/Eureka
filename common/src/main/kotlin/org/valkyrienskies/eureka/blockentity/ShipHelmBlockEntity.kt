@@ -132,7 +132,10 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         val builtShip = ShipAssembler.collectBlocks(
             level,
             blockPos
-        ) { !it.isAir && !it.`is`(ASSEMBLE_BLACKLIST) }
+        ) { !it.isAir && !it.`is`(ASSEMBLE_BLACKLIST) &&
+            // TODO: Remove blockBlacklist
+            (EurekaConfig.SERVER.blockBlacklist.isNotEmpty() && !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()))
+        }
 
         if (builtShip == null) {
             player.sendMessage(TextComponent("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks (changeable in the config)"), Util.NIL_UUID)
