@@ -7,9 +7,9 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.FurnaceFuelSlot.isBucket
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity
 import org.valkyrienskies.eureka.EurekaScreens
 import org.valkyrienskies.eureka.blockentity.EngineBlockEntity
+import org.valkyrienskies.eureka.registry.FuelRegistry
 import org.valkyrienskies.eureka.util.KtContainerData
 import org.valkyrienskies.eureka.util.inventorySlots
 
@@ -39,7 +39,7 @@ class EngineScreenMenu(syncId: Int, playerInv: Inventory, val blockEntity: Engin
 
     override fun quickMoveStack(player: Player, index: Int): ItemStack {
         val slot = this.slots[index]
-        if (slot != null && slot.hasItem() && (AbstractFurnaceBlockEntity.isFuel(slot.item) || isBucket(slot.item))) {
+        if (slot != null && slot.hasItem() && (isBucket(slot.item) || FuelRegistry.INSTANCE.get(slot.item) > 0 )) {
             if (index != 0) {
                 this.moveItemStackTo(slot.item, 0, 1, false)
                 slot.setChanged()

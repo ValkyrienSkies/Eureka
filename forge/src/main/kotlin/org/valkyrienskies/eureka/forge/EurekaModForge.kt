@@ -5,10 +5,10 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraftforge.client.ConfigScreenHandler
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
-import org.valkyrienskies.core.impl.config.VSConfigClass.Companion.getRegisteredConfig
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.eureka.EurekaMod.init
+import org.valkyrienskies.eureka.forge.registry.FuelRegistryImpl
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig.createConfigScreenFor
 import thedarkcolour.kotlinforforge.forge.LOADING_CONTEXT
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
@@ -29,10 +29,11 @@ class EurekaModForge {
             ConfigScreenHandler.ConfigScreenFactory { _: Minecraft?, parent: Screen? ->
                 createConfigScreenFor(
                     parent!!,
-                    getRegisteredConfig(EurekaConfig::class.java)
+                    EurekaConfig::class.java,
                 )
             }
         }
+        FuelRegistryImpl()
         init()
     }
 

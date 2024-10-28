@@ -24,7 +24,13 @@ body:
 - type: input
   attributes:
     label: Eureka version
-    description: The version of Eureka ships
+    description: What version of Eureka ships does this issue occur on?
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: VS2 version
+    description: What version of Valkyrien Skies 2 does this issue occur on?
   validations:
     required: true
 - type: dropdown

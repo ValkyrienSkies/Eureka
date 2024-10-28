@@ -29,6 +29,7 @@ body:
       - 1.16
       - 1.18
       - 1.19
+      - 1.20
   validations:
     required: true
 - type: dropdown
@@ -39,6 +40,12 @@ body:
       - Forge
       - Fabric
       - Quilt
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: Eureka version
+    description: What version of Eureka ships does this issue occur on?
   validations:
     required: true
 - type: textarea

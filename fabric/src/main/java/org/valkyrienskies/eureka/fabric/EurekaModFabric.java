@@ -15,13 +15,13 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.resources.ResourceLocation;
-import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaMod;
 import org.valkyrienskies.eureka.block.WoodType;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
+import org.valkyrienskies.eureka.fabric.registry.FuelRegistryImpl;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
@@ -30,6 +30,8 @@ public class EurekaModFabric implements ModInitializer {
     public void onInitialize() {
         // force VS2 to load before eureka
         new ValkyrienSkiesModFabric().onInitialize();
+
+        new FuelRegistryImpl();
 
         EurekaMod.init();
 
@@ -74,7 +76,7 @@ public class EurekaModFabric implements ModInitializer {
         public ConfigScreenFactory<?> getModConfigScreenFactory() {
             return (parent) -> VSClothConfig.createConfigScreenFor(
                     parent,
-                    VSConfigClass.Companion.getRegisteredConfig(EurekaConfig.class)
+                    EurekaConfig.class
             );
         }
     }

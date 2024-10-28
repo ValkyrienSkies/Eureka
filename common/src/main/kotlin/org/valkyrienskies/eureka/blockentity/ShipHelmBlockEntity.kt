@@ -5,11 +5,14 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.tags.TagKey
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -20,9 +23,9 @@ import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.getAttachment
-import org.valkyrienskies.core.impl.util.logger
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
+import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.gui.shiphelm.ShipHelmScreenMenu
 import org.valkyrienskies.eureka.ship.EurekaShipControl
@@ -32,6 +35,10 @@ import org.valkyrienskies.mod.common.entity.ShipMountingEntity
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOMLD
+import org.valkyrienskies.mod.util.logger
+
+var ASSEMBLE_BLACKLIST: TagKey<Block> =
+    TagKey.create(Registry.BLOCK_REGISTRY, ResourceLocation(EurekaMod.MOD_ID, "assemble_blacklist"))
 
 class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(EurekaBlockEntities.SHIP_HELM.get(), pos, state), MenuProvider {
@@ -119,14 +126,26 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         val blockState = level.getBlockState(blockPos)
         if (blockState.block !is ShipHelmBlock) return
 
+        var helmCount = 0
         val builtShip = ShipAssembler.collectBlocks(
             level,
             blockPos
-        ) { !it.isAir && !EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()) }
+        ) {
+            val allowed = !it.isAir && !it.`is`(ASSEMBLE_BLACKLIST) &&
+            // TODO: Remove blockBlacklist
+            !(EurekaConfig.SERVER.blockBlacklist.isNotEmpty() && EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()))
+            // This isn't the best way to count helms, but it'll work I promise!
+            if (allowed && it.block is ShipHelmBlock) {
+                helmCount++
+            }
+            return@collectBlocks allowed
+        }
 
         if (builtShip == null) {
             player.displayClientMessage(Component.translatable("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks (changable in the config)"), true)
             logger.warn("Failed to assemble ship for ${player.name.string}")
+        } else {
+            EurekaShipControl.getOrCreate(builtShip).helms = helmCount
         }
     }
 

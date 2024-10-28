@@ -34,5 +34,7 @@
   "gui.vs_eureka.disassemble": "Désassembler",
   "gui.vs_eureka.align": "Aligner",
   "gui.vs_eureka.aligning": "Alignement...",
-  "gui.vs_eureka.todo": "Désassembler"
+  "gui.vs_eureka.todo": "Désassembler",
+  "hud.vs_eureka.start_cruising": "Mode croisière activé",
+  "hud.vs_eureka.stop_cruising": "Mode croisière désactivé"
 }
