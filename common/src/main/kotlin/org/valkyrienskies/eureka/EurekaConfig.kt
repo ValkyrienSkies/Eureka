@@ -122,11 +122,11 @@ object EurekaConfig {
 
         // Instability scaled with mass and squared speed
         @JsonSchema(description = "Stronger stabilization with higher mass, less at higher speeds.")
-        var scaledInstability = 1000.0
+        var scaledInstability = 70.0
 
         // Unscaled linear instability cased by speed
         @JsonSchema(description = "Less stabilization at higher speed.")
-        var unscaledInstability = 0.271828
+        var unscaledInstability = 0.1
 
         @JsonSchema(description = "How fast a ship will stop and accelerate.")
         var linearMassScaling = 0.0002
