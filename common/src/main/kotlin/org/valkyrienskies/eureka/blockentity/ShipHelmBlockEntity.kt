@@ -129,17 +129,26 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         val blockState = level.getBlockState(blockPos)
         if (blockState.block !is ShipHelmBlock) return
 
+        var helmCount = 0
         val builtShip = ShipAssembler.collectBlocks(
             level,
             blockPos
-        ) { !it.isAir && !it.`is`(ASSEMBLE_BLACKLIST) &&
+        ) {
+            val allowed = !it.isAir && !it.`is`(ASSEMBLE_BLACKLIST) &&
             // TODO: Remove blockBlacklist
             !(EurekaConfig.SERVER.blockBlacklist.isNotEmpty() && EurekaConfig.SERVER.blockBlacklist.contains(Registry.BLOCK.getKey(it.block).toString()))
+            // This isn't the best way to count helms, but it'll work I promise!
+            if (allowed && it.block is ShipHelmBlock) {
+                helmCount++
+            }
+            return@collectBlocks allowed
         }
 
         if (builtShip == null) {
             player.sendMessage(TextComponent("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks (changeable in the config)"), Util.NIL_UUID)
             logger.warn("Failed to assemble ship for ${player.name.string}")
+        } else {
+            EurekaShipControl.getOrCreate(builtShip).helms = helmCount
         }
     }
 
