@@ -15,7 +15,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaMod;
@@ -78,7 +77,7 @@ public class EurekaModFabric implements ModInitializer {
         public ConfigScreenFactory<?> getModConfigScreenFactory() {
             return (parent) -> VSClothConfig.createConfigScreenFor(
                     parent,
-                    VSConfigClass.Companion.getRegisteredConfig(EurekaConfig.class)
+                    EurekaConfig.class
             );
         }
     }

@@ -122,11 +122,11 @@ object EurekaConfig {
 
         // Instability scaled with mass and squared speed
         @JsonSchema(description = "Stronger stabilization with higher mass, less at higher speeds.")
-        var scaledInstability = 1000.0
+        var scaledInstability = 70.0
 
         // Unscaled linear instability cased by speed
         @JsonSchema(description = "Less stabilization at higher speed.")
-        var unscaledInstability = 0.271828
+        var unscaledInstability = 0.1
 
         @JsonSchema(description = "How fast a ship will stop and accelerate.")
         var linearMassScaling = 0.0002
@@ -151,104 +151,6 @@ object EurekaConfig {
         @JsonSchema(description = "Chance for popped balloons to pop adjacent balloons, per side")
         var popSideBalloonChance = 0.3
 
-        // Blacklist of blocks that don't get added for ship building
-        @JsonSchema(description = "Blacklist of blocks that don't get assembled")
-        var blockBlacklist = setOf(
-            "vs_eureka:ship_helm",
-            "minecraft:dirt",
-            "minecraft:grass_block",
-            "minecraft:grass_path",
-            "minecraft:stone",
-            "minecraft:bedrock",
-            "minecraft:sand",
-            "minecraft:gravel",
-            "minecraft:water",
-            "minecraft:flowing_water",
-            "minecraft:lava",
-            "minecraft:flowing_lava",
-            "minecraft:lily_pad",
-            "minecraft:coarse_dirt",
-            "minecraft:podzol",
-            "minecraft:granite",
-            "minecraft:diorite",
-            "minecraft:andesite",
-            "minecraft:deepslate",
-            "minecraft:tuff",
-            "minecraft:crimson_nylium",
-            "minecraft:warped_nylium",
-            "minecraft:red_sand",
-            "minecraft:sandstone",
-            "minecraft:end_stone",
-            "minecraft:red_sandstone",
-            "minecraft:blackstone",
-            "minecraft:netherrack",
-            "minecraft:soul_sand",
-            "minecraft:soul_soil",
-            "minecraft:grass",
-            "minecraft:fern",
-            "minecraft:dead_bush",
-            "minecraft:seagrass",
-            "minecraft:tall_seagrass",
-            "minecraft:sea_pickle",
-            "minecraft:kelp",
-            "minecraft:bamboo",
-            "minecraft:dandelion",
-            "minecraft:poppy",
-            "minecraft:blue_orchid",
-            "minecraft:allium",
-            "minecraft:azure_bluet",
-            "minecraft:red_tulip",
-            "minecraft:orange_tulip",
-            "minecraft:white_tulip",
-            "minecraft:pink_tulip",
-            "minecraft:oxeye_daisy",
-            "minecraft:cornflower",
-            "minecraft:lily_of_the_valley",
-            "minecraft:brown_mushroom",
-            "minecraft:red_mushroom",
-            "minecraft:crimson_fungus",
-            "minecraft:warped_fungus",
-            "minecraft:crimson_roots",
-            "minecraft:warped_roots",
-            "minecraft:nether_sprouts",
-            "minecraft:weeping_vines",
-            "minecraft:twisting_vines",
-            "minecraft:chorus_plant",
-            "minecraft:chorus_flower",
-            "minecraft:snow",
-            "minecraft:snow_block",
-            "minecraft:cactus",
-            "minecraft:vine",
-            "minecraft:sunflower",
-            "minecraft:lilac",
-            "minecraft:rose_bush",
-            "minecraft:peony",
-            "minecraft:tall_grass",
-            "minecraft:large_fern",
-            "minecraft:air",
-            "minecraft:ice",
-            "minecraft:packed_ice",
-            "minecraft:blue_ice",
-            "minecraft:portal",
-            "minecraft:bedrock",
-            "minecraft:end_portal_frame",
-            "minecraft:end_portal",
-            "minecraft:end_gateway",
-            "minecraft:portal",
-            "minecraft:oak_sapling",
-            "minecraft:spruce_sapling",
-            "minecraft:birch_sapling",
-            "minecraft:jungle_sapling",
-            "minecraft:acacia_sapling",
-            "minecraft:dark_oak_sapling",
-            "minecraft:oak_leaves",
-            "minecraft:spruce_leaves",
-            "minecraft:birch_leaves",
-            "minecraft:jungle_leaves",
-            "minecraft:acacia_leaves",
-            "minecraft:dark_oak_leaves"
-        )
-
         @JsonSchema(description = "Whether the ship helm assembles diagonally connected blocks or not")
         val diagonals = true
 
@@ -263,5 +165,10 @@ object EurekaConfig {
 
         @JsonSchema(description = "Maximum number of blocks allowed in a ship. Set to 0 for no limit")
         val maxShipBlocks = 32 * 32 * 32
+
+        // TODO: Remove blockBlacklist
+        // Blacklist of blocks that don't get added for ship building
+        @JsonSchema(description = "Blacklist of blocks that don't get assembled (Use Block Tag instead)")
+        var blockBlacklist : Set<String> = emptySet()
     }
 }

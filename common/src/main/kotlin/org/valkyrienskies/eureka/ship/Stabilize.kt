@@ -3,13 +3,12 @@ package org.valkyrienskies.eureka.ship
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ships.PhysShip
-import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
 import org.valkyrienskies.eureka.EurekaConfig
 import kotlin.math.atan
 import kotlin.math.max
 
 fun stabilize(
-    ship: PhysShipImpl,
+    ship: PhysShip,
     omega: Vector3dc,
     vel: Vector3dc,
     forces: PhysShip,
@@ -18,7 +17,7 @@ fun stabilize(
 ) {
     val shipUp = Vector3d(0.0, 1.0, 0.0)
     val worldUp = Vector3d(0.0, 1.0, 0.0)
-    ship.poseVel.rot.transform(shipUp)
+    ship.transform.shipToWorldRotation.transform(shipUp)
 
     val angleBetween = shipUp.angle(worldUp)
     val idealAngularAcceleration = Vector3d()
@@ -41,15 +40,15 @@ fun stabilize(
         omega.z()
     )
 
-    val stabilizationTorque = ship.poseVel.rot.transform(
-        ship.inertia.momentOfInertiaTensor.transform(
-            ship.poseVel.rot.transformInverse(idealAngularAcceleration)
+    val stabilizationTorque = ship.transform.shipToWorldRotation.transform(
+        ship.momentOfInertia.transform(
+            ship.transform.shipToWorldRotation.transformInverse(idealAngularAcceleration)
         )
     )
 
-    val speed = ship.poseVel.vel.length()
+    val speed = ship.velocity.length()
 
-    stabilizationTorque.mul(EurekaConfig.SERVER.stabilizationTorqueConstant / max(1.0, speed * speed * EurekaConfig.SERVER.scaledInstability / ship.inertia.shipMass + speed * EurekaConfig.SERVER.unscaledInstability))
+    stabilizationTorque.mul(EurekaConfig.SERVER.stabilizationTorqueConstant / max(1.0, speed * speed * EurekaConfig.SERVER.scaledInstability / ship.mass + speed * EurekaConfig.SERVER.unscaledInstability))
     forces.applyInvariantTorque(stabilizationTorque)
 
     if (linear) {
@@ -57,12 +56,12 @@ fun stabilize(
         idealVelocity.y = 0.0
 
         // ideally this should work the same way as input is scaled
-        val s = EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity * (1 - 1 / smoothingATanMax(EurekaConfig.SERVER.linearMaxMass, ship.inertia.shipMass * EurekaConfig.SERVER.linearMassScaling + 1.0)) / 10.0
+        val s = EurekaConfig.SERVER.linearStabilizeMaxAntiVelocity * (1 - 1 / smoothingATanMax(EurekaConfig.SERVER.linearMaxMass, ship.mass * EurekaConfig.SERVER.linearMassScaling + 1.0)) / 10.0
 
         if (idealVelocity.lengthSquared() > s * s)
             idealVelocity.normalize(s)
 
-        idealVelocity.mul(ship.inertia.shipMass * (10 - EurekaConfig.SERVER.antiVelocityMassRelevance))
+        idealVelocity.mul(ship.mass * (10 - EurekaConfig.SERVER.antiVelocityMassRelevance))
         forces.applyInvariantForce(idealVelocity)
     }
 }
