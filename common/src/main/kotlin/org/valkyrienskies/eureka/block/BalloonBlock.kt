@@ -7,7 +7,6 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.BlockHitResult
@@ -48,7 +47,7 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         if (level.isClientSide) return
 
         level.destroyBlock(hit.blockPos, false)
-        Direction.values().forEach {
+        Direction.entries.forEach {
             val neighbor = hit.blockPos.relative(it)
             if (level.getBlockState(neighbor).block == this &&
                 level.random.nextFloat() < EurekaConfig.SERVER.popSideBalloonChance
