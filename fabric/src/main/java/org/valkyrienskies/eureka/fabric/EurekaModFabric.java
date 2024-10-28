@@ -19,6 +19,7 @@ import org.valkyrienskies.core.impl.config.VSConfigClass;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaMod;
+import org.valkyrienskies.eureka.block.IWoodType;
 import org.valkyrienskies.eureka.block.WoodType;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
@@ -55,7 +56,7 @@ public class EurekaModFabric implements ModInitializer {
             );
 
             ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
-                for (final WoodType woodType : WoodType.values()) {
+                for (final IWoodType woodType : WoodType.getEntries()) {
                     out.accept(new ResourceLocation(
                         EurekaMod.MOD_ID,
                         "block/" + woodType.getSerializedName().toLowerCase() + "_ship_helm_wheel"
