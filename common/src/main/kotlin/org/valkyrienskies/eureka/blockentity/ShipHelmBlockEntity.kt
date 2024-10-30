@@ -4,6 +4,7 @@ import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
@@ -37,8 +38,8 @@ import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOMLD
 import org.valkyrienskies.mod.util.logger
 
-// var ASSEMBLE_BLACKLIST: TagKey<Block> =
-//     TagKey.create(Registry.BLOCK_REGISTRY, ResourceLocation(EurekaMod.MOD_ID, "assemble_blacklist"))
+ var ASSEMBLE_BLACKLIST: TagKey<Block> =
+     TagKey.create(Registries.BLOCK, ResourceLocation(EurekaMod.MOD_ID, "assemble_blacklist"))
 
 class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(EurekaBlockEntities.SHIP_HELM.get(), pos, state), MenuProvider {
@@ -131,7 +132,9 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
             level,
             blockPos
         ) {
-            val allowed = !it.isAir && !EurekaConfig.SERVER.blockBlacklist.contains(BuiltInRegistries.BLOCK.getKey(it.block).toString())
+            val allowed = !it.isAir && !it.`is`(ASSEMBLE_BLACKLIST) &&
+            // TODO: Remove blockBlacklist
+            !(EurekaConfig.SERVER.blockBlacklist.isNotEmpty() && EurekaConfig.SERVER.blockBlacklist.contains(BuiltInRegistries.BLOCK.getKey(it.block).toString()))
             // This isn't the best way to count helms, but it'll work I promise!
             if (allowed && it.block is ShipHelmBlock) {
                 helmCount++
