@@ -9,6 +9,7 @@ import net.minecraft.client.resources.model.BakedModel
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.StateHolder
 import net.minecraft.world.level.block.state.properties.EnumProperty
+import org.valkyrienskies.eureka.block.IWoodType
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.block.WoodType
 import java.util.function.Function
@@ -53,14 +54,14 @@ object WheelModels {
         matrixStack.popPose()
     }
 
-    fun setModelGetter(getter: Function<WoodType, BakedModel>) {
+    fun setModelGetter(getter: Function<IWoodType, BakedModel>) {
         models.values.forEach { it.getter = getter::apply }
     }
 
     class WheelModel(type: WoodType) :
         StateHolder<WheelModels, WheelModel>(WheelModels, ImmutableMap.of(property, type), null) {
 
-        var getter: (WoodType) -> BakedModel = { throw IllegalStateException("Getter not set") }
+        var getter: (IWoodType) -> BakedModel = { throw IllegalStateException("Getter not set") }
 
         val model by lazy { getter(type) }
     }

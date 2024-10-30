@@ -1,22 +1,21 @@
 package org.valkyrienskies.eureka.block
 
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.StringRepresentable
+import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.Blocks
 
-// TODO mod compat
+public enum class WoodType(final val logBlock: Block, final val plankBlock: Block) : IWoodType {
+    ACACIA(Blocks.ACACIA_LOG, Blocks.ACACIA_PLANKS),
+    BIRCH(Blocks.BIRCH_LOG, Blocks.BIRCH_PLANKS),
+    CRIMSON(Blocks.CRIMSON_STEM, Blocks.CRIMSON_PLANKS),
+    DARK_OAK(Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_PLANKS),
+    JUNGLE(Blocks.JUNGLE_LOG, Blocks.JUNGLE_PLANKS),
+    OAK(Blocks.OAK_LOG, Blocks.OAK_PLANKS),
+    SPRUCE(Blocks.SPRUCE_LOG, Blocks.SPRUCE_PLANKS),
+    WARPED(Blocks.WARPED_STEM, Blocks.WARPED_PLANKS);
 
-enum class WoodType(val resourceName: String) : StringRepresentable {
-    OAK("oak"),
-    SPRUCE("spruce"),
-    BIRCH("birch"),
-    JUNGLE("jungle"),
-    ACACIA("acacia"),
-    DARK_OAK("dark_oak"),
-    WARPED("warped"),
-    CRIMSON("crimson");
+    override fun getSerializedName(): String = name.lowercase()
 
-    val textureLocationPlanks get() = ResourceLocation("minecraft:block/${resourceName}_planks")
-    val textureLocationLog get() = ResourceLocation("minecraft:block/${resourceName}_log")
+    override fun getWood(): Block = logBlock
 
-    override fun getSerializedName(): String = resourceName
+    override fun getPlanks(): Block = plankBlock
 }
