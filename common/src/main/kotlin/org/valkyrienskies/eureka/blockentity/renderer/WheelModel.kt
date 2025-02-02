@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.resources.model.BakedModel
+import net.minecraft.util.RandomSource
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.StateHolder
 import net.minecraft.world.level.block.state.properties.EnumProperty
@@ -31,22 +32,24 @@ object WheelModels {
         combinedOverlay: Int
     ) {
         val level = blockEntity.level ?: return
-        val woodType = (blockEntity.blockState.block as ShipHelmBlock).woodType
+        val blockState = blockEntity.blockState
+        val woodType = (blockState.block as ShipHelmBlock).woodType
 
         matrixStack.pushPose()
         // Model isn't centered calculated and need to use 0.625 on y and z 0.25
         matrixStack.translate(-0.5, -0.625, -0.25)
 
+        val blockPos = blockEntity.blockPos
         mc.blockRenderer.modelRenderer.tesselateWithoutAO(
             level,
             models[woodType]!!.model,
-            blockEntity.blockState,
-            blockEntity.blockPos,
+            blockState,
+            blockPos,
             matrixStack,
             buffer.getBuffer(RenderType.cutout()),
             true,
-            level.random, // should i use RandomSource.create() instead?
-            level.random.nextLong(), // use nextLong() as seed
+            RandomSource.create(),
+            blockState.getSeed(blockPos),
             combinedOverlay
         )
 
