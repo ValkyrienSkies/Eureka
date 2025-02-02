@@ -21,6 +21,7 @@ import java.util.function.Function
 object WheelModels {
     private val mc get() = Minecraft.getInstance()
     private val property = EnumProperty.create("wood", WoodType::class.java)
+    private val random = RandomSource.create()
 
     private val models by lazy { property.possibleValues.associateWith { WheelModel(it) } }
 
@@ -48,7 +49,7 @@ object WheelModels {
             matrixStack,
             buffer.getBuffer(RenderType.cutout()),
             true,
-            RandomSource.create(),
+            random,
             blockState.getSeed(blockPos),
             combinedOverlay
         )
