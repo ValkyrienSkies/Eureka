@@ -45,8 +45,8 @@ object WheelModels {
             matrixStack,
             buffer.getBuffer(RenderType.cutout()),
             true,
-            level.random,
-            42L, // Used in ModelBlockRenderer.class in renderModel, not sure what the right number is but this seems to work
+            level.random, // use nextLong() as seed or provide a dedicated random source
+            level.random.nextLong(), // seed
             combinedOverlay
         )
 
