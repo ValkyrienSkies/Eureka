@@ -1,19 +1,24 @@
 package org.valkyrienskies.eureka
 
+import org.valkyrienskies.core.apigame.VSCore
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 
 object EurekaMod {
     const val MOD_ID = "vs_eureka"
 
     @JvmStatic
-    fun init() {
+    lateinit var vsCore: VSCore
+
+    @JvmStatic
+    fun init(core: VSCore) {
+        this.vsCore = core
         EurekaBlocks.register()
         EurekaBlockEntities.register()
         EurekaItems.register()
         EurekaScreens.register()
         EurekaEntities.register()
         EurekaWeights.register()
-        ValkyrienSkiesMod.vsCore.registerConfigLegacy("vs_eureka", EurekaConfig::class.java)
+        core.registerConfigLegacy("vs_eureka", EurekaConfig::class.java)
     }
 
     @JvmStatic

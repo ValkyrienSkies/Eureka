@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import org.valkyrienskies.core.apigame.VSCore;
+import org.valkyrienskies.core.apigame.VSCoreFactory;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaItems;
@@ -27,6 +29,8 @@ import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
 import org.valkyrienskies.eureka.fabric.registry.FuelRegistryImpl;
 import org.valkyrienskies.eureka.registry.CreativeTabs;
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
+import org.valkyrienskies.mod.fabric.common.FabricHooksImpl;
+import org.valkyrienskies.mod.fabric.common.VSFabricNetworking;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
 public class EurekaModFabric implements ModInitializer {
@@ -37,7 +41,19 @@ public class EurekaModFabric implements ModInitializer {
 
         new FuelRegistryImpl();
 
-        EurekaMod.init();
+        boolean isClient = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
+        VSFabricNetworking networking = new VSFabricNetworking(isClient);
+        FabricHooksImpl hooks = new FabricHooksImpl(networking);
+        VSCore vsCore;
+        if (isClient) {
+            vsCore = VSCoreFactory.getInstance().newVsCoreClient(hooks);
+        } else {
+            vsCore = VSCoreFactory.getInstance().newVsCoreServer(hooks);
+        }
+
+        networking.register(vsCore.getHooks());
+
+        EurekaMod.init(vsCore);
 
         Registry.register(
             BuiltInRegistries.CREATIVE_MODE_TAB,
