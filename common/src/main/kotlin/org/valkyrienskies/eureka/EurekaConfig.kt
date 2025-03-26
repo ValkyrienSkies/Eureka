@@ -154,7 +154,7 @@ object EurekaConfig {
         @JsonSchema(description = "Balloons pop immediately when placed in certain dimensions, defined in the Balloon Dimension Blacklist")
         var balloonsPopInNether = false
 
-        @JsonSchema(description = "Dimensions where balloons cannot be placed when Balloons Pop In Nether is enabled")
+        @JsonSchema(description = "List of dimensions where balloons pop immediately, e.g: minecraft:the_nether")
         var balloonDimensionBlacklist = setOf(
             "minecraft:the_nether"
         )
