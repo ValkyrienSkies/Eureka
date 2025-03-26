@@ -99,12 +99,12 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
         var balloonForceProvided = balloons * forcePerBalloon
         if ( EurekaConfig.SERVER.flightRequiresEngine ) {
-            balloonForceProvided = if (extraForceLinear == 0.0) {
-                0.0 // Divide by 0 case
+            balloonForceProvided = if (extraForceLinear == 0.0 || balloons == 0) {
+                0.0 // Prevent Divide by 0 case
             } else {
-                (balloons * forcePerBalloon) * min(
+                balloonForceProvided * min(
                     1.0,
-                    (extraForceLinear / ( EurekaConfig.SERVER.enginePowerLinear * EurekaConfig.SERVER.flightMaxEngines ) ) * (100 / EurekaConfig.SERVER.flightEnginePercentage)
+                    ( extraForceLinear * EurekaConfig.SERVER.maxBalloonsPerEngine ) / ( EurekaConfig.SERVER.enginePowerLinear * balloons )
                 )
             }
         }
