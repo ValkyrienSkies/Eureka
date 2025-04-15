@@ -40,38 +40,39 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         }
 
         val invalidDimensionsConfig = EurekaConfig.SERVER.balloonDimensionBlacklist
-        val invalidDimensionLocations = invalidDimensionsConfig.mapNotNull { dimensionString ->
-            try {
-                ResourceLocation(dimensionString)
-            } catch (e: Exception) {
-                logger.warn("Invalid dimension string: $dimensionString")
-                null
+        if ( invalidDimensionsConfig.isNotEmpty() ) {
+            val invalidDimensionLocations = invalidDimensionsConfig.mapNotNull { dimensionString ->
+                try {
+                    ResourceLocation(dimensionString)
+                } catch (e: Exception) {
+                    logger.warn("Invalid dimension string: $dimensionString")
+                    null
+                }
+            }.toSet()
+            val currentDimensionLocation = serverLevel.dimension().location()
+            if ( invalidDimensionLocations.contains(currentDimensionLocation) ) {
+                // Replace the balloon block with air (Similar to how water is replaced in the Nether)
+                serverLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), 3)
+                // Particles
+                serverLevel.sendParticles(
+                    ParticleTypes.LARGE_SMOKE,
+                    pos.x + 0.5, // Center of the block
+                    pos.y + 0.0,
+                    pos.z + 0.5,
+                    15, // Number of particles per iteration
+                    0.1, 0.1, 0.1, // Spread in x, y, z directions
+                    0.01 // Speed multiplier
+                )
+                // Sounds
+                serverLevel.playSound(
+                    null, // No specific player (plays for all nearby players)
+                    pos,
+                    SoundEvents.LAVA_EXTINGUISH, // Hiss-like sound
+                    SoundSource.BLOCKS,
+                    1.0f, // Volume
+                    1.0f  // Pitch
+                )
             }
-        }.toSet()
-        val currentDimensionLocation = serverLevel.dimension().location()
-
-        if ( invalidDimensionLocations.contains(currentDimensionLocation) && EurekaConfig.SERVER.balloonsPopInNether ) {
-            // Replace the balloon block with air (Similar to how water is replaced in the Nether)
-            serverLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), 3)
-            // Particles
-            serverLevel.sendParticles(
-                ParticleTypes.LARGE_SMOKE,
-                pos.x + 0.5, // Center of the block
-                pos.y + 0.0,
-                pos.z + 0.5,
-                15, // Number of particles per iteration
-                0.1, 0.1, 0.1, // Spread in x, y, z directions
-                0.01 // Speed multiplier
-            )
-            // Sounds
-            serverLevel.playSound(
-                null, // No specific player (plays for all nearby players)
-                pos,
-                SoundEvents.LAVA_EXTINGUISH, // Hiss-like sound
-                SoundSource.BLOCKS,
-                1.0f, // Volume
-                1.0f  // Pitch
-            )
         }
     }
 
