@@ -15,7 +15,6 @@ import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
-import org.valkyrienskies.mod.util.logger
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.sounds.SoundEvents
@@ -45,7 +44,6 @@ class BalloonBlock(properties: Properties) : Block(properties) {
                 try {
                     ResourceLocation(dimensionString)
                 } catch (e: Exception) {
-                    logger.warn("Invalid dimension string: $dimensionString")
                     null
                 }
             }.toSet()
@@ -100,6 +98,5 @@ class BalloonBlock(properties: Properties) : Block(properties) {
             }
         }
     }
-
-    private val logger by logger()
+    
 }
