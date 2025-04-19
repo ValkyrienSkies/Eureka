@@ -97,12 +97,12 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         val omega: Vector3dc = physShip.omega
         val vel: Vector3dc = physShip.velocity
 
-        var balloonForceProvided = balloons * forcePerBalloon
+        var engineScaledballoonForceProvided = balloons * forcePerBalloon
         if ( EurekaConfig.SERVER.flightRequiresEngine ) {
-            balloonForceProvided = if (extraForceLinear == 0.0 || balloons == 0) {
+            engineScaledballoonForceProvided = if (extraForceLinear == 0.0 || balloons == 0) {
                 0.0 // Prevent Divide by 0 case
             } else {
-                balloonForceProvided * min(
+                engineScaledballoonForceProvided * min(
                     1.0,
                     ( extraForceLinear * EurekaConfig.SERVER.maxBalloonsPerEngine ) / ( EurekaConfig.SERVER.enginePowerLinear * balloons )
                 )
@@ -211,7 +211,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
                 mass * EurekaConfig.SERVER.elevationSnappiness
 
         physShip.applyInvariantForce(Vector3d(0.0,
-            min(balloonForceProvided, max(idealUpwardForce, 0.0)) +
+            min(engineScaledballoonForceProvided, max(idealUpwardForce, 0.0)) +
             // Add drag to the y-component
             vel.y() * -mass,
             0.0)
