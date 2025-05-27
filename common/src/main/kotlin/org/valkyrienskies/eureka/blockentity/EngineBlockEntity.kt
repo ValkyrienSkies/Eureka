@@ -2,6 +2,8 @@ package org.valkyrienskies.eureka.blockentity
 
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.core.HolderLookup
+import net.minecraft.core.NonNullList
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
@@ -47,6 +49,16 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
         EngineScreenMenu(containerId, inventory, this)
 
     override fun getDefaultName(): Component = Component.translatable("gui.vs_eureka.engine")
+
+    override fun getItems(): NonNullList<ItemStack> = NonNullList.of(fuel)
+
+    override fun setItems(nonNullList: NonNullList<ItemStack>) {
+        if (nonNullList.isNotEmpty()) {
+            fuel = nonNullList.first()
+        } else {
+            fuel = ItemStack.EMPTY
+        }
+    }
 
     private var heat = 0f
     fun tick() {
@@ -167,20 +179,20 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
     private fun scaleEngineCooling(value: Float): Float =
         (this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
 
-    override fun saveAdditional(tag: CompoundTag) {
-        tag.put("FuelSlot", fuel.save(CompoundTag()))
+    override fun saveAdditional(tag: CompoundTag, provider: HolderLookup.Provider) {
+        tag.put("FuelSlot", fuel.save(provider))
         tag.putInt("FuelLeft", fuelLeft)
         tag.putInt("PrevFuelTotal", fuelTotal)
         tag.putFloat("Heat", heat)
-        super.saveAdditional(tag)
+        super.saveAdditional(tag, provider)
     }
 
-    override fun load(compoundTag: CompoundTag) {
-        fuel = ItemStack.of(compoundTag.getCompound("FuelSlot"))
+    override fun loadAdditional(compoundTag: CompoundTag, provider: HolderLookup.Provider) {
+        fuel = ItemStack.parseOptional(provider, compoundTag.getCompound("FuelSlot"))
         fuelLeft = compoundTag.getInt("FuelLeft")
         fuelTotal = compoundTag.getInt("PrevFuelTotal")
         heat = compoundTag.getFloat("Heat")
-        super.load(compoundTag)
+        super.loadAdditional(compoundTag, provider)
     }
 
     // region Container Stuff
@@ -205,6 +217,13 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
 
     override fun setItem(slot: Int, stack: ItemStack) {
         if (slot == 0) fuel = stack
+    }
+
+    override fun setChanged() {
+        val level = this.level
+        if (level != null) {
+            setChanged(level, this.worldPosition, this.blockState);
+        }
     }
 
     override fun stillValid(player: Player): Boolean {

@@ -1,16 +1,16 @@
 package org.valkyrienskies.eureka.block
 
+import com.mojang.serialization.MapCodec
+import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.RenderShape
@@ -33,9 +33,8 @@ import org.valkyrienskies.eureka.util.RotShapes
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
-import java.awt.TextComponent
 
-class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntityBlock(properties) {
+class ShipHelmBlock(val woodType: WoodType, properties: Properties) : BaseEntityBlock(properties) {
     val HELM_BASE = RotShapes.box(2.0, 0.0, 2.0, 14.0, 2.0, 14.0)
     val HELM_POLE = RotShapes.box(4.0, 2.0, 5.0, 12.0, 13.0, 13.0)
 
@@ -72,12 +71,11 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         }
     }
 
-    override fun use(
+    override fun useWithoutItem(
         state: BlockState,
         level: Level,
         pos: BlockPos,
         player: Player,
-        hand: InteractionHand,
         blockHitResult: BlockHitResult
     ): InteractionResult {
         if (level.isClientSide) return InteractionResult.SUCCESS
@@ -124,12 +122,7 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         return true
     }
 
-    override fun isPathfindable(
-        blockState: BlockState,
-        blockGetter: BlockGetter,
-        blockPos: BlockPos,
-        pathComputationType: PathComputationType
-    ): Boolean {
+    override fun isPathfindable(blockState: BlockState, pathComputationType: PathComputationType): Boolean {
         return false
     }
 
@@ -145,6 +138,14 @@ class ShipHelmBlock(properties: Properties, val woodType: WoodType) : BaseEntity
         if (level.isClientSide) return@BlockEntityTicker
         if (blockEntity is ShipHelmBlockEntity) {
             blockEntity.tick()
+        }
+    }
+
+    override fun codec() = CODEC
+
+    companion object {
+        val CODEC: MapCodec<ShipHelmBlock> = RecordCodecBuilder.mapCodec { instance ->
+            instance.group(WoodType.CODEC.fieldOf("wood_type").forGetter { it.woodType }, propertiesCodec()).apply(instance, ::ShipHelmBlock)
         }
     }
 }

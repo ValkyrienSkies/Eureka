@@ -1,12 +1,12 @@
 package org.valkyrienskies.eureka.block
 
+import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.RandomSource
-import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
@@ -46,12 +46,11 @@ class EngineBlock : BaseEntityBlock(
     override fun newBlockEntity(blockPos: BlockPos, state: BlockState): BlockEntity =
         EngineBlockEntity(blockPos, state)
 
-    override fun use(
+    override fun useWithoutItem(
         state: BlockState,
         level: Level,
         pos: BlockPos,
         player: Player,
-        hand: InteractionHand,
         blockHitResult: BlockHitResult
     ): InteractionResult {
         if (level.isClientSide) return InteractionResult.SUCCESS
@@ -121,7 +120,7 @@ class EngineBlock : BaseEntityBlock(
         }
     }
 
-    override fun playerWillDestroy(level: Level, pos: BlockPos, state: BlockState, player: Player) {
+    override fun playerWillDestroy(level: Level, pos: BlockPos, state: BlockState, player: Player): BlockState? {
         if (!level.isClientSide) {
             val blockEntity = level.getBlockEntity(pos) as EngineBlockEntity
 
@@ -131,6 +130,12 @@ class EngineBlock : BaseEntityBlock(
             }
         }
 
-        super.playerWillDestroy(level, pos, state, player)
+        return super.playerWillDestroy(level, pos, state, player)
+    }
+
+    override fun codec() = CODEC
+
+    companion object {
+        val CODEC: MapCodec<EngineBlock> = simpleCodec { EngineBlock() }
     }
 }

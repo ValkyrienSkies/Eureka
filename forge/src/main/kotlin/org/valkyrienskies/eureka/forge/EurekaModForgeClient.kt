@@ -42,7 +42,7 @@ object EurekaModForgeClient {
         WheelModels.setModelGetter { woodType: WoodType ->
             event.modelBakery.bakedTopLevelModels
                 .getOrDefault(
-                    ResourceLocation(
+                    ResourceLocation.fromNamespaceAndPath(
                         EurekaMod.MOD_ID,
                         "block/" + woodType.resourceName + "_ship_helm_wheel"
                     ),
@@ -62,7 +62,7 @@ object EurekaModForgeClient {
     fun onModelRegistry(event: ModelEvent.RegisterAdditional) {
         for (woodType in WoodType.values()) {
             event.register(
-                ResourceLocation(
+                ResourceLocation.fromNamespaceAndPath(
                     EurekaMod.MOD_ID, "block/" + woodType.resourceName + "_ship_helm_wheel"
                 )
             )

@@ -108,7 +108,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
     }
 
     companion object { // TEXTURE DATA
-        internal val TEXTURE = ResourceLocation(EurekaMod.MOD_ID, "textures/gui/ship_helm.png")
+        internal val TEXTURE = ResourceLocation.fromNamespaceAndPath(EurekaMod.MOD_ID, "textures/gui/ship_helm.png")
 
         private const val BUTTON_1_X = 10
         private const val BUTTON_1_Y = 73

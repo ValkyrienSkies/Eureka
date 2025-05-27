@@ -14,17 +14,15 @@ apply from: '../gradle-scripts/publish-curseforge.gradle'
 
 architectury {
     platformSetupLoomIde()
-    forge()
+    neoForge()
 }
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
 
-    forge {
-        convertAccessWideners = true
-        mixinConfig "vs_eureka.mixins.json"
-        mixinConfig "vs_eureka-common.mixins.json"
-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+    mixin {
+        useLegacyMixinAp = true
+        defaultRefmapName = "eureka-refmap.json"
     }
 }
 

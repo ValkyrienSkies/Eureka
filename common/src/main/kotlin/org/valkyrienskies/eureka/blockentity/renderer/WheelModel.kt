@@ -2,6 +2,7 @@ package org.valkyrienskies.eureka.blockentity.renderer
 
 import com.google.common.collect.ImmutableMap
 import com.mojang.blaze3d.vertex.PoseStack
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
@@ -9,6 +10,7 @@ import net.minecraft.client.resources.model.BakedModel
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.StateHolder
 import net.minecraft.world.level.block.state.properties.EnumProperty
+import net.minecraft.world.level.block.state.properties.Property
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.block.WoodType
 import java.util.function.Function
@@ -58,8 +60,13 @@ object WheelModels {
     }
 
     class WheelModel(type: WoodType) :
-        StateHolder<WheelModels, WheelModel>(WheelModels, ImmutableMap.of(property, type), null) {
-
+        StateHolder<WheelModels, WheelModel>(
+            WheelModels,
+            Reference2ObjectArrayMap<Property<*>, Comparable<*>>().also {
+                it[property] = type
+            },
+            null
+        ) {
         var getter: (WoodType) -> BakedModel = { throw IllegalStateException("Getter not set") }
 
         val model by lazy { getter(type) }

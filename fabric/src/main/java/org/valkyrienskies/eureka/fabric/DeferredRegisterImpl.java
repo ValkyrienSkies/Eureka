@@ -27,7 +27,7 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
     public <I extends T> RegistrySupplier<I> register(
             @NotNull final String name,
             @NotNull final Function0<? extends I> builder) {
-        final I result = Registry.register(registry, new ResourceLocation(modId, name), builder.invoke());
+        final I result = Registry.register(registry, ResourceLocation.fromNamespaceAndPath(modId, name), builder.invoke());
 
         final RegistrySupplier<I> r = new RegistrySupplier<I>() {
 

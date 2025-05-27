@@ -31,6 +31,6 @@ object EurekaWeights : BlockStateInfoProvider {
     }
 
     fun register() {
-        Registry.register(BlockStateInfo.REGISTRY, ResourceLocation(EurekaMod.MOD_ID, "ballast"), this)
+        Registry.register(BlockStateInfo.REGISTRY, ResourceLocation.fromNamespaceAndPath(EurekaMod.MOD_ID, "ballast"), this)
     }
 }

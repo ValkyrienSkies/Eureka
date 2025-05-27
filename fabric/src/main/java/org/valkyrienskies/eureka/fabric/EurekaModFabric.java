@@ -6,8 +6,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
-import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -47,8 +46,8 @@ public class EurekaModFabric implements ModInitializer {
 
         // TODO: make resources packs work
         ModContainer eureka = FabricLoader.getInstance().getModContainer(EurekaMod.MOD_ID)
-                .orElseThrow(() -> new IllegalStateException("Eureka's ModContainer couldn't be found!"));
-        ResourceLocation packId = new ResourceLocation(EurekaMod.MOD_ID, "retro_helms");
+            .orElseThrow(() -> new IllegalStateException("Eureka's ModContainer couldn't be found!"));
+        ResourceLocation packId = ResourceLocation.fromNamespaceAndPath(EurekaMod.MOD_ID, "retro_helms");
         ResourceManagerHelper.registerBuiltinResourcePack(packId, eureka, "Eureka retro helms", ResourcePackActivationType.NORMAL);
     }
 
@@ -59,13 +58,13 @@ public class EurekaModFabric implements ModInitializer {
         public void onInitializeClient() {
             EurekaMod.initClient();
             BlockEntityRenderers.register(
-                    EurekaBlockEntities.INSTANCE.getSHIP_HELM().get(),
-                    ShipHelmBlockEntityRenderer::new
+                EurekaBlockEntities.INSTANCE.getSHIP_HELM().get(),
+                ShipHelmBlockEntityRenderer::new
             );
 
-            ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
+            ModelLoadingPlugin.register(context -> {
                 for (final WoodType woodType : WoodType.getEntries()) {
-                    out.accept(new ResourceLocation(
+                    context.addModels(ResourceLocation.fromNamespaceAndPath(
                         EurekaMod.MOD_ID,
                         "block/" + woodType.getResourceName() + "_ship_helm_wheel"
                     ));
@@ -73,10 +72,10 @@ public class EurekaModFabric implements ModInitializer {
             });
 
             WheelModels.INSTANCE.setModelGetter(woodType ->
-                BakedModelManagerHelper.getModel(Minecraft.getInstance().getModelManager(),
-                    new ResourceLocation(
-                            EurekaMod.MOD_ID,
-                            "block/" + woodType.getResourceName() + "_ship_helm_wheel"
+                Minecraft.getInstance().getModelManager().getModel(
+                    ResourceLocation.fromNamespaceAndPath(
+                        EurekaMod.MOD_ID,
+                        "block/" + woodType.getResourceName() + "_ship_helm_wheel"
                     )));
         }
     }
@@ -85,8 +84,8 @@ public class EurekaModFabric implements ModInitializer {
         @Override
         public ConfigScreenFactory<?> getModConfigScreenFactory() {
             return (parent) -> VSClothConfig.createConfigScreenFor(
-                    parent,
-                    EurekaConfig.class
+                parent,
+                EurekaConfig.class
             );
         }
     }

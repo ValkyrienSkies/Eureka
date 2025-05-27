@@ -31,50 +31,50 @@ object EurekaBlocks {
     // region Ship Helms
     val OAK_SHIP_HELM = BLOCKS.register("oak_ship_helm") {
         ShipHelmBlock(
+            WoodType.OAK,
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD),
-            WoodType.OAK
         )
     }
     val SPRUCE_SHIP_HELM = BLOCKS.register("spruce_ship_helm") {
         ShipHelmBlock(
+            WoodType.SPRUCE,
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD),
-            WoodType.SPRUCE
         )
     }
     val BIRCH_SHIP_HELM = BLOCKS.register("birch_ship_helm") {
         ShipHelmBlock(
+            WoodType.BIRCH,
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD),
-            WoodType.BIRCH
         )
     }
     val JUNGLE_SHIP_HELM = BLOCKS.register("jungle_ship_helm") {
         ShipHelmBlock(
+            WoodType.JUNGLE,
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD),
-            WoodType.JUNGLE
         )
     }
     val ACACIA_SHIP_HELM = BLOCKS.register("acacia_ship_helm") {
         ShipHelmBlock(
+            WoodType.ACACIA,
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD),
-            WoodType.ACACIA
         )
     }
     val DARK_OAK_SHIP_HELM = BLOCKS.register("dark_oak_ship_helm") {
         ShipHelmBlock(
+            WoodType.DARK_OAK,
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD),
-            WoodType.DARK_OAK
         )
     }
     val CRIMSON_SHIP_HELM = BLOCKS.register("crimson_ship_helm") {
         ShipHelmBlock(
+            WoodType.CRIMSON,
             BlockBehaviour.Properties.of().mapColor(MapColor.NETHER).strength(2.5F).sound(SoundType.STEM),
-            WoodType.CRIMSON
         )
     }
     val WARPED_SHIP_HELM = BLOCKS.register("warped_ship_helm") {
         ShipHelmBlock(
+            WoodType.WARPED,
             BlockBehaviour.Properties.of().mapColor(MapColor.NETHER).strength(2.5F).sound(SoundType.STEM),
-            WoodType.WARPED
         )
     }
     // endregion

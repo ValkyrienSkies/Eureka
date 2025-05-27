@@ -39,7 +39,7 @@ import org.valkyrienskies.mod.common.util.toJOMLD
 import org.valkyrienskies.mod.util.logger
 
  var ASSEMBLE_BLACKLIST: TagKey<Block> =
-     TagKey.create(Registries.BLOCK, ResourceLocation(EurekaMod.MOD_ID, "assemble_blacklist"))
+     TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(EurekaMod.MOD_ID, "assemble_blacklist"))
 
 class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(EurekaBlockEntities.SHIP_HELM.get(), pos, state), MenuProvider {
