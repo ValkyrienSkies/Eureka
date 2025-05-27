@@ -9,7 +9,7 @@ executors:
   java_large:
     resource_class: large
     docker:
-      - image: cimg/openjdk:17.0
+      - image: cimg/openjdk:21.0
     environment:
       ORG_GRADLE_PROJECT_block_external_repositories: "true"
 

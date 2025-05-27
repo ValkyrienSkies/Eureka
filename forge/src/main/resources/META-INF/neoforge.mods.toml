@@ -1,5 +1,5 @@
 modLoader = "kotlinforforge"
-loaderVersion = "[3.12.0,)"
+loaderVersion = "[5.3,)"
 issueTrackerURL = "https://github.com/ValkyrienSkies/Valkyrien-Skies-2/issues"
 license = "Apache-2.0"
 
@@ -13,17 +13,23 @@ Basically Archimedes Ships, but with VS2 as the backend!
 '''
 logoFile = "icon.png"
 
+[[mixins]]
+config = "vs_eureka-common.mixins.json"
+
+[[mixins]]
+config = "vs_eureka.mixins.json"
+
 [[dependencies.vs_eureka]]
-modId = "forge"
+modId = "neoforge"
 mandatory = true
-versionRange = "[47.0.18,)"
+versionRange = "[21.1.125,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.vs_eureka]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.20.1,)"
+versionRange = "[1.21.1,)"
 ordering = "NONE"
 side = "BOTH"
 
