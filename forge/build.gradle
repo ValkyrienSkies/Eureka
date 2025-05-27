@@ -36,28 +36,39 @@ configurations {
 
 dependencies {
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixin_extras_version"))
-    implementation(include("io.github.llamalad7:mixinextras-forge:$mixin_extras_version"))
 
     neoForge("net.neoforged:neoforge:$rootProject.neoforge_version")
     modApi("org.valkyrienskies:valkyrienskies-1-21-1-forge:${rootProject.vs2_version}") { transitive = false }
 
-    implementation("org.valkyrienskies.core:api:$vs_core_version")
-    implementation("org.valkyrienskies.core:api-game:$vs_core_version")
-    implementation("org.valkyrienskies.core:util:$vs_core_version")
-    implementation("org.valkyrienskies.core:impl:$vs_core_version")
-
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 
-    // Add Kotlin for Forge.
+    // Add Kotlin for Forge
     implementation("thedarkcolour:kotlinforforge-neoforge:$forge_kotlin_version")
-    forgeRuntimeLibrary("thedarkcolour:kotlinforforge-neoforge:$forge_kotlin_version")
+    forgeRuntimeLibrary("thedarkcolour:kotlinforforge-neoforge:${forge_kotlin_version}")
+
+    // Cloth for config
+    include(modImplementation("me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}"))
+
+    // region Manually include every single dependency of vs-core (total meme)
+    forgeRuntimeLibrary include("org.valkyrienskies.core:api:${rootProject.vs_core_version}") {
+        exclude group: 'org.joml', module: 'joml'
+        transitive = false
+    }
+
+    forgeRuntimeLibrary include("org.valkyrienskies.core:util:${rootProject.vs_core_version}") {
+        exclude group: 'org.joml', module: 'joml'
+        transitive = false
+    }
+
+    // JOML for Math
+    forgeRuntimeLibrary include("org.joml:joml-primitives:1.10.0")
 }
 
 processResources {
     inputs.property "version", project.version
 
-    filesMatching("META-INF/mods.toml") {
+    filesMatching("META-INF/neoforge.mods.toml") {
         expand "version": project.version, "vs2_version": project.vs2_version.substring(0, project.vs2_version.indexOf('+'))
     }
 }

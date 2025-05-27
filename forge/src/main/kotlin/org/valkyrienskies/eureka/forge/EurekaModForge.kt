@@ -1,24 +1,22 @@
 package org.valkyrienskies.eureka.forge
 
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.screens.Screen
 import net.minecraft.core.registries.Registries
-import net.minecraftforge.client.ConfigScreenHandler
-import net.minecraftforge.eventbus.api.IEventBus
-import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.registries.DeferredRegister
+import net.neoforged.bus.api.IEventBus
+import net.neoforged.fml.common.Mod
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory
+import net.neoforged.neoforge.registries.DeferredRegister
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.eureka.EurekaMod.init
-import org.valkyrienskies.eureka.registry.CreativeTabs
 import org.valkyrienskies.eureka.forge.registry.FuelRegistryImpl
+import org.valkyrienskies.eureka.registry.CreativeTabs
 import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig.createConfigScreenFor
-import thedarkcolour.kotlinforforge.forge.LOADING_CONTEXT
-import thedarkcolour.kotlinforforge.forge.MOD_BUS
-import thedarkcolour.kotlinforforge.forge.runForDist
+import thedarkcolour.kotlinforforge.neoforge.forge.LOADING_CONTEXT
+import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
+import thedarkcolour.kotlinforforge.neoforge.forge.runForDist
 
 @Mod(EurekaMod.MOD_ID)
-class EurekaModForge {
+object EurekaModForge {
     init {
         runForDist (
             clientTarget = {
@@ -26,27 +24,24 @@ class EurekaModForge {
             },
             serverTarget = {}
         )
-        LOADING_CONTEXT.registerExtensionPoint(
-            ConfigScreenHandler.ConfigScreenFactory::class.java
-        ) {
-            ConfigScreenHandler.ConfigScreenFactory { _: Minecraft?, parent: Screen? ->
+        LOADING_CONTEXT.registerExtensionPoint(IConfigScreenFactory::class.java) {
+            IConfigScreenFactory { _, parent ->
                 createConfigScreenFor(
-                    parent!!,
+                    parent,
                     EurekaConfig::class.java,
                 )
             }
         }
+
         FuelRegistryImpl()
         init()
 
         val deferredRegister = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, EurekaMod.MOD_ID)
-        deferredRegister.register("general") {
+        deferredRegister.register("general") { ->
             CreativeTabs.create()
         }
         deferredRegister.register(getModBus())
     }
 
-    companion object {
-        fun getModBus(): IEventBus = MOD_BUS
-    }
+    fun getModBus(): IEventBus = MOD_BUS
 }

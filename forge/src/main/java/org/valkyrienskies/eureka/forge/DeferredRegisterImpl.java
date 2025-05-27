@@ -4,25 +4,25 @@ import java.util.Iterator;
 import kotlin.jvm.functions.Function0;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 import org.valkyrienskies.eureka.registry.DeferredRegister;
 import org.valkyrienskies.eureka.registry.RegistrySupplier;
 
 public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
-    private final net.minecraftforge.registries.DeferredRegister<T> forge;
+    private final net.neoforged.neoforge.registries.DeferredRegister<T> forge;
 
     public DeferredRegisterImpl(final String modId, final ResourceKey<Registry<T>> registry) {
-        forge = net.minecraftforge.registries.DeferredRegister.create(registry.location(), modId);
+        forge = net.neoforged.neoforge.registries.DeferredRegister.create(registry.location(), modId);
     }
 
     @NotNull
     @Override
     public <I extends T> RegistrySupplier<I> register(
-            @NotNull final String name,
-            @NotNull final Function0<? extends I> builder
+        @NotNull final String name,
+        @NotNull final Function0<? extends I> builder
     ) {
-        final RegistryObject<I> result = forge.register(name, builder::invoke);
+        final DeferredHolder<?, ?> result = forge.register(name, builder::invoke);
 
         return new RegistrySupplier<I>() {
             @NotNull
@@ -33,22 +33,22 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
 
             @Override
             public I get() {
-                return result.get();
+                return (I) result.get();
             }
         };
     }
 
     @Override
     public void applyAll() {
-        forge.register(EurekaModForge.Companion.getModBus());
+        forge.register(EurekaModForge.INSTANCE.getModBus());
     }
 
     @NotNull
     @Override
     public Iterator<RegistrySupplier<T>> iterator() {
-        final Iterator<RegistryObject<T>> iterator = forge.getEntries().iterator();
+        final Iterator<DeferredHolder<T, ?>> iterator = forge.getEntries().iterator();
 
-        return new Iterator<RegistrySupplier<T>>() {
+        return new Iterator<>() {
             @Override
             public boolean hasNext() {
                 return iterator.hasNext();
@@ -56,9 +56,9 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
 
             @Override
             public RegistrySupplier<T> next() {
-                final RegistryObject<T> result = iterator.next();
+                final DeferredHolder<T, ?> result = iterator.next();
 
-                return new RegistrySupplier<T>() {
+                return new RegistrySupplier<>() {
                     @NotNull
                     @Override
                     public String getName() {

@@ -1,7 +1,8 @@
 package org.valkyrienskies.eureka.forge.registry;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ForgeHooks;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.neoforge.event.EventHooks;
 
 public class FuelRegistryImpl extends org.valkyrienskies.eureka.registry.FuelRegistry {
 
@@ -11,6 +12,6 @@ public class FuelRegistryImpl extends org.valkyrienskies.eureka.registry.FuelReg
 
     @Override
     public int get(ItemStack stack) {
-        return ForgeHooks.getBurnTime(stack, null);
+        return EventHooks.getItemBurnTime(stack, stack.getBurnTime(RecipeType.SMELTING), RecipeType.SMELTING);
     }
 }

@@ -2,15 +2,15 @@ package org.valkyrienskies.eureka.forge
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
-import net.minecraft.resources.ResourceLocation
-import net.minecraftforge.client.event.EntityRenderersEvent
-import net.minecraftforge.client.event.ModelEvent
+import net.minecraft.client.resources.model.ModelResourceLocation
+import net.neoforged.neoforge.client.event.EntityRenderersEvent
+import net.neoforged.neoforge.client.event.ModelEvent
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.eureka.block.WoodType
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels
-import thedarkcolour.kotlinforforge.forge.MOD_BUS
+import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
 
 object EurekaModForgeClient {
     private var happendClientSetup = false
@@ -42,7 +42,7 @@ object EurekaModForgeClient {
         WheelModels.setModelGetter { woodType: WoodType ->
             event.modelBakery.bakedTopLevelModels
                 .getOrDefault(
-                    ResourceLocation.fromNamespaceAndPath(
+                    ModelResourceLocation.vanilla(
                         EurekaMod.MOD_ID,
                         "block/" + woodType.resourceName + "_ship_helm_wheel"
                     ),
@@ -60,9 +60,9 @@ object EurekaModForgeClient {
     }
 
     fun onModelRegistry(event: ModelEvent.RegisterAdditional) {
-        for (woodType in WoodType.values()) {
+        for (woodType in WoodType.entries) {
             event.register(
-                ResourceLocation.fromNamespaceAndPath(
+                ModelResourceLocation.vanilla(
                     EurekaMod.MOD_ID, "block/" + woodType.resourceName + "_ship_helm_wheel"
                 )
             )
