@@ -180,7 +180,9 @@ class EngineBlockEntity(pos: BlockPos, state: BlockState) :
         (this.heat * EurekaConfig.SERVER.engineHeatChangeExponent + 1f) * value
 
     override fun saveAdditional(tag: CompoundTag, provider: HolderLookup.Provider) {
-        tag.put("FuelSlot", fuel.save(provider))
+        if (!fuel.isEmpty) {
+            tag.put("FuelSlot", fuel.save(provider))
+        }
         tag.putInt("FuelLeft", fuelLeft)
         tag.putInt("PrevFuelTotal", fuelTotal)
         tag.putFloat("Heat", heat)
