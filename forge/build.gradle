@@ -29,40 +29,48 @@ loom {
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    core
     compileClasspath.extendsFrom common
-            runtimeClasspath.extendsFrom common
-            developmentForge.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentNeoForge.extendsFrom common
+    compileClasspath.extendsFrom core
+    forgeRuntimeLibrary.extendsFrom core
+    shadowCommon.extendsFrom core
 }
 
 dependencies {
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixin_extras_version"))
 
     neoForge("net.neoforged:neoforge:$rootProject.neoforge_version")
-    modApi("org.valkyrienskies:valkyrienskies-1-21-1-forge:${rootProject.vs2_version}") { transitive = false }
+    modApi("org.valkyrienskies:valkyrienskies-1-21-1-forge:${rootProject.vs2_version}:dev-no-shadow") {
+        transitive = false
+    }
+    // We have to include vscore manually because forge transitive dependencies are weird
+    forgeRuntimeLibrary(api("org.valkyrienskies.core:impl:${rootProject.vs_core_version}") {
+        exclude module: "netty-buffer"
+        exclude module: "fastutil"
+        exclude module: "kotlin-stdlib-jdk8"
+    })
+    forgeRuntimeLibrary(include("com.fasterxml:classmate:1.5.1"))
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 
     // Add Kotlin for Forge
-    implementation("thedarkcolour:kotlinforforge-neoforge:$forge_kotlin_version")
+    compileOnly("thedarkcolour:kotlinforforge-neoforge:$forge_kotlin_version")
     forgeRuntimeLibrary("thedarkcolour:kotlinforforge-neoforge:${forge_kotlin_version}")
 
     // Cloth for config
     include(modImplementation("me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}"))
+}
 
-    // region Manually include every single dependency of vs-core (total meme)
-    forgeRuntimeLibrary include("org.valkyrienskies.core:api:${rootProject.vs_core_version}") {
-        exclude group: 'org.joml', module: 'joml'
-        transitive = false
-    }
+// I don't know why, but this is the only way gradle can launch it
+tasks.runClient.configure {
+    jvmArgs '-Dkotlinx.coroutines.debug=off'
+}
 
-    forgeRuntimeLibrary include("org.valkyrienskies.core:util:${rootProject.vs_core_version}") {
-        exclude group: 'org.joml', module: 'joml'
-        transitive = false
-    }
-
-    // JOML for Math
-    forgeRuntimeLibrary include("org.joml:joml-primitives:1.10.0")
+tasks.runServer.configure {
+    jvmArgs '-Dkotlinx.coroutines.debug=off'
 }
 
 processResources {

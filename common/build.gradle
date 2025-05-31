@@ -14,7 +14,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     // Remove the next line if you don't want to depend on the API
 //    modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
-    modApi("org.valkyrienskies:valkyrienskies-1-21-1-common:${rootProject.vs2_version}")
+    modCompileOnly("org.valkyrienskies:valkyrienskies-1-21-1-common:${rootProject.vs2_version}") {
+        transitive = false
+    }
 
     compileOnly("org.valkyrienskies.core:api:${rootProject.vs_core_version}")
     compileOnly("org.valkyrienskies.core:api-game:${rootProject.vs_core_version}")
