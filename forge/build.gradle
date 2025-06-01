@@ -51,7 +51,7 @@ dependencies {
         exclude module: "fastutil"
         exclude module: "kotlin-stdlib-jdk8"
     })
-    forgeRuntimeLibrary(include("com.fasterxml:classmate:1.5.1"))
+    forgeRuntimeLibrary("com.fasterxml:classmate:1.5.1")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
@@ -61,7 +61,7 @@ dependencies {
     forgeRuntimeLibrary("thedarkcolour:kotlinforforge-neoforge:${forge_kotlin_version}")
 
     // Cloth for config
-    include(modImplementation("me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}"))
+    modImplementation("me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}")
 }
 
 // I don't know why, but this is the only way gradle can launch it
