@@ -1,5 +1,7 @@
 package org.valkyrienskies.eureka.block
 
+import com.mojang.serialization.Codec
+import net.minecraft.util.StringRepresentable
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 
@@ -18,4 +20,8 @@ public enum class WoodType(final val logBlock: Block, final val plankBlock: Bloc
     override fun getWood(): Block = logBlock
 
     override fun getPlanks(): Block = plankBlock
+
+    companion object {
+        val CODEC: Codec<WoodType> = StringRepresentable.fromEnum(WoodType::values)
+    }
 }
