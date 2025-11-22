@@ -21,6 +21,7 @@ import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaItems;
 import org.valkyrienskies.eureka.EurekaMod;
+import org.valkyrienskies.eureka.block.IWoodType;
 import org.valkyrienskies.eureka.block.WoodType;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
@@ -64,10 +65,10 @@ public class EurekaModFabric implements ModInitializer {
             );
 
             ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
-                for (final WoodType woodType : WoodType.getEntries()) {
+                for (final IWoodType woodType : WoodType.getEntries()) {
                     out.accept(new ResourceLocation(
                         EurekaMod.MOD_ID,
-                        "block/" + woodType.getResourceName() + "_ship_helm_wheel"
+                        "block/" + woodType.getSerializedName().toLowerCase() + "_ship_helm_wheel"
                     ));
                 }
             });
@@ -76,7 +77,7 @@ public class EurekaModFabric implements ModInitializer {
                 BakedModelManagerHelper.getModel(Minecraft.getInstance().getModelManager(),
                     new ResourceLocation(
                             EurekaMod.MOD_ID,
-                            "block/" + woodType.getResourceName() + "_ship_helm_wheel"
+                            "block/" + woodType.getSerializedName().toLowerCase() + "_ship_helm_wheel"
                     )));
         }
     }
