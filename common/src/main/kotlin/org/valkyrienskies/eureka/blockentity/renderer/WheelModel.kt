@@ -6,13 +6,13 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.resources.model.BakedModel
+import net.minecraft.util.RandomSource
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.StateHolder
 import net.minecraft.world.level.block.state.properties.EnumProperty
 import org.valkyrienskies.eureka.block.IWoodType
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.block.WoodType
-import java.util.Random
 import java.util.function.Function
 
 // OK so what dis does im making mc happy about states
@@ -22,7 +22,7 @@ import java.util.function.Function
 object WheelModels {
     private val mc get() = Minecraft.getInstance()
     private val property = EnumProperty.create("wood", WoodType::class.java)
-    private val random = Random()
+    private val random = RandomSource.create()
 
     private val models by lazy { property.possibleValues.associateWith { WheelModel(it) } }
 
