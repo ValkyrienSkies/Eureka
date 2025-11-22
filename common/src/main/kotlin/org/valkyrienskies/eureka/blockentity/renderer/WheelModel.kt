@@ -7,10 +7,12 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.resources.model.BakedModel
+import net.minecraft.util.RandomSource
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.StateHolder
 import net.minecraft.world.level.block.state.properties.EnumProperty
 import net.minecraft.world.level.block.state.properties.Property
+import org.valkyrienskies.eureka.block.IWoodType
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.block.WoodType
 import java.util.function.Function
@@ -22,6 +24,7 @@ import java.util.function.Function
 object WheelModels {
     private val mc get() = Minecraft.getInstance()
     private val property = EnumProperty.create("wood", WoodType::class.java)
+    private val random = RandomSource.create()
 
     private val models by lazy { property.possibleValues.associateWith { WheelModel(it) } }
 
@@ -33,41 +36,40 @@ object WheelModels {
         combinedOverlay: Int
     ) {
         val level = blockEntity.level ?: return
-        val woodType = (blockEntity.blockState.block as ShipHelmBlock).woodType
+        val blockState = blockEntity.blockState
+        val woodType = (blockState.block as ShipHelmBlock).woodType
 
         matrixStack.pushPose()
         // Model isn't centered calculated and need to use 0.625 on y and z 0.25
         matrixStack.translate(-0.5, -0.625, -0.25)
 
+        val blockPos = blockEntity.blockPos
         mc.blockRenderer.modelRenderer.tesselateWithoutAO(
             level,
             models[woodType]!!.model,
-            blockEntity.blockState,
-            blockEntity.blockPos,
+            blockState,
+            blockPos,
             matrixStack,
             buffer.getBuffer(RenderType.cutout()),
             true,
-            level.random,
-            42L, // Used in ModelBlockRenderer.class in renderModel, not sure what the right number is but this seems to work
+            random,
+            blockState.getSeed(blockPos),
             combinedOverlay
         )
 
         matrixStack.popPose()
     }
 
-    fun setModelGetter(getter: Function<WoodType, BakedModel>) {
+    fun setModelGetter(getter: Function<IWoodType, BakedModel>) {
         models.values.forEach { it.getter = getter::apply }
     }
 
     class WheelModel(type: WoodType) :
-        StateHolder<WheelModels, WheelModel>(
-            WheelModels,
-            Reference2ObjectArrayMap<Property<*>, Comparable<*>>().also {
-                it[property] = type
-            },
-            null
-        ) {
-        var getter: (WoodType) -> BakedModel = { throw IllegalStateException("Getter not set") }
+        StateHolder<WheelModels, WheelModel>(WheelModels, Reference2ObjectArrayMap<Property<*>, Comparable<*>>().also {
+            it[property] = type
+        }, null) {
+
+        var getter: (IWoodType) -> BakedModel = { throw IllegalStateException("Getter not set") }
 
         val model by lazy { getter(type) }
     }

@@ -34,7 +34,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
-class ShipHelmBlock(val woodType: WoodType, properties: Properties) : BaseEntityBlock(properties) {
+class ShipHelmBlock(properties: Properties, val woodType: IWoodType) : BaseEntityBlock(properties) {
     val HELM_BASE = RotShapes.box(2.0, 0.0, 2.0, 14.0, 2.0, 14.0)
     val HELM_POLE = RotShapes.box(4.0, 2.0, 5.0, 12.0, 13.0, 13.0)
 
@@ -145,7 +145,10 @@ class ShipHelmBlock(val woodType: WoodType, properties: Properties) : BaseEntity
 
     companion object {
         val CODEC: MapCodec<ShipHelmBlock> = RecordCodecBuilder.mapCodec { instance ->
-            instance.group(WoodType.CODEC.fieldOf("wood_type").forGetter { it.woodType }, propertiesCodec()).apply(instance, ::ShipHelmBlock)
+            instance.group(
+                propertiesCodec(),
+                WoodType.CODEC.fieldOf("wood_type").forGetter { it.woodType as WoodType }
+            ).apply(instance, ::ShipHelmBlock)
         }
     }
 }
