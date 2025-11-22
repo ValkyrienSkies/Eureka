@@ -12,6 +12,7 @@ import org.joml.AxisAngle4d
 import org.joml.Matrix4d
 import org.joml.Vector3d
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.impl.networking.simple.sendToClient
 import org.valkyrienskies.core.util.datastructures.DenseBlockPosSet
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.common.assembly.createNewShipWithBlocks
@@ -122,9 +123,7 @@ object ShipAssembler {
         // Send a list of all the chunks that we plan on updating to players, so that they
         // defer all updates until assembly is finished
         level.players().forEach { player ->
-            with (vsCore.simplePacketNetworking) {
-                PacketStopChunkUpdates(chunkPosesJOML).sendToClient(player.playerWrapper)
-            }
+            PacketStopChunkUpdates(chunkPosesJOML).sendToClient(player.playerWrapper)
         }
 
         val toUpdate = Sets.newHashSet<Triple<BlockPos, BlockPos, BlockState>>()
@@ -167,9 +166,7 @@ object ShipAssembler {
         ) {
             // Once all the chunk updates are sent to players, we can tell them to restart chunk updates
             level.players().forEach { player ->
-                with (vsCore.simplePacketNetworking) {
-                    PacketRestartChunkUpdates(chunkPosesJOML).sendToClient(player.playerWrapper)
-                }
+                PacketRestartChunkUpdates(chunkPosesJOML).sendToClient(player.playerWrapper)
             }
         }
     }
