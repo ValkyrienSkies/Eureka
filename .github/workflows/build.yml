@@ -11,10 +11,10 @@ jobs:
     name: "Validate Gradle wrapper"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: true # Clone with vs-core submodule
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: gradle/wrapper-validation-action@v3
 
   test-server:
     name: Test Server

@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty
 import org.valkyrienskies.eureka.block.IWoodType
 import org.valkyrienskies.eureka.block.ShipHelmBlock
 import org.valkyrienskies.eureka.block.WoodType
+import java.util.Random
 import java.util.function.Function
 
 // OK so what dis does im making mc happy about states
@@ -21,6 +22,7 @@ import java.util.function.Function
 object WheelModels {
     private val mc get() = Minecraft.getInstance()
     private val property = EnumProperty.create("wood", WoodType::class.java)
+    private val random = Random()
 
     private val models by lazy { property.possibleValues.associateWith { WheelModel(it) } }
 
@@ -32,22 +34,24 @@ object WheelModels {
         combinedOverlay: Int
     ) {
         val level = blockEntity.level ?: return
-        val woodType = (blockEntity.blockState.block as ShipHelmBlock).woodType
+        val blockState = blockEntity.blockState
+        val woodType = (blockState.block as ShipHelmBlock).woodType
 
         matrixStack.pushPose()
         // Model isn't centered calculated and need to use 0.625 on y and z 0.25
         matrixStack.translate(-0.5, -0.625, -0.25)
 
+        val blockPos = blockEntity.blockPos
         mc.blockRenderer.modelRenderer.tesselateWithoutAO(
             level,
             models[woodType]!!.model,
-            blockEntity.blockState,
-            blockEntity.blockPos,
+            blockState,
+            blockPos,
             matrixStack,
             buffer.getBuffer(RenderType.cutout()),
             true,
-            level.random,
-            42L, // Used in ModelBlockRenderer.class in renderModel, not sure what the right number is but this seems to work
+            random,
+            blockState.getSeed(blockPos),
             combinedOverlay
         )
 
