@@ -15,6 +15,7 @@ import org.valkyrienskies.core.api.ships.ServerTickListener
 import org.valkyrienskies.core.api.ships.ShipForcesInducer
 import org.valkyrienskies.core.api.ships.getAttachment
 import org.valkyrienskies.core.api.ships.saveAttachment
+import org.valkyrienskies.core.impl.game.ships.PhysShipImpl
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
 import org.valkyrienskies.mod.common.util.toJOMLD
@@ -91,11 +92,13 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         // Disable fluid drag when helms are present, because it makes ships hard to drive
         physShip.doFluidDrag = EurekaConfig.SERVER.doFluidDrag
 
+        physShip as PhysShipImpl
+
         val ship = ship ?: return
-        val mass = physShip.mass
-        val moiTensor = physShip.momentOfInertia
-        val omega: Vector3dc = physShip.omega
-        val vel: Vector3dc = physShip.velocity
+        val mass = physShip.inertia.shipMass
+        val moiTensor = physShip.inertia.momentOfInertiaTensor
+        val omega: Vector3dc = physShip.poseVel.omega
+        val vel: Vector3dc = physShip.poseVel.vel
         val balloonForceProvided = balloons * forcePerBalloon
 
         val buoyantFactorPerFloater = min(
@@ -230,7 +233,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         return currentControlData
     }
 
-    private fun applyPlayerControl(control: ControlData, physShip: PhysShip) {
+    private fun applyPlayerControl(control: ControlData, physShip: PhysShipImpl) {
 
         val ship = ship ?: return
         val transform = physShip.transform
@@ -238,8 +241,8 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         val center = transform.positionInWorld
 
         // region Player controlled rotation
-        val moiTensor = physShip.momentOfInertia
-        val omega: Vector3dc = physShip.omega
+        val moiTensor = physShip.inertia.momentOfInertiaTensor
+        val omega: Vector3dc = physShip.poseVel.omega
 
         val largestDistance = run {
             var dist = center.distance(aabb.minX(), center.y(), aabb.minZ())
@@ -290,10 +293,10 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
     }
 
     // Player controlled forward and backward thrust
-    private fun getPlayerForwardVel(control: ControlData, physShip: PhysShip): Vector3d {
+    private fun getPlayerForwardVel(control: ControlData, physShip: PhysShipImpl): Vector3d {
 
-        val scaledMass = physShip.mass * EurekaConfig.SERVER.speedMassScale
-        val vel: Vector3dc = physShip.velocity
+        val scaledMass = physShip.inertia.shipMass *  EurekaConfig.SERVER.speedMassScale
+        val vel: Vector3dc = physShip.poseVel.vel
 
         // region Player controlled forward and backward thrust
         val forwardVector = control.seatInDirection.normal.toJOMLD()
@@ -302,7 +305,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
         val s = 1 / smoothingATanMax(
             EurekaConfig.SERVER.linearMaxMass,
-            physShip.mass * EurekaConfig.SERVER.linearMassScaling + EurekaConfig.SERVER.linearBaseMass
+            physShip.inertia.shipMass * EurekaConfig.SERVER.linearMassScaling + EurekaConfig.SERVER.linearBaseMass
         )
 
         val maxSpeed = EurekaConfig.SERVER.linearMaxSpeed / 15
