@@ -41,9 +41,9 @@ fun stabilize(
         omega.z()
     )
 
-    val stabilizationTorque = ship.transform.shipToWorldRotation.transform(
-        ship.transform.shipToWorldRotation.transform(
-            ship.transform.shipToWorldRotation.transformInverse(idealAngularAcceleration)
+    val stabilizationTorque = ship.poseVel.rot.transform(
+        ship.inertia.momentOfInertiaTensor.transform(
+            ship.poseVel.rot.transformInverse(idealAngularAcceleration)
         )
     )
 

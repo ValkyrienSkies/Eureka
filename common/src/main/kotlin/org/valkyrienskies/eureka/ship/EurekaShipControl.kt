@@ -277,15 +277,15 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         physShip.applyInvariantForce(getPlayerForwardVel(control, physShip))
     }
 
-    private fun getPlayerControlledBanking(control: ControlData, physShip: PhysShip, moiTensor: Matrix3dc, strength: Double): Vector3d {
+    private fun getPlayerControlledBanking(control: ControlData, physShip: PhysShipImpl, moiTensor: Matrix3dc, strength: Double): Vector3d {
         val rotationVector = control.seatInDirection.normal.toJOMLD()
-        physShip.transform.shipToWorldRotation.transform(rotationVector)
+        physShip.poseVel.transformDirection(rotationVector)
         rotationVector.y = 0.0
         rotationVector.mul(strength * 1.5)
 
-        physShip.transform.shipToWorldRotation.transform(
+        physShip.poseVel.rot.transform(
             moiTensor.transform(
-                physShip.transform.shipToWorldRotation.transformInverse(rotationVector)
+                physShip.poseVel.rot.transformInverse(rotationVector)
             )
         )
 
@@ -300,7 +300,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
         // region Player controlled forward and backward thrust
         val forwardVector = control.seatInDirection.normal.toJOMLD()
-        physShip.transform.shipToWorldRotation.transform(forwardVector)
+        physShip.poseVel.rot.transform(forwardVector)
         forwardVector.normalize()
 
         val s = 1 / smoothingATanMax(
@@ -312,7 +312,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         oldSpeed = max(min(oldSpeed * (1 - s) + control.forwardImpulse.toDouble() * s, maxSpeed), -maxSpeed)
         forwardVector.mul(oldSpeed)
 
-        val playerUpDirection = physShip.transform.shipToWorldRotation.transform(Vector3d(0.0, 1.0, 0.0))
+        val playerUpDirection = physShip.poseVel.transformDirection(Vector3d(0.0, 1.0, 0.0))
         val velOrthogonalToPlayerUp = vel.sub(playerUpDirection.mul(playerUpDirection.dot(vel)), Vector3d())
 
         // This is the speed that the ship is always allowed to go out, without engines
