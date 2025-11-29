@@ -7,6 +7,7 @@ import net.minecraftforge.client.ConfigScreenHandler
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.registries.DeferredRegister
+import org.valkyrienskies.core.impl.config.VSConfigClass.Companion.getRegisteredConfig
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.eureka.EurekaMod.init
@@ -32,7 +33,7 @@ class EurekaModForge {
             ConfigScreenHandler.ConfigScreenFactory { _: Minecraft?, parent: Screen? ->
                 createConfigScreenFor(
                     parent!!,
-                    EurekaConfig::class.java,
+                    getRegisteredConfig(EurekaConfig::class.java),
                 )
             }
         }

@@ -1,6 +1,6 @@
 package org.valkyrienskies.eureka
 
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod
+import org.valkyrienskies.core.impl.config.VSConfigClass
 
 object EurekaMod {
     const val MOD_ID = "vs_eureka"
@@ -13,7 +13,7 @@ object EurekaMod {
         EurekaScreens.register()
         EurekaEntities.register()
         EurekaWeights.register()
-        ValkyrienSkiesMod.vsCore.registerConfigLegacy("vs_eureka", EurekaConfig::class.java)
+        VSConfigClass.registerConfig("vs_eureka", EurekaConfig::class.java)
     }
 
     @JvmStatic
