@@ -35,7 +35,8 @@
   "gui.vs_eureka.disassemble": "Dock",
   "gui.vs_eureka.align": "Come About",
   "gui.vs_eureka.aligning": "Comin' About...",
-  "gui.vs_eureka.todo": "Ye lamb be wretched n' wee",
   "hud.vs_eureka.start_cruising": "Cruisin' be enabled",
-  "hud.vs_eureka.stop_cruising": "Cruisin' be disabled"
+  "hud.vs_eureka.stop_cruising": "Cruisin' be disabled",
+  "info.vs_eureka.too_big": "Ye ship is too large lad! Max size is %s blocks (changeable in the config)",
+  "info.vs_eureka.sneak_to_open_helm": "Sneak to open the ship wheel!"
 }

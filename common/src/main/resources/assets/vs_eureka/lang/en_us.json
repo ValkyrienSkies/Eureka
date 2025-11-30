@@ -35,7 +35,8 @@
   "gui.vs_eureka.disassemble": "Disassemble",
   "gui.vs_eureka.align": "Align",
   "gui.vs_eureka.aligning": "Aligning...",
-  "gui.vs_eureka.todo": "Disassemble",
   "hud.vs_eureka.start_cruising": "Cruise control enabled",
-  "hud.vs_eureka.stop_cruising": "Cruise control disabled"
+  "hud.vs_eureka.stop_cruising": "Cruise control disabled",
+  "info.vs_eureka.too_big": "Ship is too big! Max size is %s blocks (changeable in the config)",
+  "info.vs_eureka.sneak_to_open_helm": "Sneak to open the ship helm!"
 }

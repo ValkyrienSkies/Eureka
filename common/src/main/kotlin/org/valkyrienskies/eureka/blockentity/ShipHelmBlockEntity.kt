@@ -6,7 +6,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction.Axis
 import net.minecraft.core.Registry
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.TextComponent
 import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
@@ -145,8 +144,8 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         }
 
         if (builtShip == null) {
-            player.sendMessage(TextComponent("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks (changeable in the config)"), Util.NIL_UUID)
-            logger.warn("Failed to assemble ship for ${player.name.string}")
+            player.sendMessage(TranslatableComponent("gui.vs_eureka.too_big", EurekaConfig.SERVER.maxShipBlocks), Util.NIL_UUID)
+            logger.warn("Failed to assemble to large of a ship for ${player.name.string}")
         } else {
             EurekaShipControl.getOrCreate(builtShip).helms = helmCount
         }
