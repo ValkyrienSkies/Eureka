@@ -46,6 +46,13 @@ class EurekaModForge {
                 event
             )
         }
+        /*
+        MOD_BUS.addListener{ event: AddPackFindersEvent ->
+            addPackFinders(
+                event
+            )
+        }
+        */
         LOADING_CONTEXT.registerExtensionPoint(
             ConfigGuiFactory::class.java
         ) {
@@ -96,6 +103,24 @@ class EurekaModForge {
             )
         }
     }
+
+    /*
+    private fun addPackFinders(event: AddPackFindersEvent) {
+        if (event.packType == PackType.CLIENT_RESOURCES) {
+            event.addRepositorySource { consumer, packConstructor ->
+                val pack = Pack.create(
+                    "${EurekaMod.MOD_ID}:retro_helms",
+                    false,
+                    null,
+                    packConstructor,
+                    Pack.Position.TOP,
+                    PackSource.BUILT_IN
+                )
+                consumer.accept(pack)
+            }
+        }
+    }
+    */
 
     companion object {
         fun getModBus(): IEventBus = MOD_BUS
