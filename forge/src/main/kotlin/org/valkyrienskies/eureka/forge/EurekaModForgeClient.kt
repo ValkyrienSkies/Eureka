@@ -44,9 +44,10 @@ object EurekaModForgeClient {
         WheelModels.setModelGetter { woodType: IWoodType ->
             event.modelBakery.bakedTopLevelModels
                 .getOrDefault(
-                    ResourceLocation(
-                        EurekaMod.MOD_ID,
-                        "block/" + woodType.serializedName.lowercase() + "_ship_helm_wheel"
+                    ModelResourceLocation.standalone(
+                        ResourceLocation.fromNamespaceAndPath(
+                            EurekaMod.MOD_ID, "block/" + woodType.serializedName.lowercase() + "_ship_helm_wheel"
+                        )
                     ),
                     Minecraft.getInstance().modelManager.missingModel
                 )
@@ -64,8 +65,10 @@ object EurekaModForgeClient {
     fun onModelRegistry(event: ModelEvent.RegisterAdditional) {
         for (woodType in WoodType.entries) {
             event.register(
-                ResourceLocation(
-                    EurekaMod.MOD_ID, "block/" + woodType.serializedName.lowercase() + "_ship_helm_wheel"
+                ModelResourceLocation.standalone(
+                    ResourceLocation.fromNamespaceAndPath(
+                        EurekaMod.MOD_ID, "block/" + woodType.serializedName.lowercase() + "_ship_helm_wheel"
+                    )
                 )
             )
         }
