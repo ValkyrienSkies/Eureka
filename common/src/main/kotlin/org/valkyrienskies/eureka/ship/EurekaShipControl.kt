@@ -96,7 +96,14 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         val moiTensor = physShip.momentOfInertia
         val omega: Vector3dc = physShip.omega
         val vel: Vector3dc = physShip.velocity
-        val balloonForceProvided = balloons * forcePerBalloon
+        var balloonForceProvided = balloons * forcePerBalloon
+
+        if (EurekaConfig.SERVER.maxBalloonsPerEngine > 0) {
+            balloonForceProvided *= min(
+                1.0,
+                ( extraForceLinear * EurekaConfig.SERVER.maxBalloonsPerEngine ) / ( EurekaConfig.SERVER.enginePowerLinear * balloons )
+            )
+        }
 
         val buoyantFactorPerFloater = min(
             EurekaConfig.SERVER.floaterBuoyantFactorPerKg / 15.0 / mass,

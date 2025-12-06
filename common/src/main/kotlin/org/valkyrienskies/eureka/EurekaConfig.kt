@@ -37,6 +37,9 @@ object EurekaConfig {
         @JsonSchema(description = "Pause fuel consumption and power when block is powered")
         val engineRedstoneBehaviorPause = false
 
+        @JsonSchema(description = "Number of Balloons a single engine can power. 0 disables the feature")
+        val maxBalloonsPerEngine = 0
+
         @JsonSchema(description = "Avoids consuming fuel when heat is 100%")
         val engineFuelSaving = false
 
