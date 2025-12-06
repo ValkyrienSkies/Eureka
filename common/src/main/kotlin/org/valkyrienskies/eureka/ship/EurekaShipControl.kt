@@ -111,19 +111,6 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         )
 
         physShip.buoyantFactor = 1.0 + floaters * buoyantFactorPerFloater
-        // Revisiting eureka control code.
-        // [x] Move torque stabilization code
-        // [x] Move linear stabilization code
-        // [x] Revisit player controlled torque
-        // [x] Revisit player controlled linear force
-        // [x] Anchor freezing
-        // [x] Rewrite Alignment code
-        // [x] Revisit Elevation code
-        // [x] Balloon limiter
-        // [x] Add Cruise code
-        // [x] Rotation based of ship size
-        // [x] Engine consumption
-        // [x] Fix elevation sensitivity
 
         // region Aligning
 
