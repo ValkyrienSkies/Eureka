@@ -58,8 +58,11 @@ object EurekaConfig {
         @JsonSchema(description = "The final linear boost will be raised to the power of 2, and the result of the delta is multiple by this value")
         val engineBoostExponentialPower = 0.000001
 
-        @JsonSchema(description = "Max speed of a ship without boosting")
-        val maxCasualSpeed = 15.0
+        @JsonSchema(description = "Max speed of a ship with engines (actual max speed varies with engines and mass.)")
+        val maxSpeedFromEngines = 16.0
+
+        @JsonSchema(description = "Max reverse speed of a ship with engines")
+        val maxReverseSpeedFromEngines = 8.0
 
         @JsonSchema(description = "The speed at which the ship stabilizes")
         var stabilizationSpeed = 10.0
@@ -71,7 +74,7 @@ object EurekaConfig {
         var maxFloaterBuoyantFactor = 1.0
 
         @JsonSchema(description = "how much the mass decreases the speed.")
-        var speedMassScale = 5.0
+        var speedMassScale = 1.0
 
         // The velocity any ship at least can move at.
         @JsonSchema(description = "The speed a ship with no engines can move at")
@@ -142,8 +145,8 @@ object EurekaConfig {
         @JsonSchema(description = "Max smoothing value, will smooth out before reaching max value.")
         var linearMaxMass = 10000.0
 
-        @JsonSchema(description = "Max unscaled speed in m/s.")
-        var linearMaxSpeed = 15.0
+        @JsonSchema(description = "Max unscaled speed in m/s without engines.")
+        var linearCasualSpeed = 3.0
 
         // Anti-velocity mass relevance when stopping the ship
         // Max 10.0 (means no mass irrelevance)
