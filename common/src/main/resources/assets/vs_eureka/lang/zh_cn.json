@@ -37,5 +37,6 @@
   "gui.vs_eureka.aligning": "对齐中……",
   "hud.vs_eureka.start_cruising": "定速巡航已启用",
   "hud.vs_eureka.stop_cruising": "定速巡航已禁用",
-  "info.vs_eureka.sneak_to_open_helm": "物理结构过大！船舵可组装的最大尺寸为%s个方块（此项可在配置文件中更改）"
+  "info.vs_eureka.too_big": "物理结构过大！船舵可组装的最大尺寸为%s个方块（此项可在配置文件中更改）",
+  "info.vs_eureka.sneak_to_open_helm": "潜行以打开船舵GUI！"
 }
