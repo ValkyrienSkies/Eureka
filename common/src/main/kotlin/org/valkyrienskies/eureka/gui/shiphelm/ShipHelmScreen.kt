@@ -47,7 +47,7 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         )
 
         disassembleButton = addRenderableWidget(
-            ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, TODO_TEXT, font) {
+            ShipHelmButton(x + BUTTON_3_X, y + BUTTON_3_Y, DISSEMBLE_TEXT, font) {
                 minecraft?.gameMode?.handleInventoryButtonClick(menu.containerId, 3)
             }
         )
@@ -121,6 +121,5 @@ class ShipHelmScreen(handler: ShipHelmScreenMenu, playerInventory: Inventory, te
         private val DISSEMBLE_TEXT = Component.translatable("gui.vs_eureka.disassemble")
         private val ALIGN_TEXT = Component.translatable("gui.vs_eureka.align")
         private val ALIGNING_TEXT = Component.translatable("gui.vs_eureka.aligning")
-        private val TODO_TEXT = Component.translatable("gui.vs_eureka.todo")
     }
 }

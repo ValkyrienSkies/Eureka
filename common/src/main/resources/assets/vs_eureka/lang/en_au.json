@@ -1,5 +1,5 @@
 {
-  "itemGroup.vs_eureka.eureka_tab": "Vis ya-eeka?",
+  "itemGroup.vs_eureka.eureka_tab": "VS Eureka",
   "block.vs_eureka.oak_ship_helm": "Oyshelm",
   "block.vs_eureka.spruce_ship_helm": "Spruy shelm",
   "block.vs_eureka.birch_ship_helm": "Bury shelm",
@@ -35,7 +35,6 @@
   "gui.vs_eureka.disassemble": "Right, now yoowh put it down",
   "gui.vs_eureka.align": "M8",
   "gui.vs_eureka.aligning": "M8ing...",
-  "gui.vs_eureka.todo": "Right, now yoowh put it down",
   "hud.vs_eureka.start_cruising": "Cruise is on, watch out for roo's",
   "hud.vs_eureka.stop_cruising": "Cruise is out"
 }
