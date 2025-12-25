@@ -142,8 +142,8 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         }
 
         if (builtShip == null) {
-            player.displayClientMessage(Component.translatable("Ship is too big! Max size is ${EurekaConfig.SERVER.maxShipBlocks} blocks (changable in the config)"), true)
-            logger.warn("Failed to assemble ship for ${player.name.string}")
+            player.displayClientMessage(Component.translatable("gui.vs_eureka.too_big", EurekaConfig.SERVER.maxShipBlocks), true)
+            logger.warn("Failed to assemble to large of a ship for ${player.name.string}")
         } else {
             EurekaShipControl.getOrCreate(builtShip).helms = helmCount
         }

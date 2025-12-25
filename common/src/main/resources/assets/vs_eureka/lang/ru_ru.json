@@ -35,7 +35,6 @@
    "gui.vs_eureka.disassemble": "Разобрать",
    "gui.vs_eureka.align": "Выровнять",
    "gui.vs_eureka.aligning": "Выравнивание...",
-   "gui.vs_eureka.todo": "Разобрать",
    "hud.vs_eureka.start_cruising": "Круиз-контроль включён",
    "hud.vs_eureka.stop_cruising": "Круиз-контроль отключён"
 }

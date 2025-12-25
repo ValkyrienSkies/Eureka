@@ -1,6 +1,6 @@
 {
   "pack": {
-     "pack_format": 9,
-     "description": "retro eureka wheel"
+     "pack_format": 8,
+     "description": "Retro eureka helm models (restart required to apply)"
   }
 }
