@@ -39,18 +39,6 @@ public class EurekaModFabric implements ModInitializer {
         new FuelRegistryImpl();
 
         EurekaMod.init();
-
-        Registry.register(
-            BuiltInRegistries.CREATIVE_MODE_TAB,
-            EurekaItems.INSTANCE.getTAB(),
-            CreativeTabs.INSTANCE.create()
-        );
-
-        // TODO: make resources packs work
-        ModContainer eureka = FabricLoader.getInstance().getModContainer(EurekaMod.MOD_ID)
-                .orElseThrow(() -> new IllegalStateException("Eureka's ModContainer couldn't be found!"));
-        ResourceLocation packId = new ResourceLocation(EurekaMod.MOD_ID, "retro_helms");
-        ResourceManagerHelper.registerBuiltinResourcePack(packId, eureka, "Eureka retro helms", ResourcePackActivationType.NORMAL);
     }
 
     @Environment(EnvType.CLIENT)
@@ -79,6 +67,17 @@ public class EurekaModFabric implements ModInitializer {
                             EurekaMod.MOD_ID,
                             "block/" + woodType.getSerializedName().toLowerCase() + "_ship_helm_wheel"
                     )));
+
+            Registry.register(
+                BuiltInRegistries.CREATIVE_MODE_TAB,
+                EurekaItems.INSTANCE.getTAB(),
+                CreativeTabs.INSTANCE.create()
+            );
+
+            ModContainer eureka = FabricLoader.getInstance().getModContainer(EurekaMod.MOD_ID)
+                    .orElseThrow(() -> new IllegalStateException("Eureka's ModContainer couldn't be found!"));
+            ResourceLocation packId = new ResourceLocation(EurekaMod.MOD_ID, "retro_helms");
+            ResourceManagerHelper.registerBuiltinResourcePack(packId, eureka, "Eureka retro helms", ResourcePackActivationType.NORMAL);
         }
     }
 
