@@ -33,9 +33,6 @@
     "preLaunch": [
       "org.valkyrienskies.eureka.fabric.ValkyrienPreLaunch"
     ],
-    "modmenu": [
-      "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}ModMenu"
-    ],
     "fabric-datagen": [
       "org.valkyrienskies.eureka.fabric.EurekaDataGenerator"
     ]
