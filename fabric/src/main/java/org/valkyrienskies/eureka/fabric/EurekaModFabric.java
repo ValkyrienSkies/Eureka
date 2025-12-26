@@ -1,7 +1,6 @@
 package org.valkyrienskies.eureka.fabric;
 
-import com.terraformersmc.modmenu.api.ConfigScreenFactory;
-import com.terraformersmc.modmenu.api.ModMenuApi;
+import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,6 +16,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fml.config.ModConfig;
 import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaItems;
@@ -27,7 +27,6 @@ import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRendere
 import org.valkyrienskies.eureka.blockentity.renderer.WheelModels;
 import org.valkyrienskies.eureka.fabric.registry.FuelRegistryImpl;
 import org.valkyrienskies.eureka.registry.CreativeTabs;
-import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
 public class EurekaModFabric implements ModInitializer {
@@ -37,6 +36,8 @@ public class EurekaModFabric implements ModInitializer {
         new ValkyrienSkiesModFabric().onInitialize();
 
         new FuelRegistryImpl();
+
+        ForgeConfigRegistry.INSTANCE.register(EurekaMod.MOD_ID, ModConfig.Type.SERVER, EurekaConfig.INSTANCE.getEUREKA_SPEC(), "valkyrienskies/vs_eureka.toml");
 
         EurekaMod.init();
     }
@@ -78,16 +79,6 @@ public class EurekaModFabric implements ModInitializer {
                     .orElseThrow(() -> new IllegalStateException("Eureka's ModContainer couldn't be found!"));
             ResourceLocation packId = new ResourceLocation(EurekaMod.MOD_ID, "retro_helms");
             ResourceManagerHelper.registerBuiltinResourcePack(packId, eureka, "Eureka retro helms", ResourcePackActivationType.NORMAL);
-        }
-    }
-
-    public static class ModMenu implements ModMenuApi {
-        @Override
-        public ConfigScreenFactory<?> getModConfigScreenFactory() {
-            return (parent) -> VSClothConfig.createConfigScreenFor(
-                    parent,
-                    EurekaConfig.class
-            );
         }
     }
 }

@@ -1,18 +1,18 @@
 package org.valkyrienskies.eureka.forge
 
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.screens.Screen
 import net.minecraft.core.registries.Registries
-import net.minecraftforge.client.ConfigScreenHandler
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.config.ModConfig
+import net.minecraftforge.fml.event.config.ModConfigEvent
 import net.minecraftforge.registries.DeferredRegister
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.eureka.EurekaMod.init
 import org.valkyrienskies.eureka.registry.CreativeTabs
 import org.valkyrienskies.eureka.forge.registry.FuelRegistryImpl
-import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig.createConfigScreenFor
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod.MOD_ID
+import org.valkyrienskies.mod.common.config.VSConfigUpdater
 import thedarkcolour.kotlinforforge.forge.LOADING_CONTEXT
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import thedarkcolour.kotlinforforge.forge.runForDist
@@ -26,16 +26,11 @@ class EurekaModForge {
             },
             serverTarget = {}
         )
-        LOADING_CONTEXT.registerExtensionPoint(
-            ConfigScreenHandler.ConfigScreenFactory::class.java
-        ) {
-            ConfigScreenHandler.ConfigScreenFactory { _: Minecraft?, parent: Screen? ->
-                createConfigScreenFor(
-                    parent!!,
-                    EurekaConfig::class.java,
-                )
-            }
+        LOADING_CONTEXT.apply {
+            registerConfig(ModConfig.Type.SERVER, EurekaConfig.EUREKA_SPEC, "valkyrienskies/vs_eureka.toml")
         }
+        MOD_BUS.addListener(::onConfigReload)
+        MOD_BUS.addListener(::onConfigLoad)
         FuelRegistryImpl()
         init()
 
@@ -48,5 +43,17 @@ class EurekaModForge {
 
     companion object {
         fun getModBus(): IEventBus = MOD_BUS
+    }
+
+    private fun onConfigLoad(event: ModConfigEvent.Loading) {
+        if (event.config.modId == MOD_ID) {
+            EurekaConfig.update(event.config)
+        }
+    }
+
+    private fun onConfigReload(event: ModConfigEvent.Reloading) {
+        if (event.config.modId == MOD_ID) {
+            EurekaConfig.update(event.config)
+        }
     }
 }

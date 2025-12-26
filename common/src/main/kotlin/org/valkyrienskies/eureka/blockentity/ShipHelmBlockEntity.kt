@@ -22,8 +22,11 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties.HOR
 import net.minecraft.world.level.block.state.properties.Half
 import org.joml.Vector3d
 import org.joml.Vector3dc
+import org.valkyrienskies.core.api.VsBeta
 import org.valkyrienskies.core.api.ships.ServerShip
-import org.valkyrienskies.core.api.ships.getAttachment
+import org.valkyrienskies.core.api.attachment.getAttachment
+import org.valkyrienskies.core.api.ships.LoadedServerShip
+import org.valkyrienskies.core.api.util.GameTickOnly
 import org.valkyrienskies.eureka.EurekaBlockEntities
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.EurekaMod
@@ -33,6 +36,7 @@ import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.ShipAssembler
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.entity.ShipMountingEntity
+import org.valkyrienskies.mod.common.getLoadedShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOMLD
@@ -44,7 +48,9 @@ import org.valkyrienskies.mod.util.logger
 class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(EurekaBlockEntities.SHIP_HELM.get(), pos, state), MenuProvider {
 
-    private val ship: ServerShip? get() = (level as ServerLevel).getShipObjectManagingPos(this.blockPos)
+    @OptIn(GameTickOnly::class)
+    private val ship: LoadedServerShip? get() = (level as ServerLevel).getLoadedShipManagingPos(this.blockPos)
+    @OptIn(GameTickOnly::class, VsBeta::class)
     private val control: EurekaShipControl? get() = ship?.getAttachment(EurekaShipControl::class.java)
     private val seats = mutableListOf<ShipMountingEntity>()
     val assembled get() = ship != null
@@ -112,6 +118,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         return ride
     }
 
+    @OptIn(VsBeta::class, GameTickOnly::class)
     fun tick() {
         if (shouldDisassembleWhenPossible && ship?.getAttachment<EurekaShipControl>()?.canDisassemble == true) {
             this.disassemble()
@@ -120,6 +127,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     // Needs to get called server-side
+    @OptIn(GameTickOnly::class, VsBeta::class)
     fun assemble(player: Player) {
         val level = level as ServerLevel
 
@@ -132,9 +140,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
             level,
             blockPos
         ) {
-            val allowed = !it.isAir && !it.`is`(ASSEMBLE_BLACKLIST) &&
-            // TODO: Remove blockBlacklist
-            !(EurekaConfig.SERVER.blockBlacklist.isNotEmpty() && EurekaConfig.SERVER.blockBlacklist.contains(BuiltInRegistries.BLOCK.getKey(it.block).toString()))
+            val allowed = !it.isAir && !it.`is`(ASSEMBLE_BLACKLIST)
             // This isn't the best way to count helms, but it'll work I promise!
             if (allowed && it.block is ShipHelmBlock) {
                 helmCount++
@@ -146,7 +152,10 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
             player.displayClientMessage(Component.translatable("gui.vs_eureka.too_big", EurekaConfig.SERVER.maxShipBlocks), true)
             logger.warn("Failed to assemble to large of a ship for ${player.name.string}")
         } else {
-            EurekaShipControl.getOrCreate(builtShip).helms = helmCount
+            EurekaShipControl.deferUntilLoaded(
+                builtShip,
+                { it.helms = helmCount }
+            )
         }
     }
 

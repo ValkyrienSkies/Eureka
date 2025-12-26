@@ -10,8 +10,14 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties.POWER
 import net.minecraft.world.level.material.MapColor
-import org.valkyrienskies.core.api.ships.getAttachment
+import org.valkyrienskies.core.api.VsBeta
+import org.valkyrienskies.core.api.attachment.getAttachment
+import org.valkyrienskies.core.api.ships.LoadedServerShip
+import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.api.util.GameTickOnly
 import org.valkyrienskies.eureka.ship.EurekaShipControl
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod
+import org.valkyrienskies.mod.common.getLoadedShipManagingPos
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
@@ -28,6 +34,7 @@ class FloaterBlock : Block(
         builder.add(POWER)
     }
 
+    @OptIn(GameTickOnly::class)
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
         super.onPlace(state, level, pos, oldState, isMoving)
 
@@ -36,10 +43,11 @@ class FloaterBlock : Block(
 
         val floaterPower = 15 - state.getValue(POWER)
 
-        val ship = level.getShipObjectManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        EurekaShipControl.getOrCreate(ship).floaters += floaterPower
+        val ship = level.getShipManagingPos(pos) ?: return
+        EurekaShipControl.deferUntilLoaded(ship, { it.floaters += floaterPower})
     }
 
+    @OptIn(GameTickOnly::class, VsBeta::class)
     override fun neighborChanged(
         state: BlockState,
         level: Level,
@@ -55,13 +63,16 @@ class FloaterBlock : Block(
         val signal = level.getBestNeighborSignal(pos)
         val currentPower = state.getValue(POWER)
 
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
+        level.getLoadedShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
             it.floaters += (currentPower - signal)
         }
+        val ship = level.getShipManagingPos(pos)
+        if(ship != null) EurekaShipControl.deferUntilLoaded(ship, { it.floaters += (currentPower - signal)})
 
         level.setBlock(pos, state.setValue(POWER, signal), 2)
     }
 
+    @OptIn(GameTickOnly::class, VsBeta::class)
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
         super.onRemove(state, level, pos, newState, isMoving)
 
@@ -70,8 +81,7 @@ class FloaterBlock : Block(
 
         val floaterPower = 15 - state.getValue(POWER)
 
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.floaters -= floaterPower
-        }
+        val ship = level.getShipManagingPos(pos) ?: return
+        EurekaShipControl.deferUntilLoaded(ship, { it.floaters -= floaterPower})
     }
 }

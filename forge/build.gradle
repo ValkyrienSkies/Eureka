@@ -57,7 +57,7 @@ dependencies {
     modApi("org.valkyrienskies:valkyrienskies-120-forge:${rootProject.vs2_version}") { transitive = false }
 
     implementation("org.valkyrienskies.core:api:$vs_core_version")
-    implementation("org.valkyrienskies.core:api-game:$vs_core_version")
+    implementation("org.valkyrienskies.core:internal:$vs_core_version")
     implementation("org.valkyrienskies.core:util:$vs_core_version")
     implementation("org.valkyrienskies.core:impl:$vs_core_version")
 

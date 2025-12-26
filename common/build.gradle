@@ -17,9 +17,11 @@ dependencies {
     modApi("org.valkyrienskies:valkyrienskies-120-common:${rootProject.vs2_version}")
 
     compileOnly("org.valkyrienskies.core:api:${rootProject.vs_core_version}")
-    compileOnly("org.valkyrienskies.core:api-game:${rootProject.vs_core_version}")
+    compileOnly("org.valkyrienskies.core:internal:${rootProject.vs_core_version}")
     compileOnly("org.valkyrienskies.core:util:${rootProject.vs_core_version}")
     compileOnly("org.valkyrienskies.core:impl:${rootProject.vs_core_version}")
+
+    modCompileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common:${rootProject.fcap_version}"
 
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10"
     api "org.jetbrains.kotlin:kotlin-reflect:1.9.10"
