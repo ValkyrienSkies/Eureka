@@ -15,7 +15,7 @@ Eureka is a simple add-on for Valkyrien Skies that fits with vanilla aesthetic a
 
 Build and design your own ship out of ordinary (or modded!) Minecraft blocks, place a Ship Helm, shift + right-click, assemble, and watch your creation suddenly infuse with physics. No longer are your Minecraft builds bound to remain forever static, sitting in the same place for all eternity.
 
-![](https://i.imgur.com/DaxvXa9.png)
+![Eureka_blocks.jpg](https://static.wikitide.net/valkyrienskieswiki/8/80/Eureka_blocks.jpg)
 
 ## Dependencies
 > [!NOTE]
