@@ -7,7 +7,8 @@
   "authors": [
     "ewoudje",
     "Tri0de",
-    "Rubydesic"
+    "Rubydesic",
+    "millennIumAMbiguity"
   ],
   "contributors": [
     "Copper",
@@ -16,7 +17,8 @@
   ],
   "contact": {
     "homepage": "https://valkyrienskies.org/",
-    "sources": "https://github.com/ValkyrienSkies/Eureka"
+    "sources": "https://github.com/ValkyrienSkies/Eureka",
+    "issues": "https://github.com/ValkyrienSkies/Eureka/issues"
   },
   "license": "Apache-2.0",
   "icon": "assets/vs_eureka/icon.png",
