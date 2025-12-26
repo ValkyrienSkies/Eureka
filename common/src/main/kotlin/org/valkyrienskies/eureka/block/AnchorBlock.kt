@@ -20,6 +20,7 @@ import org.valkyrienskies.core.api.util.GameTickOnly
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
+import org.valkyrienskies.mod.common.getLoadedShipManagingPos
 import org.valkyrienskies.mod.common.getShipManagingPos
 
 class AnchorBlock :
@@ -84,7 +85,7 @@ class AnchorBlock :
 
         val bl = state.getValue(BlockStateProperties.POWERED)
 
-        val ship = level.getShipManagingPos(pos) ?: return
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
         EurekaShipControl.deferUntilLoaded(ship,
             {
                 it.anchors += 1
@@ -102,7 +103,7 @@ class AnchorBlock :
 
         val bl = state.getValue(BlockStateProperties.POWERED)
 
-        val ship = level.getShipManagingPos(pos) ?: return
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
         EurekaShipControl.deferUntilLoaded(ship,
             {
                 it.anchors -= 1

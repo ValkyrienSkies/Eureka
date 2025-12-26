@@ -31,7 +31,7 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         if (level.isClientSide) return
         level as ServerLevel
 
-        val ship = level.getShipManagingPos(pos) ?: return
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
         EurekaShipControl.deferUntilLoaded(ship, { it.balloons += 1})
     }
 
@@ -42,7 +42,7 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         if (level.isClientSide) return
         level as ServerLevel
 
-        val ship = level.getShipManagingPos(pos) ?: return
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
         EurekaShipControl.deferUntilLoaded(ship, { it.balloons -= 1})
     }
 

@@ -54,7 +54,7 @@ class ShipHelmBlock(properties: Properties, val woodType: IWoodType) : BaseEntit
         if (level.isClientSide) return
         level as ServerLevel
 
-        val ship = level.getShipManagingPos(pos) ?: return
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
         EurekaShipControl.deferUntilLoaded(ship, { it.helms += 1})
     }
 
@@ -65,7 +65,7 @@ class ShipHelmBlock(properties: Properties, val woodType: IWoodType) : BaseEntit
         if (level.isClientSide) return
         level as ServerLevel
 
-        val ship = level.getShipManagingPos(pos) ?: return
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
         EurekaShipControl.deferUntilLoaded(ship,
             {
                 if(it.helms <= 1 && it.seatedPlayer?.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE) {

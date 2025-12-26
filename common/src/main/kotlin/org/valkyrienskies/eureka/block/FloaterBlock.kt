@@ -43,7 +43,7 @@ class FloaterBlock : Block(
 
         val floaterPower = 15 - state.getValue(POWER)
 
-        val ship = level.getShipManagingPos(pos) ?: return
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
         EurekaShipControl.deferUntilLoaded(ship, { it.floaters += floaterPower})
     }
 
@@ -63,10 +63,7 @@ class FloaterBlock : Block(
         val signal = level.getBestNeighborSignal(pos)
         val currentPower = state.getValue(POWER)
 
-        level.getLoadedShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.floaters += (currentPower - signal)
-        }
-        val ship = level.getShipManagingPos(pos)
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos)
         if(ship != null) EurekaShipControl.deferUntilLoaded(ship, { it.floaters += (currentPower - signal)})
 
         level.setBlock(pos, state.setValue(POWER, signal), 2)
@@ -81,7 +78,7 @@ class FloaterBlock : Block(
 
         val floaterPower = 15 - state.getValue(POWER)
 
-        val ship = level.getShipManagingPos(pos) ?: return
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
         EurekaShipControl.deferUntilLoaded(ship, { it.floaters -= floaterPower})
     }
 }
