@@ -59,10 +59,10 @@ object EurekaConfig {
         val engineBoostExponentialPower = 0.000001
 
         @JsonSchema(description = "Max speed of a ship with engines (actual max speed varies with engines and mass.)")
-        val maxSpeedFromEngines = 16.0
+        val maxSpeedFromEngines = 12.0
 
         @JsonSchema(description = "Max reverse speed of a ship with engines")
-        val maxReverseSpeedFromEngines = 8.0
+        val maxReverseSpeedFromEngines = 5.0
 
         @JsonSchema(description = "The speed at which the ship stabilizes")
         var stabilizationSpeed = 10.0
