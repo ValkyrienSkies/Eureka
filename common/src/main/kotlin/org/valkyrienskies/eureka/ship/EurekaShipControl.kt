@@ -98,9 +98,12 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         val vel: Vector3dc = physShip.velocity
         var balloonForceProvided = balloons * forcePerBalloon
 
+        // Disable if maxBalloonsPerEngine <= 0
         if (EurekaConfig.SERVER.maxBalloonsPerEngine > 0) {
+            // remove power from unpowered balloons
             balloonForceProvided *= min(
                 1.0,
+                // (currentTotalEnginePower * maxBalloonsPerEngine) / (enginePowerAtMaxHeat * balloonsCount)
                 ( extraForceLinear * EurekaConfig.SERVER.maxBalloonsPerEngine ) / ( EurekaConfig.SERVER.enginePowerLinear * balloons )
             )
         }
@@ -300,28 +303,26 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         )
 
         oldSpeed = oldSpeed * (1 - s) + control.forwardImpulse.toDouble() * s // from -1 to 1.
-        var speed = oldSpeed * EurekaConfig.SERVER.linearCasualSpeed / 3 // 1 unit -> 3m/s
+        var speed = oldSpeed * EurekaConfig.SERVER.linearBaseSpeed
 
         if (extraForceLinear != 0.0) {
             // engine boost
-            val boost = max((extraForceLinear - EurekaConfig.SERVER.enginePowerLinear * EurekaConfig.SERVER.engineBoostOffset) * EurekaConfig.SERVER.engineBoost, 0.0)
-            extraForceLinear += boost + boost * boost * EurekaConfig.SERVER.engineBoostExponentialPower
-            extraForceLinear /= scaledMass
+            var boost = max((extraForceLinear - EurekaConfig.SERVER.enginePowerLinear * EurekaConfig.SERVER.engineBoostOffset) * EurekaConfig.SERVER.engineBoost, 0.0)
+            boost = extraForceLinear + boost + boost * boost * EurekaConfig.SERVER.engineBoostExponentialPower
+            boost /= scaledMass
 
             speed += if (speed < 0) {
-                smoothingATanMax(EurekaConfig.SERVER.maxReverseSpeedFromEngines, extraForceLinear * oldSpeed)
+                smoothingATanMax(EurekaConfig.SERVER.maxReverseSpeedFromEngines, boost * oldSpeed)
             } else {
-                smoothingATanMax(EurekaConfig.SERVER.maxSpeedFromEngines, extraForceLinear * oldSpeed)
+                smoothingATanMax(EurekaConfig.SERVER.maxSpeedFromEngines, boost * oldSpeed)
             }
         }
-
-        forwardVector.mul(speed)
 
         val playerUpDirection = physShip.transform.shipToWorldRotation.transform(Vector3d(0.0, 1.0, 0.0))
         val velOrthogonalToPlayerUp = vel.sub(playerUpDirection.mul(playerUpDirection.dot(vel)), Vector3d())
 
         // This is the speed that the ship is always allowed to go out, without engines
-        val baseForwardVel = forwardVector.mul(EurekaConfig.SERVER.baseSpeed)
+        val baseForwardVel = forwardVector.mul(speed)
         val forwardForce = baseForwardVel.sub(velOrthogonalToPlayerUp).mul(scaledMass)
 
         return forwardForce

@@ -76,10 +76,6 @@ object EurekaConfig {
         @JsonSchema(description = "how much the mass decreases the speed.")
         var speedMassScale = 1.0
 
-        // The velocity any ship at least can move at.
-        @JsonSchema(description = "The speed a ship with no engines can move at")
-        var baseSpeed = 3.0
-
         // Sensitivity of the up/down impulse buttons.
         // TODO maybe should be moved to VS2 client-side config?
         @JsonSchema(description = "Vertical sensitivity when ascending")
@@ -141,12 +137,12 @@ object EurekaConfig {
         @JsonSchema(description = "Base mass for linear acceleration in Kg.")
         var linearBaseMass = 50.0
 
-        //when value is same as linearMaxMass, actual value will be 1/3. actual value will be close to linearMaxMass when 5 times over
-        @JsonSchema(description = "Max smoothing value, will smooth out before reaching max value.")
+        // when value is same as linearMaxMass. actual value will be close to linearMaxMass when 5 times over
+        @JsonSchema(description = "Max mass for the linear stabilisation, will smooth out before reaching max value.")
         var linearMaxMass = 10000.0
 
         @JsonSchema(description = "Max unscaled speed in m/s without engines.")
-        var linearCasualSpeed = 3.0
+        var linearBaseSpeed = 3.0
 
         // Anti-velocity mass relevance when stopping the ship
         // Max 10.0 (means no mass irrelevance)
