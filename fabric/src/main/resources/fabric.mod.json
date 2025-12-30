@@ -21,7 +21,7 @@
     "issues": "https://github.com/ValkyrienSkies/Eureka/issues"
   },
   "license": "Apache-2.0",
-  "icon": "assets/vs_eureka/icon.png",
+  "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
