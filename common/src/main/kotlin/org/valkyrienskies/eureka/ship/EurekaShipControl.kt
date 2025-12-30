@@ -109,7 +109,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         }
 
         val buoyantFactorPerFloater = min(
-            EurekaConfig.SERVER.floaterBuoyantFactorPerKg / 15.0 / mass,
+            EurekaConfig.SERVER.floaterBuoyantLift / mass,
             EurekaConfig.SERVER.maxFloaterBuoyantFactor
         )
 

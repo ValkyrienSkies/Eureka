@@ -67,11 +67,11 @@ object EurekaConfig {
         @JsonSchema(description = "The speed at which the ship stabilizes")
         var stabilizationSpeed = 10.0
 
-        @JsonSchema(description = "The amount extra that each floater will make the ship float, per kg mass")
-        var floaterBuoyantFactorPerKg = 50_000.0
+        @JsonSchema(description = "How how much force is Kg each floater supports")
+        var floaterBuoyantLift = 2_000.0
 
         @JsonSchema(description = "The maximum amount extra each floater will multiply the buoyant force by, irrespective of mass")
-        var maxFloaterBuoyantFactor = 1.0
+        var maxFloaterBuoyantFactor = 0.1
 
         @JsonSchema(description = "how much the mass decreases the speed.")
         var speedMassScale = 1.0
