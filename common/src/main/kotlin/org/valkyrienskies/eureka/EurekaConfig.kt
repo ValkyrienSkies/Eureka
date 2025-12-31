@@ -95,10 +95,10 @@ object EurekaConfig {
         var AllowFloatersAndBalloonsOnNonEurekaShips = true
 
         @JsonSchema(description = "The height where balloons starts to loose effectiveness on ships without a helm")
-        var PassiveBallonMinHeight = 64
+        var PassiveBallonMinHeight = 64.0
 
         @JsonSchema(description = "The height where balloons effectiveness is zero on ships without a helm")
-        var PassiveBallonMaxHeight = 400
+        var PassiveBallonMaxHeight = 400.0
 
         // Allow Eureka controlled ships to be affected by fluid drag
         @JsonSchema(description = "Allow Eureka controlled ships to be affected by fluid drag")
