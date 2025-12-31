@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING
 import net.minecraft.world.level.block.state.properties.Half
+import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ships.ServerShip
@@ -64,20 +65,36 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     fun spawnSeat(blockPos: BlockPos, state: BlockState, level: ServerLevel): ShipMountingEntity {
         val newPos = blockPos.relative(state.getValue(HorizontalDirectionalBlock.FACING))
         val newState = level.getBlockState(newPos)
-        val newShape = newState.getShape(level, newPos)
-        val newBlock = newState.block
-        var height = 0.5
+        var height = 0.0
         if (!newState.isAir) {
             height = if (
-                newBlock is StairBlock &&
+                newState.block is StairBlock &&
                 (!newState.hasProperty(StairBlock.HALF) || newState.getValue(StairBlock.HALF) == Half.BOTTOM)
             )
                 0.5 // Valid StairBlock
             else
-                newShape.max(Axis.Y)
+                newState.getShape(level, newPos).max(Axis.Y)
+        } else {
+            val stateBelow = level.getBlockState(BlockPos(newPos.x, newPos.y - 1, newPos.z))
+
+            // If block below expected seat is valid slab or stair, move seat down one block
+            val shapeHeight = stateBelow.getShape(level, newPos).max(Axis.Y)
+            // if block is slab or higher
+            if (shapeHeight >= 0.5 && shapeHeight < 1.0) {
+                height = shapeHeight - 1.0
+            }
         }
+
         val entity = ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE.create(level)!!.apply {
-            val seatEntityPos: Vector3dc = Vector3d(newPos.x + .5, (newPos.y - .5) + height, newPos.z + .5)
+
+            val offset =
+                if (height > 0.15)
+                    // when seated, place player 0.1m closer to helm
+                    state.getValue(HorizontalDirectionalBlock.FACING).normal.toDoubles().scale(-0.1).add(.5, height - .5, .5)
+                else
+                    Vec3(.5, height + 0.1, .5)
+
+            val seatEntityPos: Vector3dc = Vector3d(newPos.x + offset.x, newPos.y + offset.y, newPos.z + offset.z)
             moveTo(seatEntityPos.x(), seatEntityPos.y(), seatEntityPos.z())
 
             lookAt(
