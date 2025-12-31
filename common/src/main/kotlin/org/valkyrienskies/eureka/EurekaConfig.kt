@@ -91,6 +91,15 @@ object EurekaConfig {
         @JsonSchema(description = "Ascend and descend acceleration")
         var elevationSnappiness = 1.0
 
+        @JsonSchema(description = "Allows ships without a helm (passive ships) to use floaters and balloons")
+        var AllowFloatersAndBalloonsOnNonEurekaShips = true
+
+        @JsonSchema(description = "The height where balloons starts to loose effectiveness on ships without a helm")
+        var PassiveBallonMinHeight = 64
+
+        @JsonSchema(description = "The height where balloons effectiveness is zero on ships without a helm")
+        var PassiveBallonMaxHeight = 400
+
         // Allow Eureka controlled ships to be affected by fluid drag
         @JsonSchema(description = "Allow Eureka controlled ships to be affected by fluid drag")
         var doFluidDrag = false
