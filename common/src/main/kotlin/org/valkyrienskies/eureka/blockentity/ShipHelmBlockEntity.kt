@@ -88,7 +88,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         val entity = ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE.create(level)!!.apply {
 
             val offset =
-                if (height > 0.3)
+                if (height > 0.15)
                     // when seated, place player 0.1m closer to helm
                     state.getValue(HorizontalDirectionalBlock.FACING).normal.toDoubles().scale(-0.1).add(.5, height - .5, .5)
                 else
