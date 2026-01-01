@@ -89,6 +89,9 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
             physShip.doFluidDrag = true
 
             if (EurekaConfig.SERVER.AllowFloatersAndBalloonsOnNonEurekaShips) {
+
+                physShip as PhysShipImpl
+
                 val mass = physShip.inertia.shipMass
                 val velY = physShip.poseVel.vel.y()
 
