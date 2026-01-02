@@ -87,6 +87,24 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         if (helms < 1) {
             // Enable fluid drag if all the helms have been destroyed
             physShip.doFluidDrag = true
+
+            if (EurekaConfig.SERVER.AllowFloatersAndBalloonsOnNonEurekaShips) {
+
+                physShip as PhysShipImpl
+
+                val mass = physShip.mass
+                val velY = physShip.velocity.y()
+
+                var balloonForce = getBalloonForce()
+                // balloon force 100% at y 100, 0% at y 320
+                // the "velY * 10" reduces bobbing by sampling the height position in the future
+                balloonForce *= 1 - Math.clamp(0.0, 1.0, (physShip.transform.positionInWorld.y() + velY * 10 - EurekaConfig.SERVER.PassiveBallonMinHeight) / (EurekaConfig.SERVER.PassiveBallonMaxHeight - EurekaConfig.SERVER.PassiveBallonMinHeight))
+                balloonForce = min(balloonForce, max(getIdealUpwardForce(EurekaConfig.SERVER.balloonElevationMaxSpeed, velY, mass), 0.0))
+                physShip.applyInvariantForce(Vector3d(0.0, balloonForce, 0.0))
+
+                physShip.buoyantFactor = getFloaterFactor(mass)
+            }
+
             return
         }
         // Disable fluid drag when helms are present, because it makes ships hard to drive
@@ -99,21 +117,8 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         val moiTensor = physShip.inertia.momentOfInertiaTensor
         val omega: Vector3dc = physShip.poseVel.omega
         val vel: Vector3dc = physShip.poseVel.vel
-        var balloonForceProvided = balloons * forcePerBalloon
 
-        if (EurekaConfig.SERVER.maxBalloonsPerEngine > 0) {
-            balloonForceProvided *= min(
-                1.0,
-                ( extraForceLinear * EurekaConfig.SERVER.maxBalloonsPerEngine ) / ( EurekaConfig.SERVER.enginePowerLinear * balloons )
-            )
-        }
-
-        val buoyantFactorPerFloater = min(
-            EurekaConfig.SERVER.floaterBuoyantFactorPerKg / 15.0 / mass,
-            EurekaConfig.SERVER.maxFloaterBuoyantFactor
-        )
-
-        physShip.buoyantFactor = 1.0 + floaters * buoyantFactorPerFloater
+        physShip.buoyantFactor = getFloaterFactor(mass)
 
         // region Aligning
 
@@ -192,12 +197,8 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
             idealUpwardVel = getPlayerUpwardVel(control, mass)
         }
 
-        // region Elevation
-        val idealUpwardForce = (idealUpwardVel.y() - vel.y() - (GRAVITY / EurekaConfig.SERVER.elevationSnappiness)) *
-                mass * EurekaConfig.SERVER.elevationSnappiness
-
         physShip.applyInvariantForce(Vector3d(0.0,
-            min(balloonForceProvided, max(idealUpwardForce, 0.0)) +
+            min(getBalloonForce(), max(getIdealUpwardForce(idealUpwardVel.y(), vel.y(), mass), 0.0)) +
             // Add drag to the y-component
             vel.y() * -mass,
             0.0)
@@ -205,6 +206,30 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         // endregion
 
         physShip.isStatic = anchored
+    }
+
+    private fun getBalloonForce(): Double {
+        // Disable if maxBalloonsPerEngine <= 0
+        if (EurekaConfig.SERVER.maxBalloonsPerEngine > 0) {
+            // remove power from unpowered balloons
+            return balloons * forcePerBalloon * min(
+                1.0,
+                // (currentTotalEnginePower * maxBalloonsPerEngine) / (enginePowerAtMaxHeat * balloonsCount)
+                ( extraForceLinear * EurekaConfig.SERVER.maxBalloonsPerEngine ) / ( EurekaConfig.SERVER.enginePowerLinear * balloons )
+            )
+        }
+        return balloons * forcePerBalloon
+    }
+
+    private fun getFloaterFactor(mass: Double): Double {
+        return 1.0 + floaters * min(
+            EurekaConfig.SERVER.floaterBuoyantLift / mass,
+            EurekaConfig.SERVER.maxFloaterBuoyantFactor
+        )
+    }
+
+    private fun getIdealUpwardForce(idealUpwardVelY: Double, velY: Double, mass: Double): Double {
+        return (idealUpwardVelY - velY - (GRAVITY / EurekaConfig.SERVER.elevationSnappiness)) * mass * EurekaConfig.SERVER.elevationSnappiness
     }
 
     private fun getControlData(player: SeatedControllingPlayer): ControlData {
@@ -303,28 +328,26 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         )
 
         oldSpeed = oldSpeed * (1 - s) + control.forwardImpulse.toDouble() * s // from -1 to 1.
-        var speed = oldSpeed * EurekaConfig.SERVER.linearCasualSpeed / 3 // 1 unit -> 3m/s
+        var speed = oldSpeed * EurekaConfig.SERVER.linearBaseSpeed
 
         if (extraForceLinear != 0.0) {
             // engine boost
-            val boost = max((extraForceLinear - EurekaConfig.SERVER.enginePowerLinear * EurekaConfig.SERVER.engineBoostOffset) * EurekaConfig.SERVER.engineBoost, 0.0)
-            extraForceLinear += boost + boost * boost * EurekaConfig.SERVER.engineBoostExponentialPower
-            extraForceLinear /= scaledMass
+            var boost = max((extraForceLinear - EurekaConfig.SERVER.enginePowerLinear * EurekaConfig.SERVER.engineBoostOffset) * EurekaConfig.SERVER.engineBoost, 0.0)
+            boost = extraForceLinear + boost + boost * boost * EurekaConfig.SERVER.engineBoostExponentialPower
+            boost /= scaledMass
 
             speed += if (speed < 0) {
-                smoothingATanMax(EurekaConfig.SERVER.maxReverseSpeedFromEngines, extraForceLinear * oldSpeed)
+                smoothingATanMax(EurekaConfig.SERVER.maxReverseSpeedFromEngines, boost * oldSpeed)
             } else {
-                smoothingATanMax(EurekaConfig.SERVER.maxSpeedFromEngines, extraForceLinear * oldSpeed)
+                smoothingATanMax(EurekaConfig.SERVER.maxSpeedFromEngines, boost * oldSpeed)
             }
         }
-
-        forwardVector.mul(speed)
 
         val playerUpDirection = physShip.transform.shipToWorldRotation.transform(Vector3d(0.0, 1.0, 0.0))
         val velOrthogonalToPlayerUp = vel.sub(playerUpDirection.mul(playerUpDirection.dot(vel)), Vector3d())
 
         // This is the speed that the ship is always allowed to go out, without engines
-        val baseForwardVel = forwardVector.mul(EurekaConfig.SERVER.baseSpeed)
+        val baseForwardVel = forwardVector.mul(speed)
         val forwardForce = baseForwardVel.sub(velOrthogonalToPlayerUp).mul(scaledMass)
 
         return forwardForce
