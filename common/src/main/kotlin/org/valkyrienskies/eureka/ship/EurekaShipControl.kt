@@ -92,8 +92,8 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
                 physShip as PhysShipImpl
 
-                val mass = physShip.mass
-                val velY = physShip.velocity.y()
+                val mass = physShip.inertia.shipMass
+                val velY = physShip.poseVel.vel.y()
 
                 var balloonForce = getBalloonForce()
                 // balloon force 100% at y 100, 0% at y 320
