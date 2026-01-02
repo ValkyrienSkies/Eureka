@@ -11,8 +11,6 @@ import org.valkyrienskies.eureka.EurekaMod
 import org.valkyrienskies.eureka.EurekaMod.init
 import org.valkyrienskies.eureka.registry.CreativeTabs
 import org.valkyrienskies.eureka.forge.registry.FuelRegistryImpl
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod.MOD_ID
-import org.valkyrienskies.mod.common.config.VSConfigUpdater
 import thedarkcolour.kotlinforforge.forge.LOADING_CONTEXT
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import thedarkcolour.kotlinforforge.forge.runForDist
@@ -46,13 +44,13 @@ class EurekaModForge {
     }
 
     private fun onConfigLoad(event: ModConfigEvent.Loading) {
-        if (event.config.modId == MOD_ID) {
+        if (event.config.modId == EurekaMod.MOD_ID) {
             EurekaConfig.update(event.config)
         }
     }
 
     private fun onConfigReload(event: ModConfigEvent.Reloading) {
-        if (event.config.modId == MOD_ID) {
+        if (event.config.modId == EurekaMod.MOD_ID) {
             EurekaConfig.update(event.config)
         }
     }
