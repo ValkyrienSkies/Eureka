@@ -82,26 +82,22 @@ object EurekaConfig {
         var engineBoostExponentialPower = 0.000001
 
         @ConfigEntry(description = "Max speed of a ship with engines (actual max speed varies with engines and mass.)")
-        var maxSpeedFromEngines = 16.0
+        var maxSpeedFromEngines = 12.0
 
         @ConfigEntry(description = "Max reverse speed of a ship with engines")
-        var maxReverseSpeedFromEngines = 8.0
+        var maxReverseSpeedFromEngines = 5.0
 
         @ConfigEntry(description = "The speed at which the ship stabilizes")
         var stabilizationSpeed = 10.0
 
-        @ConfigEntry(description = "The amount extra that each floater will make the ship float, per kg mass")
-        var floaterBuoyantFactorPerKg = 50_000.0
+        @ConfigEntry(description = "How how much force is Kg each floater supports")
+        var floaterBuoyantLift = 2_000.0
 
         @ConfigEntry(description = "The maximum amount extra each floater will multiply the buoyant force by, irrespective of mass")
-        var maxFloaterBuoyantFactor = 1.0
+        var maxFloaterBuoyantFactor = 0.1
 
         @ConfigEntry(description = "how much the mass decreases the speed.")
         var speedMassScale = 1.0
-
-        // The velocity any ship at least can move at.
-        @ConfigEntry(description = "The speed a ship with no engines can move at")
-        var baseSpeed = 3.0
 
         // Sensitivity of the up/down impulse buttons.
         // TODO maybe should be moved to VS2 client-side config?
@@ -117,6 +113,15 @@ object EurekaConfig {
         // Higher numbers make the ship accelerate to max speed faster
         @ConfigEntry(description = "Ascend and descend acceleration")
         var elevationSnappiness = 1.0
+
+        @ConfigEntry(description = "Allows ships without a helm (passive ships) to use floaters and balloons")
+        var allowFloatersAndBalloonsOnNonEurekaShips = true
+
+        @ConfigEntry(description = "The height where balloons starts to loose effectiveness on ships without a helm")
+        var passiveBalloonMinHeight = 64.0
+
+        @ConfigEntry(description = "The height where balloons effectiveness is zero on ships without a helm")
+        var passiveBalloonMaxHeight = 400.0
 
         // Allow Eureka controlled ships to be affected by fluid drag
         @ConfigEntry(description = "Allow Eureka controlled ships to be affected by fluid drag")
@@ -164,12 +169,12 @@ object EurekaConfig {
         @ConfigEntry(description = "Base mass for linear acceleration in Kg.")
         var linearBaseMass = 50.0
 
-        //when value is same as linearMaxMass, actual value will be 1/3. actual value will be close to linearMaxMass when 5 times over
-        @ConfigEntry(description = "Max smoothing value, will smooth out before reaching max value.")
+        // when value is same as linearMaxMass. actual value will be close to linearMaxMass when 5 times over
+        @ConfigEntry(description = "Max mass for the linear stabilisation, will smooth out before reaching max value.")
         var linearMaxMass = 10000.0
 
         @ConfigEntry(description = "Max unscaled speed in m/s without engines.")
-        var linearCasualSpeed = 3.0
+        var linearBaseSpeed = 3.0
 
         // Anti-velocity mass relevance when stopping the ship
         // Max 10.0 (means no mass irrelevance)

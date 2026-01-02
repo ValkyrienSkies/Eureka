@@ -35,6 +35,7 @@ import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.getLoadedShipManagingPos
+import org.valkyrienskies.mod.common.entity.ShipMountingEntity
 import org.valkyrienskies.mod.common.getShipManagingPos
 
 class ShipHelmBlock(properties: Properties, val woodType: IWoodType) : BaseEntityBlock(properties) {
