@@ -8,7 +8,6 @@ import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.player.Player
 import org.joml.*
-import org.valkyrienskies.core.api.VsBeta
 import org.valkyrienskies.core.api.ships.LoadedServerShip
 import org.valkyrienskies.core.api.ships.PhysShip
 import org.valkyrienskies.core.api.ships.ServerShip
@@ -91,16 +90,16 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
             // Enable fluid drag if all the helms have been destroyed
             physShip.doFluidDrag = true
 
-            if (EurekaConfig.SERVER.AllowFloatersAndBalloonsOnNonEurekaShips) {
+            if (EurekaConfig.SERVER.allowFloatersAndBalloonsOnNonEurekaShips) {
                 val mass = physShip.mass
                 val velY = physShip.velocity.y()
 
                 var balloonForce = getBalloonForce()
                 // balloon force 100% at y 100, 0% at y 320
                 // the "velY * 10" reduces bobbing by sampling the height position in the future
-                balloonForce *= 1 - Math.clamp(0.0, 1.0, (physShip.transform.positionInWorld.y() + velY * 10 - EurekaConfig.SERVER.PassiveBallonMinHeight) / (EurekaConfig.SERVER.PassiveBallonMaxHeight - EurekaConfig.SERVER.PassiveBallonMinHeight))
+                balloonForce *= 1 - Math.clamp(0.0, 1.0, (physShip.transform.positionInWorld.y() + velY * 10 - EurekaConfig.SERVER.passiveBalloonMinHeight) / (EurekaConfig.SERVER.passiveBalloonMaxHeight - EurekaConfig.SERVER.passiveBalloonMinHeight))
                 balloonForce = min(balloonForce, max(getIdealUpwardForce(EurekaConfig.SERVER.balloonElevationMaxSpeed, velY, mass), 0.0))
-                physShip.applyInvariantForce(Vector3d(0.0, balloonForce, 0.0))
+                physShip.applyWorldForce(Vector3d(0.0, balloonForce, 0.0))
 
                 physShip.buoyantFactor = getFloaterFactor(mass)
             }
@@ -113,7 +112,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
         val ship = ship ?: return
         val mass = physShip.mass
         val moiTensor = physShip.momentOfInertia
-        val omega: Vector3dc = physShip.omega
+        val omega: Vector3dc = physShip.angularVelocity
         val vel: Vector3dc = physShip.velocity
 
         physShip.buoyantFactor = getFloaterFactor(mass)
