@@ -1,6 +1,6 @@
 modLoader = "kotlinforforge"
 loaderVersion = "[3.12.0,)"
-issueTrackerURL = "https://github.com/ValkyrienSkies/Valkyrien-Skies-2/issues"
+issueTrackerURL = "https://github.com/ValkyrienSkies/Eureka/issues"
 license = "Apache-2.0"
 
 [[mods]]
