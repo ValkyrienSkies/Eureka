@@ -24,7 +24,7 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
     ) {
         final RegistryObject<I> result = forge.register(name, builder::invoke);
 
-        return new RegistrySupplier<I>() {
+        return new RegistrySupplier<>() {
             @NotNull
             @Override
             public String getName() {
@@ -48,7 +48,7 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
     public Iterator<RegistrySupplier<T>> iterator() {
         final Iterator<RegistryObject<T>> iterator = forge.getEntries().iterator();
 
-        return new Iterator<RegistrySupplier<T>>() {
+        return new Iterator<>() {
             @Override
             public boolean hasNext() {
                 return iterator.hasNext();
@@ -58,7 +58,7 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
             public RegistrySupplier<T> next() {
                 final RegistryObject<T> result = iterator.next();
 
-                return new RegistrySupplier<T>() {
+                return new RegistrySupplier<>() {
                     @NotNull
                     @Override
                     public String getName() {

@@ -32,7 +32,7 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         level as ServerLevel
 
         val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        EurekaShipControl.deferUntilLoaded(ship, { it.balloons += 1})
+        EurekaShipControl.deferUntilLoaded(ship) { it.balloons += 1 }
     }
 
     @OptIn(GameTickOnly::class, VsBeta::class)
@@ -43,7 +43,7 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         level as ServerLevel
 
         val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        EurekaShipControl.deferUntilLoaded(ship, { it.balloons -= 1})
+        EurekaShipControl.deferUntilLoaded(ship) { it.balloons -= 1 }
     }
 
     override fun onProjectileHit(level: Level, state: BlockState, hit: BlockHitResult, projectile: Projectile) {

@@ -86,12 +86,11 @@ class AnchorBlock :
         val bl = state.getValue(BlockStateProperties.POWERED)
 
         val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        EurekaShipControl.deferUntilLoaded(ship,
-            {
-                it.anchors += 1
-                it.anchorsActive += if(bl) 1 else 0
-            }
-        )
+        EurekaShipControl.deferUntilLoaded(ship
+        ) {
+            it.anchors += 1
+            it.anchorsActive += if (bl) 1 else 0
+        }
     }
 
     @OptIn(VsBeta::class, GameTickOnly::class)
@@ -104,11 +103,10 @@ class AnchorBlock :
         val bl = state.getValue(BlockStateProperties.POWERED)
 
         val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        EurekaShipControl.deferUntilLoaded(ship,
-            {
-                it.anchors -= 1
-                it.anchorsActive -= if(bl) 1 else 0
-            }
-        )
+        EurekaShipControl.deferUntilLoaded(ship
+        ) {
+            it.anchors -= 1
+            it.anchorsActive -= if (bl) 1 else 0
+        }
     }
 }

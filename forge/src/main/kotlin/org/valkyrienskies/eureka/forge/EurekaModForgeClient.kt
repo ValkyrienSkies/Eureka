@@ -61,7 +61,7 @@ object EurekaModForgeClient {
     }
 
     fun onModelRegistry(event: ModelEvent.RegisterAdditional) {
-        for (woodType in WoodType.values()) {
+        for (woodType in WoodType.entries) {
             event.register(
                 ResourceLocation(
                     EurekaMod.MOD_ID, "block/" + woodType.serializedName.lowercase() + "_ship_helm_wheel"

@@ -56,7 +56,7 @@ class ShipHelmBlock(properties: Properties, val woodType: IWoodType) : BaseEntit
         level as ServerLevel
 
         val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        EurekaShipControl.deferUntilLoaded(ship, { it.helms += 1})
+        EurekaShipControl.deferUntilLoaded(ship) { it.helms += 1 }
     }
 
     @OptIn(GameTickOnly::class, VsBeta::class)
@@ -67,15 +67,14 @@ class ShipHelmBlock(properties: Properties, val woodType: IWoodType) : BaseEntit
         level as ServerLevel
 
         val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        EurekaShipControl.deferUntilLoaded(ship,
-            {
-                if(it.helms <= 1 && it.seatedPlayer?.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE) {
-                    it.seatedPlayer!!.unRide()
-                    it.seatedPlayer = null
-                }
-                it.helms -= 1
+        EurekaShipControl.deferUntilLoaded(ship
+        ) {
+            if (it.helms <= 1 && it.seatedPlayer?.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE) {
+                it.seatedPlayer!!.unRide()
+                it.seatedPlayer = null
             }
-        )
+            it.helms -= 1
+        }
     }
 
     override fun use(

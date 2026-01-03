@@ -29,7 +29,7 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
             @NotNull final Function0<? extends I> builder) {
         final I result = Registry.register(registry, new ResourceLocation(modId, name), builder.invoke());
 
-        final RegistrySupplier<I> r = new RegistrySupplier<I>() {
+        final RegistrySupplier<I> r = new RegistrySupplier<>() {
 
             @NotNull
             @Override

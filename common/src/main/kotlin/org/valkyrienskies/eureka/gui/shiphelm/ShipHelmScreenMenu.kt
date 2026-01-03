@@ -14,8 +14,8 @@ class ShipHelmScreenMenu(syncId: Int, playerInv: Inventory, private val blockEnt
     constructor(syncId: Int, playerInv: Inventory) : this(syncId, playerInv, null)
 
     // TODO this isn't synced...
-    val aligning = blockEntity?.aligning ?: false
-    val assembled = blockEntity?.assembled ?: false
+    val aligning = blockEntity?.aligning == true
+    val assembled = blockEntity?.assembled == true
 
     override fun stillValid(player: Player): Boolean = true
 

@@ -3,7 +3,6 @@ package org.valkyrienskies.eureka.blockentity
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction.Axis
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -24,7 +23,6 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.core.api.VsBeta
-import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.attachment.getAttachment
 import org.valkyrienskies.core.api.ships.LoadedServerShip
 import org.valkyrienskies.core.api.util.GameTickOnly
@@ -38,7 +36,6 @@ import org.valkyrienskies.eureka.util.ShipAssembler
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.entity.ShipMountingEntity
 import org.valkyrienskies.mod.common.getLoadedShipManagingPos
-import org.valkyrienskies.mod.common.getShipObjectManagingPos
 import org.valkyrienskies.mod.common.util.toDoubles
 import org.valkyrienskies.mod.common.util.toJOMLD
 import org.valkyrienskies.mod.util.logger
@@ -54,8 +51,9 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
     @OptIn(GameTickOnly::class, VsBeta::class)
     private val control: EurekaShipControl? get() = ship?.getAttachment(EurekaShipControl::class.java)
     private val seats = mutableListOf<ShipMountingEntity>()
+    @OptIn(GameTickOnly::class)
     val assembled get() = ship != null
-    val aligning get() = control?.aligning ?: false
+    val aligning get() = control?.aligning == true
     private var shouldDisassembleWhenPossible = false
 
     override fun createMenu(id: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
@@ -170,12 +168,12 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
             logger.warn("Failed to assemble to large of a ship for ${player.name.string}")
         } else {
             EurekaShipControl.deferUntilLoaded(
-                builtShip,
-                { it.helms = helmCount }
-            )
+                builtShip
+            ) { it.helms = helmCount }
         }
     }
 
+    @OptIn(GameTickOnly::class)
     fun disassemble() {
         val ship = ship ?: return
         val level = level ?: return
@@ -196,7 +194,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
             this.blockPos,
             BlockPos.containing(inWorld.x, inWorld.y, inWorld.z)
         )
-        // ship.die() TODO i think we do need this no? or autodetecting on all air
+        // ship.die() TODO i think we do need this no? or autodetect on all air
 
         shouldDisassembleWhenPossible = false
     }

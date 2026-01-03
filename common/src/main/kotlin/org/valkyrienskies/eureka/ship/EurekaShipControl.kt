@@ -8,6 +8,7 @@ import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.player.Player
 import org.joml.*
+import org.valkyrienskies.core.api.VsBeta
 import org.valkyrienskies.core.api.ships.LoadedServerShip
 import org.valkyrienskies.core.api.ships.PhysShip
 import org.valkyrienskies.core.api.ships.ServerShip
@@ -16,6 +17,7 @@ import org.valkyrienskies.core.api.ships.ShipPhysicsListener
 import org.valkyrienskies.core.api.attachment.getAttachment
 import org.valkyrienskies.core.api.attachment.removeAttachment
 import org.valkyrienskies.core.api.util.GameTickOnly
+import org.valkyrienskies.core.api.util.PhysTickOnly
 import org.valkyrienskies.core.api.world.PhysLevel
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
@@ -33,6 +35,7 @@ import kotlin.math.*
 @JsonIgnoreProperties(ignoreUnknown = true)
 class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
 
+    @OptIn(GameTickOnly::class)
     @JsonIgnore
     internal var ship: LoadedServerShip? = null
 
@@ -46,6 +49,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
 
     private var angleUntilAligned = 0.0
     private var positionUntilAligned = Vector3d()
+    @OptIn(GameTickOnly::class)
     val canDisassemble
         get() = ship != null &&
             disassembling &&
@@ -85,6 +89,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
         }
     }
 
+    @OptIn(PhysTickOnly::class, GameTickOnly::class, VsBeta::class)
     override fun physTick(physShip: PhysShip, physLevel: PhysLevel) {
         if (helms < 1) {
             // Enable fluid drag if all the helms have been destroyed
@@ -249,6 +254,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
         return currentControlData
     }
 
+    @OptIn(PhysTickOnly::class, GameTickOnly::class)
     private fun applyPlayerControl(control: ControlData, physShip: PhysShip) {
 
         val ship = ship ?: return
@@ -285,14 +291,12 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
 
         val idealAlphaY = normalizedAlphaYMultiplier * maxAlphaY
 
-        physShip.applyInvariantTorque(moiTensor.transform(Vector3d(0.0, idealAlphaY, 0.0)))
-        // endregion
+        physShip.applyWorldTorque(moiTensor.transform(Vector3d(0.0, idealAlphaY, 0.0)).add(getPlayerControlledBanking(control, physShip, moiTensor, -idealAlphaY)))
 
-        physShip.applyInvariantTorque(getPlayerControlledBanking(control, physShip, moiTensor, -idealAlphaY))
-
-        physShip.applyInvariantForce(getPlayerForwardVel(control, physShip))
+        physShip.applyWorldForce(getPlayerForwardVel(control, physShip))
     }
 
+    @OptIn(PhysTickOnly::class)
     private fun getPlayerControlledBanking(control: ControlData, physShip: PhysShip, moiTensor: Matrix3dc, strength: Double): Vector3d {
         val rotationVector = control.seatInDirection.normal.toJOMLD()
         physShip.transform.shipToWorldRotation.transform(rotationVector)
@@ -309,6 +313,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
     }
 
     // Player controlled forward and backward thrust
+    @OptIn(PhysTickOnly::class)
     private fun getPlayerForwardVel(control: ControlData, physShip: PhysShip): Vector3d {
 
         val scaledMass = physShip.mass * EurekaConfig.SERVER.speedMassScale
@@ -400,6 +405,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
             field = v; deleteIfEmpty()
         }
 
+    @OptIn(VsBeta::class, GameTickOnly::class)
     private fun deleteIfEmpty() {
         if (helms <= 0 && floaters <= 0 && anchors <= 0 && balloons <= 0) {
             ship?.removeAttachment<EurekaShipControl>()
@@ -420,12 +426,13 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
     private fun smoothingATanMax(max: Double, x: Double): Double = smoothingATan(1 / (max * 0.638), x)
 
     companion object {
+        @OptIn(GameTickOnly::class)
         fun getOrCreate(ship: LoadedServerShip): EurekaShipControl {
             return ship.getAttachment<EurekaShipControl>()
                 ?: EurekaShipControl().also { ship.setAttachment(it) }
         }
 
-        @OptIn(GameTickOnly::class)
+        @OptIn(GameTickOnly::class, VsBeta::class)
         fun deferUntilLoaded(ship: ServerShip, consumer: Consumer<EurekaShipControl>){
             if(ship is LoadedServerShip) {
                 consumer.accept(getOrCreate(ship))

@@ -15,6 +15,6 @@ public class DeferredRegisterBackendForge implements DeferredRegisterBackend {
             @NotNull final String id,
             @NotNull final ResourceKey<Registry<T>> registry
     ) {
-        return new DeferredRegisterImpl(id, registry);
+        return new DeferredRegisterImpl<>(id, registry);
     }
 }
