@@ -4,7 +4,7 @@ import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
-import org.valkyrienskies.core.apigame.world.chunks.BlockType
+import org.valkyrienskies.core.internal.world.chunks.VsiBlockType
 import org.valkyrienskies.mod.common.BlockStateInfo
 import org.valkyrienskies.mod.common.BlockStateInfoProvider
 
@@ -26,7 +26,7 @@ object EurekaWeights : BlockStateInfoProvider {
         return null
     }
 
-    override fun getBlockStateType(blockState: BlockState): BlockType? {
+    override fun getBlockStateType(blockState: BlockState): VsiBlockType? {
         return null
     }
 

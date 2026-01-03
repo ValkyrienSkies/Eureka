@@ -6,7 +6,6 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.SoundType
@@ -16,12 +15,13 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.world.level.material.MapColor
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
-import org.valkyrienskies.core.api.ships.getAttachment
+import org.valkyrienskies.core.api.VsBeta
+import org.valkyrienskies.core.api.util.GameTickOnly
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
+import org.valkyrienskies.mod.common.getLoadedShipManagingPos
 import org.valkyrienskies.mod.common.getShipManagingPos
-import org.valkyrienskies.mod.common.getShipObjectManagingPos
 
 class AnchorBlock :
     HorizontalDirectionalBlock(Properties.of().mapColor(MapColor.METAL).strength(5.0f, 6.0f).sound(SoundType.ANVIL)) {
@@ -76,6 +76,7 @@ class AnchorBlock :
         super.neighborChanged(state, level, pos, block, fromPos, isMoving)
     }
 
+    @OptIn(GameTickOnly::class)
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
         super.onPlace(state, level, pos, oldState, isMoving)
 
@@ -84,13 +85,16 @@ class AnchorBlock :
 
         val bl = state.getValue(BlockStateProperties.POWERED)
 
-        val ship = level.getShipObjectManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        val attachment = EurekaShipControl.getOrCreate(ship)
-
-        attachment.anchors += 1
-        attachment.anchorsActive += if (bl) 1 else 0
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
+        EurekaShipControl.deferUntilLoaded(ship,
+            {
+                it.anchors += 1
+                it.anchorsActive += if(bl) 1 else 0
+            }
+        )
     }
 
+    @OptIn(VsBeta::class, GameTickOnly::class)
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
         super.onRemove(state, level, pos, newState, isMoving)
 
@@ -99,9 +103,12 @@ class AnchorBlock :
 
         val bl = state.getValue(BlockStateProperties.POWERED)
 
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let {
-            it.anchors -= 1
-            it.anchorsActive -= if (bl) 1 else 0
-        }
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
+        EurekaShipControl.deferUntilLoaded(ship,
+            {
+                it.anchors -= 1
+                it.anchorsActive -= if(bl) 1 else 0
+            }
+        )
     }
 }

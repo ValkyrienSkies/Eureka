@@ -33,9 +33,6 @@
     "preLaunch": [
       "org.valkyrienskies.eureka.fabric.ValkyrienPreLaunch"
     ],
-    "modmenu": [
-      "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}ModMenu"
-    ],
     "fabric-datagen": [
       "org.valkyrienskies.eureka.fabric.EurekaDataGenerator"
     ]
@@ -47,6 +44,7 @@
   "depends": {
     "minecraft": ">=1.20.1",
     "valkyrienskies": "~${vs2_version}",
-    "fabricloader": ">=0.14.21"
+    "fabricloader": ">=0.14.21",
+    "forgeconfigapiport": ">=8.0.0"
   }
 }

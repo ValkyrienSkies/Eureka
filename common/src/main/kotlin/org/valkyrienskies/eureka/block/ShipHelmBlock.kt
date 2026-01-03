@@ -10,7 +10,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.RenderShape
@@ -25,15 +24,19 @@ import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
-import org.valkyrienskies.core.api.ships.getAttachment
+import org.valkyrienskies.core.api.VsBeta
+import org.valkyrienskies.core.api.attachment.getAttachment
+import org.valkyrienskies.core.api.ships.LoadedServerShip
+import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.api.util.GameTickOnly
 import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.eureka.util.DirectionalShape
 import org.valkyrienskies.eureka.util.RotShapes
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod
+import org.valkyrienskies.mod.common.getLoadedShipManagingPos
 import org.valkyrienskies.mod.common.entity.ShipMountingEntity
 import org.valkyrienskies.mod.common.getShipManagingPos
-import org.valkyrienskies.mod.common.getShipObjectManagingPos
-import java.awt.TextComponent
 
 class ShipHelmBlock(properties: Properties, val woodType: IWoodType) : BaseEntityBlock(properties) {
     val HELM_BASE = RotShapes.box(2.0, 0.0, 2.0, 14.0, 2.0, 14.0)
@@ -45,31 +48,34 @@ class ShipHelmBlock(properties: Properties, val woodType: IWoodType) : BaseEntit
         registerDefaultState(this.stateDefinition.any().setValue(HORIZONTAL_FACING, Direction.NORTH))
     }
 
+    @OptIn(GameTickOnly::class)
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
         super.onPlace(state, level, pos, oldState, isMoving)
 
         if (level.isClientSide) return
         level as ServerLevel
 
-        val ship = level.getShipObjectManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        EurekaShipControl.getOrCreate(ship).helms += 1
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
+        EurekaShipControl.deferUntilLoaded(ship, { it.helms += 1})
     }
 
+    @OptIn(GameTickOnly::class, VsBeta::class)
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
         super.onRemove(state, level, pos, newState, isMoving)
 
         if (level.isClientSide) return
         level as ServerLevel
 
-        level.getShipManagingPos(pos)?.getAttachment<EurekaShipControl>()?.let { control ->
-
-            if (control.helms <= 1 && control.seatedPlayer?.vehicle is ShipMountingEntity) {
-                control.seatedPlayer!!.unRide()
-                control.seatedPlayer = null
+        val ship = level.getLoadedShipManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
+        EurekaShipControl.deferUntilLoaded(ship,
+            {
+                if(it.helms <= 1 && it.seatedPlayer?.vehicle?.type == ValkyrienSkiesMod.SHIP_MOUNTING_ENTITY_TYPE) {
+                    it.seatedPlayer!!.unRide()
+                    it.seatedPlayer = null
+                }
+                it.helms -= 1
             }
-
-            control.helms -= 1
-        }
+        )
     }
 
     override fun use(

@@ -8,16 +8,20 @@ import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.player.Player
 import org.joml.*
-import org.valkyrienskies.core.api.VSBeta
+import org.valkyrienskies.core.api.ships.LoadedServerShip
 import org.valkyrienskies.core.api.ships.PhysShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.ServerTickListener
-import org.valkyrienskies.core.api.ships.ShipForcesInducer
-import org.valkyrienskies.core.api.ships.getAttachment
-import org.valkyrienskies.core.api.ships.saveAttachment
+import org.valkyrienskies.core.api.ships.ShipPhysicsListener
+import org.valkyrienskies.core.api.attachment.getAttachment
+import org.valkyrienskies.core.api.attachment.removeAttachment
+import org.valkyrienskies.core.api.util.GameTickOnly
+import org.valkyrienskies.core.api.world.PhysLevel
 import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.mod.api.SeatedControllingPlayer
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.util.toJOMLD
+import java.util.function.Consumer
 import kotlin.math.*
 
 @JsonAutoDetect(
@@ -27,10 +31,10 @@ import kotlin.math.*
     setterVisibility = JsonAutoDetect.Visibility.NONE
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
-class EurekaShipControl : ShipForcesInducer, ServerTickListener {
+class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
 
     @JsonIgnore
-    internal var ship: ServerShip? = null
+    internal var ship: LoadedServerShip? = null
 
     private var extraForceLinear = 0.0
     private var extraForceAngular = 0.0
@@ -81,8 +85,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         }
     }
 
-    @OptIn(VSBeta::class)
-    override fun applyForces(physShip: PhysShip) {
+    override fun physTick(physShip: PhysShip, physLevel: PhysLevel) {
         if (helms < 1) {
             // Enable fluid drag if all the helms have been destroyed
             physShip.doFluidDrag = true
@@ -96,7 +99,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
                 // the "velY * 10" reduces bobbing by sampling the height position in the future
                 balloonForce *= 1 - Math.clamp(0.0, 1.0, (physShip.transform.positionInWorld.y() + velY * 10 - EurekaConfig.SERVER.passiveBalloonMinHeight) / (EurekaConfig.SERVER.passiveBalloonMaxHeight - EurekaConfig.SERVER.passiveBalloonMinHeight))
                 balloonForce = min(balloonForce, max(getIdealUpwardForce(EurekaConfig.SERVER.balloonElevationMaxSpeed, velY, mass), 0.0))
-                physShip.applyInvariantForce(Vector3d(0.0, balloonForce, 0.0))
+                physShip.applyWorldForce(Vector3d(0.0, balloonForce, 0.0))
 
                 physShip.buoyantFactor = getFloaterFactor(mass)
             }
@@ -109,7 +112,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
         val ship = ship ?: return
         val mass = physShip.mass
         val moiTensor = physShip.momentOfInertia
-        val omega: Vector3dc = physShip.omega
+        val omega: Vector3dc = physShip.angularVelocity
         val vel: Vector3dc = physShip.velocity
 
         physShip.buoyantFactor = getFloaterFactor(mass)
@@ -125,7 +128,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
             val pos = ship.transform.positionInWorld
             positionUntilAligned = pos.floor(Vector3d())
             val direction = pos.sub(positionUntilAligned, Vector3d())
-            physShip.applyInvariantForce(direction)
+            physShip.applyWorldForce(direction)
         }
         if ((aligning) && abs(angleUntilAligned) > ALIGN_THRESHOLD) {
             if (angleUntilAligned < 0.3 && angleUntilAligned > 0.0) angleUntilAligned = 0.3
@@ -137,7 +140,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
             val idealTorque = moiTensor.transform(idealOmega)
 
-            physShip.applyInvariantTorque(idealTorque)
+            physShip.applyWorldTorque(idealTorque)
         }
         // endregion
 
@@ -168,7 +171,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
 
         if (validPlayer) {
-            val player = controllingPlayer!!
+            val player = controllingPlayer
 
             val currentControlData = getControlData(player)
 
@@ -191,7 +194,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
             idealUpwardVel = getPlayerUpwardVel(control, mass)
         }
 
-        physShip.applyInvariantForce(Vector3d(0.0,
+        physShip.applyWorldForce(Vector3d(0.0,
             min(getBalloonForce(), max(getIdealUpwardForce(idealUpwardVel.y(), vel.y(), mass), 0.0)) +
             // Add drag to the y-component
             vel.y() * -mass,
@@ -255,7 +258,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
         // region Player controlled rotation
         val moiTensor = physShip.momentOfInertia
-        val omega: Vector3dc = physShip.omega
+        val omega: Vector3dc = physShip.angularVelocity
 
         val largestDistance = run {
             var dist = center.distance(aabb.minX(), center.y(), aabb.minZ())
@@ -399,7 +402,7 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
 
     private fun deleteIfEmpty() {
         if (helms <= 0 && floaters <= 0 && anchors <= 0 && balloons <= 0) {
-            ship?.saveAttachment<EurekaShipControl>(null)
+            ship?.removeAttachment<EurekaShipControl>()
         }
     }
 
@@ -417,9 +420,21 @@ class EurekaShipControl : ShipForcesInducer, ServerTickListener {
     private fun smoothingATanMax(max: Double, x: Double): Double = smoothingATan(1 / (max * 0.638), x)
 
     companion object {
-        fun getOrCreate(ship: ServerShip): EurekaShipControl {
+        fun getOrCreate(ship: LoadedServerShip): EurekaShipControl {
             return ship.getAttachment<EurekaShipControl>()
-                ?: EurekaShipControl().also { ship.saveAttachment(it) }
+                ?: EurekaShipControl().also { ship.setAttachment(it) }
+        }
+
+        @OptIn(GameTickOnly::class)
+        fun deferUntilLoaded(ship: ServerShip, consumer: Consumer<EurekaShipControl>){
+            if(ship is LoadedServerShip) {
+                consumer.accept(getOrCreate(ship))
+            } else {
+                ValkyrienSkiesMod.vsCore.shipLoadEvent.once(
+                    { event -> event.ship.id == ship.id },
+                    {event -> consumer.accept(getOrCreate(event.ship))}
+                )
+            }
         }
 
         private const val ALIGN_THRESHOLD = 0.01

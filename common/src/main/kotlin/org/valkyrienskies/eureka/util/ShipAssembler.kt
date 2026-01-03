@@ -14,7 +14,7 @@ import org.joml.Vector3d
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.util.datastructures.DenseBlockPosSet
 import org.valkyrienskies.eureka.EurekaConfig
-import org.valkyrienskies.mod.common.assembly.createNewShipWithBlocks
+import org.valkyrienskies.mod.common.assembly.ShipAssembler.assembleToShip
 import org.valkyrienskies.mod.common.executeIf
 import org.valkyrienskies.mod.common.isTickingChunk
 import org.valkyrienskies.mod.common.networking.PacketRestartChunkUpdates
@@ -30,12 +30,12 @@ import kotlin.math.*
 
 object ShipAssembler {
     fun collectBlocks(level: ServerLevel, center: BlockPos, predicate: (BlockState) -> Boolean): ServerShip? {
-        val blocks = DenseBlockPosSet()
+        val blocks = mutableListOf<BlockPos>()
 
-        blocks.add(center.toJOML())
+        blocks.add(center)
         val result = bfs(level, center, blocks, predicate)
         if (result) {
-            return createNewShipWithBlocks(center, blocks, level)
+            return assembleToShip(level, blocks, true)
         } else {
             return null
         }
@@ -182,7 +182,7 @@ object ShipAssembler {
     private fun bfs(
         level: ServerLevel,
         start: BlockPos,
-        blocks: DenseBlockPosSet,
+        blocks: MutableList<BlockPos>,
         predicate: (BlockState) -> Boolean
     ): Boolean {
 
@@ -195,7 +195,7 @@ object ShipAssembler {
             val pos = stack.pop()
 
             if (predicate(level.getBlockState(pos))) {
-                blocks.add(pos.x, pos.y, pos.z)
+                blocks.add(BlockPos(pos.x, pos.y, pos.z))
                 directions(pos) {
                     if (!blacklist.contains(it.x, it.y, it.z)) {
                         blacklist.add(it.x, it.y, it.z)
