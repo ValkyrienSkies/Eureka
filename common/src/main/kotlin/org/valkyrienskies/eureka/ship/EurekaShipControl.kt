@@ -128,7 +128,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
             val pos = ship.transform.positionInWorld
             positionUntilAligned = pos.floor(Vector3d())
             val direction = pos.sub(positionUntilAligned, Vector3d())
-            physShip.applyInvariantForce(direction)
+            physShip.applyWorldForce(direction)
         }
         if ((aligning) && abs(angleUntilAligned) > ALIGN_THRESHOLD) {
             if (angleUntilAligned < 0.3 && angleUntilAligned > 0.0) angleUntilAligned = 0.3
@@ -140,7 +140,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
 
             val idealTorque = moiTensor.transform(idealOmega)
 
-            physShip.applyInvariantTorque(idealTorque)
+            physShip.applyWorldTorque(idealTorque)
         }
         // endregion
 
@@ -171,7 +171,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
 
 
         if (validPlayer) {
-            val player = controllingPlayer!!
+            val player = controllingPlayer
 
             val currentControlData = getControlData(player)
 
@@ -194,7 +194,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
             idealUpwardVel = getPlayerUpwardVel(control, mass)
         }
 
-        physShip.applyInvariantForce(Vector3d(0.0,
+        physShip.applyWorldForce(Vector3d(0.0,
             min(getBalloonForce(), max(getIdealUpwardForce(idealUpwardVel.y(), vel.y(), mass), 0.0)) +
             // Add drag to the y-component
             vel.y() * -mass,
@@ -258,7 +258,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
 
         // region Player controlled rotation
         val moiTensor = physShip.momentOfInertia
-        val omega: Vector3dc = physShip.omega
+        val omega: Vector3dc = physShip.angularVelocity
 
         val largestDistance = run {
             var dist = center.distance(aabb.minX(), center.y(), aabb.minZ())
