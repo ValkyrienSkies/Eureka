@@ -9,7 +9,7 @@ import org.valkyrienskies.eureka.EurekaItems
 object CreativeTabs {
     fun create(): CreativeModeTab {
         return CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
-            .title(Component.translatable("itemGroup.eureka"))
+            .title(Component.translatable("itemGroup.vs_eureka.eureka_tab"))
             .icon { ItemStack(EurekaBlocks.OAK_SHIP_HELM.get().asItem()) }
             .displayItems { _, output ->
                 EurekaItems.ITEMS.forEach {
