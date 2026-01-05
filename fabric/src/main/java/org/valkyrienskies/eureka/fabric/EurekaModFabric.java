@@ -38,6 +38,8 @@ public class EurekaModFabric implements ModInitializer {
         new FuelRegistryImpl();
 
         ForgeConfigRegistry.INSTANCE.register(EurekaMod.MOD_ID, ModConfig.Type.SERVER, EurekaConfig.INSTANCE.getEUREKA_SPEC(), "valkyrienskies/vs_eureka.toml");
+        fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents.loading(EurekaMod.MOD_ID).register(EurekaConfig.INSTANCE::update);
+        fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents.reloading(EurekaMod.MOD_ID).register(EurekaConfig.INSTANCE::update);
 
         EurekaMod.init();
     }
