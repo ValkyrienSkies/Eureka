@@ -15,10 +15,11 @@ body:
     label: Minecraft Version
     description: What Minecraft version does this issue occur on?
     options:
-      - 1.16
-      - 1.18
-      - 1.19
-      - 1.20​
+      - "1.16"
+      - "1.18"
+      - "1.19"
+      - "1.20"
+      - "1.21"
   validations:
     required: true
 - type: input
@@ -29,8 +30,8 @@ body:
     required: true
 - type: input
   attributes:
-    label: VS2 version
-    description: What version of Valkyrien Skies 2 does this issue occur on?
+    label: Valkyrien Skies version
+    description: What version of Valkyrien Skies does this issue occur on?
   validations:
     required: true
 - type: dropdown
