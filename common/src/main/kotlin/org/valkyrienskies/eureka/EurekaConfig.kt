@@ -162,6 +162,9 @@ object EurekaConfig {
         @JsonSchema(description = "Chance for popped balloons to pop adjacent balloons, per side")
         var popSideBalloonChance = 0.3
 
+        @JsonSchema(description = "List of dimensions where balloons pop immediately, e.g: \"minecraft:the_nether\"")
+        var balloonDimensionBlacklist: Set<String> = setOf()
+
         @JsonSchema(description = "Whether the ship helm assembles diagonally connected blocks or not")
         val diagonals = true
 

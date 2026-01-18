@@ -15,6 +15,11 @@ import org.valkyrienskies.eureka.EurekaConfig
 import org.valkyrienskies.eureka.ship.EurekaShipControl
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.getShipObjectManagingPos
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.sounds.SoundEvents
+import net.minecraft.sounds.SoundSource
+import net.minecraft.world.level.block.Blocks
 
 class BalloonBlock(properties: Properties) : Block(properties) {
 
@@ -26,10 +31,47 @@ class BalloonBlock(properties: Properties) : Block(properties) {
         super.onPlace(state, level, pos, oldState, isMoving)
 
         if (level.isClientSide) return
-        level as ServerLevel
+        val serverLevel = level as ServerLevel
 
-        val ship = level.getShipObjectManagingPos(pos) ?: level.getShipManagingPos(pos) ?: return
-        EurekaShipControl.getOrCreate(ship).balloons += 1
+        val ship = level.getShipObjectManagingPos(pos) ?: level.getShipManagingPos(pos)
+        if (ship != null) {
+            EurekaShipControl.getOrCreate(ship).balloons += 1
+        }
+
+        val invalidDimensionsConfig = EurekaConfig.SERVER.balloonDimensionBlacklist
+        if ( invalidDimensionsConfig.isNotEmpty() ) {
+            val invalidDimensionLocations = invalidDimensionsConfig.mapNotNull { dimensionString ->
+                try {
+                    ResourceLocation(dimensionString)
+                } catch (e: Exception) {
+                    null
+                }
+            }.toSet()
+            val currentDimensionLocation = serverLevel.dimension().location()
+            if ( invalidDimensionLocations.contains(currentDimensionLocation) ) {
+                // Replace the balloon block with air (Similar to how water is replaced in the Nether)
+                serverLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), 3)
+                // Particles
+                serverLevel.sendParticles(
+                    ParticleTypes.LARGE_SMOKE,
+                    pos.x + 0.5, // Center of the block
+                    pos.y + 0.0,
+                    pos.z + 0.5,
+                    15, // Number of particles per iteration
+                    0.1, 0.1, 0.1, // Spread in x, y, z directions
+                    0.01 // Speed multiplier
+                )
+                // Sounds
+                serverLevel.playSound(
+                    null, // No specific player (plays for all nearby players)
+                    pos,
+                    SoundEvents.LAVA_EXTINGUISH, // Hiss-like sound
+                    SoundSource.BLOCKS,
+                    1.0f, // Volume
+                    1.0f  // Pitch
+                )
+            }
+        }
     }
 
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
@@ -56,4 +98,5 @@ class BalloonBlock(properties: Properties) : Block(properties) {
             }
         }
     }
+    
 }
