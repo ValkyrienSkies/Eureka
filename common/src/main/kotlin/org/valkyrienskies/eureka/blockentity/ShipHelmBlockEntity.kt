@@ -69,22 +69,28 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
         val newPos = blockPos.relative(state.getValue(HorizontalDirectionalBlock.FACING))
         val newState = level.getBlockState(newPos)
         var height = 0.0
-        if (!newState.isAir) {
+
+        val shape = newState.getShape(level, newPos)
+
+        if (!shape.isEmpty) {
             height = if (
                 newState.block is StairBlock &&
                 (!newState.hasProperty(StairBlock.HALF) || newState.getValue(StairBlock.HALF) == Half.BOTTOM)
             )
                 0.5 // Valid StairBlock
             else
-                newState.getShape(level, newPos).max(Axis.Y)
+                shape.max(Axis.Y)
         } else {
             val stateBelow = level.getBlockState(BlockPos(newPos.x, newPos.y - 1, newPos.z))
+            val shapeBelow = stateBelow.getShape(level, newPos)
 
-            // If block below expected seat is valid slab or stair, move seat down one block
-            val shapeHeight = stateBelow.getShape(level, newPos).max(Axis.Y)
-            // if block is slab or higher
-            if (shapeHeight >= 0.5 && shapeHeight < 1.0) {
-                height = shapeHeight - 1.0
+            if (!shapeBelow.isEmpty) {
+                // If block below expected seat is valid slab or stair, move seat down one block
+                val shapeHeight = shapeBelow.max(Axis.Y)
+                // if block is slab or higher
+                if (shapeHeight >= 0.5 && shapeHeight < 1.0) {
+                    height = shapeHeight - 1.0
+                }
             }
         }
 
@@ -92,7 +98,7 @@ class ShipHelmBlockEntity(pos: BlockPos, state: BlockState) :
 
             val offset =
                 if (height > 0.15)
-                    // when seated, place player 0.1m closer to helm
+                // when seated, place player 0.1m closer to helm
                     state.getValue(HorizontalDirectionalBlock.FACING).normal.toDoubles().scale(-0.1).add(.5, height - .5, .5)
                 else
                     Vec3(.5, height + 0.1, .5)
