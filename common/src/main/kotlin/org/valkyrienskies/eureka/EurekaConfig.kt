@@ -199,6 +199,9 @@ object EurekaConfig {
 
         @ConfigEntry(description = "Maximum number of blocks allowed in a ship. Set to 0 for no limit")
         var maxShipBlocks = 32 * 32 * 32
+
+        @ConfigEntry(description = "Time until disassembling skips aligning and forces disassembling")
+        var disassemblingTimeUntilForced = 1000
     }
     @ApiStatus.Internal
     fun update(config: ModConfig) {

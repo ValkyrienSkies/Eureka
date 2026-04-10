@@ -53,8 +53,9 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
     val canDisassemble
         get() = ship != null &&
             disassembling &&
-            abs(angleUntilAligned) < DISASSEMBLE_THRESHOLD &&
-            positionUntilAligned.distanceSquared(this.ship!!.transform.positionInWorld) < 4.0
+                (abs(angleUntilAligned) < DISASSEMBLE_THRESHOLD &&
+                positionUntilAligned.distanceSquared(this.ship!!.transform.positionInWorld) < 4.0 ||
+                disassemblingTime > EurekaConfig.SERVER.disassemblingTimeUntilForced)
     var consumed = 0f
         private set
 
@@ -68,6 +69,9 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
 
     @JsonIgnore
     var oldSpeed = 0.0
+
+    @JsonIgnore
+    var disassemblingTime = 0
 
     private data class ControlData(
         val seatInDirection: Direction,
@@ -130,11 +134,12 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
         val alignTarget = floor((invRotationAxisAngle.angle / (PI * 0.5)) + 4.5).toInt() % 4
         angleUntilAligned = (alignTarget.toDouble() * (0.5 * PI)) - invRotationAxisAngle.angle
         if (disassembling) {
+            disassemblingTime++
             val pos = ship.transform.positionInWorld
             positionUntilAligned = pos.floor(Vector3d())
             val direction = pos.sub(positionUntilAligned, Vector3d())
             physShip.applyWorldForce(direction)
-        }
+        } else disassemblingTime = 0
         if ((aligning) && abs(angleUntilAligned) > ALIGN_THRESHOLD) {
             if (angleUntilAligned < 0.3 && angleUntilAligned > 0.0) angleUntilAligned = 0.3
             if (angleUntilAligned > -0.3 && angleUntilAligned < 0.0) angleUntilAligned = -0.3
