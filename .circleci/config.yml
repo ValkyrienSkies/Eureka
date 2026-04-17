@@ -120,12 +120,30 @@ jobs:
           success_only: true
           webhook: ${EUREKA_118_WEBHOOK}
 
+  forge_gametest:
+    executor: java_large
+    steps:
+      - checkout_and_cache
+      - run:
+          name: "Run Forge GameTests"
+          command: "./gradlew :forge:runForgeGameTests --no-daemon --stacktrace"
+          no_output_timeout: 30m
+      - store_artifacts:
+          path: forge/run/logs
+          destination: gametest-logs
+          when: always
+      - save_gradle_cache
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   build:
     jobs:
       - gradle_build:
+          context:
+            - valkyrien_maven
+
+      - forge_gametest:
           context:
             - valkyrien_maven
 
