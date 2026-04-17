@@ -1,21 +1,28 @@
 package org.valkyrienskies.eureka.forge.gametest;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valkyrienskies.eureka.EurekaBlocks;
 import org.valkyrienskies.eureka.EurekaMod;
-import org.valkyrienskies.eureka.util.ShipAssembler;
+import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity;
+
+import java.util.UUID;
 
 /**
  * Performance benchmarks for Eureka ships.
  * These tests don't assert correctness — they measure and log timing data
  * so regressions in spawn throughput or tick performance are visible in CI output.
+ *
+ * Each ship is assembled by simulating a player opening the helm GUI and clicking "Assemble",
+ * which goes through {@link ShipHelmBlockEntity#assemble} — the same path as real gameplay.
  */
 @GameTestHolder(EurekaMod.MOD_ID)
 @PrefixGameTestTemplate(false)
@@ -26,32 +33,33 @@ public class EurekaShipBenchmarkTests {
     private static final int TICK_COUNT = 50;
 
     /**
-     * Spawns SHIP_COUNT single-helm ships then measures tick performance over TICK_COUNT ticks.
-     * Reports spawn throughput and effective TPS with all ships loaded.
+     * Spawns SHIP_COUNT single-helm ships via player helm interaction,
+     * then measures tick performance over TICK_COUNT ticks.
      */
     @GameTest(template = "empty_platform", timeoutTicks = 60000, batch = "benchmarkSpawnShipsAndTick")
     public void benchmarkSpawnShipsAndTick(GameTestHelper helper) {
         helper.runAfterDelay(1, () -> {
             ServerLevel level = helper.getLevel();
-            BlockPos placePos = new BlockPos(1, 1, 1);
+            BlockPos helmPos = new BlockPos(1, 1, 1);
+            BlockPos absPos = helper.absolutePos(helmPos);
+            FakePlayer fakePlayer = new FakePlayer(level, new GameProfile(UUID.randomUUID(), "[GameTest]"));
 
             long spawnStartNanos = System.nanoTime();
             int shipsSpawned = 0;
 
             for (int i = 0; i < SHIP_COUNT; i++) {
-                helper.setBlock(placePos, EurekaBlocks.INSTANCE.getOAK_SHIP_HELM().get().defaultBlockState());
-                try {
-                    var ship = ShipAssembler.INSTANCE.collectBlocks(level,
-                        helper.absolutePos(placePos), state -> !state.isAir());
-                    if (ship == null) {
-                        helper.fail("collectBlocks returned null at ship " + (i + 1));
-                        return;
-                    }
-                    shipsSpawned++;
-                } catch (Exception e) {
-                    helper.fail("Failed to assemble ship " + (i + 1) + ": " + e.getMessage());
+                helper.setBlock(helmPos, EurekaBlocks.INSTANCE.getOAK_SHIP_HELM().get().defaultBlockState());
+                ShipHelmBlockEntity blockEntity = (ShipHelmBlockEntity) level.getBlockEntity(absPos);
+                if (blockEntity == null) {
+                    helper.fail("No ShipHelmBlockEntity at ship " + (i + 1));
                     return;
                 }
+                blockEntity.assemble(fakePlayer);
+                if (!level.getBlockState(absPos).isAir()) {
+                    helper.fail("Assembly did not remove helm block at ship " + (i + 1));
+                    return;
+                }
+                shipsSpawned++;
             }
 
             long spawnElapsedNanos = System.nanoTime() - spawnStartNanos;
@@ -128,35 +136,39 @@ public class EurekaShipBenchmarkTests {
     }
 
     /**
-     * Spawns SHIP_COUNT ships alternating helm and balloon blocks to benchmark
-     * assembly with EurekaShipControl attachment callbacks.
+     * Spawns SHIP_COUNT ships via helm interaction, alternating between single-helm ships and
+     * helm+balloon ships, to benchmark assembly with EurekaShipControl attachment callbacks.
      */
     @GameTest(template = "empty_platform", timeoutTicks = 60000, batch = "benchmarkSpawnEurekaBlockShips")
     public void benchmarkSpawnEurekaBlockShips(GameTestHelper helper) {
         helper.runAfterDelay(1, () -> {
             ServerLevel level = helper.getLevel();
-            BlockPos placePos = new BlockPos(1, 1, 1);
+            BlockPos helmPos = new BlockPos(1, 1, 1);
+            BlockPos balloonPos = new BlockPos(1, 1, 2);
+            BlockPos absHelmPos = helper.absolutePos(helmPos);
+            FakePlayer fakePlayer = new FakePlayer(level, new GameProfile(UUID.randomUUID(), "[GameTest]"));
 
             long spawnStartNanos = System.nanoTime();
             int shipsSpawned = 0;
 
             for (int i = 0; i < SHIP_COUNT; i++) {
-                var block = (i % 2 == 0
-                    ? EurekaBlocks.INSTANCE.getOAK_SHIP_HELM().get()
-                    : EurekaBlocks.INSTANCE.getBALLOON().get());
-                helper.setBlock(placePos, block.defaultBlockState());
-                try {
-                    var ship = ShipAssembler.INSTANCE.collectBlocks(level,
-                        helper.absolutePos(placePos), state -> !state.isAir());
-                    if (ship == null) {
-                        helper.fail("collectBlocks returned null at ship " + (i + 1));
-                        return;
-                    }
-                    shipsSpawned++;
-                } catch (Exception e) {
-                    helper.fail("Failed to assemble Eureka block ship " + (i + 1) + ": " + e.getMessage());
+                helper.setBlock(helmPos, EurekaBlocks.INSTANCE.getOAK_SHIP_HELM().get().defaultBlockState());
+                if (i % 2 == 1) {
+                    // Odd ships: helm + balloon (BFS collects both)
+                    helper.setBlock(balloonPos, EurekaBlocks.INSTANCE.getBALLOON().get().defaultBlockState());
+                }
+
+                ShipHelmBlockEntity blockEntity = (ShipHelmBlockEntity) level.getBlockEntity(absHelmPos);
+                if (blockEntity == null) {
+                    helper.fail("No ShipHelmBlockEntity at ship " + (i + 1));
                     return;
                 }
+                blockEntity.assemble(fakePlayer);
+                if (!level.getBlockState(absHelmPos).isAir()) {
+                    helper.fail("Assembly did not remove helm block at ship " + (i + 1));
+                    return;
+                }
+                shipsSpawned++;
             }
 
             long spawnElapsedNanos = System.nanoTime() - spawnStartNanos;

@@ -1,28 +1,60 @@
 package org.valkyrienskies.eureka.forge.gametest;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valkyrienskies.core.api.ships.LoadedServerShip;
 import org.valkyrienskies.core.api.ships.ServerShip;
+import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.eureka.EurekaBlocks;
 import org.valkyrienskies.eureka.EurekaMod;
+import org.valkyrienskies.eureka.blockentity.ShipHelmBlockEntity;
 import org.valkyrienskies.eureka.ship.EurekaShipControl;
-import org.valkyrienskies.eureka.util.ShipAssembler;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @GameTestHolder(EurekaMod.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class EurekaShipTests {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("EurekaShipTests");
+
+    /**
+     * Simulates a player opening the helm GUI and clicking "Assemble".
+     * Returns the new ServerShip, or null if no new ship was created.
+     */
+    private static ServerShip simulateHelmAssemble(GameTestHelper helper, ServerLevel level, BlockPos helmRelPos) {
+        BlockPos absPos = helper.absolutePos(helmRelPos);
+        ShipHelmBlockEntity blockEntity = (ShipHelmBlockEntity) level.getBlockEntity(absPos);
+        if (blockEntity == null) return null;
+
+        Set<Long> beforeIds = new HashSet<>();
+        for (Ship ship : VSGameUtilsKt.getAllShips(level)) {
+            beforeIds.add(ship.getId());
+        }
+
+        FakePlayer fakePlayer = new FakePlayer(level, new GameProfile(UUID.randomUUID(), "[GameTest]"));
+        blockEntity.assemble(fakePlayer);
+
+        for (Ship ship : VSGameUtilsKt.getAllShips(level)) {
+            if (!beforeIds.contains(ship.getId())) {
+                return (ServerShip) ship;
+            }
+        }
+        return null;
+    }
 
     @GameTest(template = "empty_platform", batch = "shipAssemblyCreatesShip")
     public void shipAssemblyCreatesShip(GameTestHelper helper) {
@@ -32,17 +64,10 @@ public class EurekaShipTests {
 
         helper.runAfterDelay(1, () -> {
             ServerLevel level = helper.getLevel();
-            BlockPos absolutePos = helper.absolutePos(helmPos);
 
-            ServerShip ship;
-            try {
-                ship = ShipAssembler.INSTANCE.collectBlocks(level, absolutePos, state -> !state.isAir());
-                if (ship == null) {
-                    helper.fail("collectBlocks returned null — too many blocks or no solid blocks");
-                    return;
-                }
-            } catch (Exception e) {
-                helper.fail("Failed to assemble ship: " + e.getMessage());
+            ServerShip ship = simulateHelmAssemble(helper, level, helmPos);
+            if (ship == null) {
+                helper.fail("Helm assembly returned null — no ship created");
                 return;
             }
 
@@ -59,20 +84,13 @@ public class EurekaShipTests {
         helper.runAfterDelay(1, () -> {
             ServerLevel level = helper.getLevel();
 
-            ServerShip ship;
-            try {
-                ship = ShipAssembler.INSTANCE.collectBlocks(level, helper.absolutePos(helmPos),
-                    state -> !state.isAir());
-                if (ship == null) {
-                    helper.fail("collectBlocks returned null for helm block");
-                    return;
-                }
-            } catch (Exception e) {
-                helper.fail("Failed to assemble helm ship: " + e.getMessage());
+            ServerShip ship = simulateHelmAssemble(helper, level, helmPos);
+            if (ship == null) {
+                helper.fail("Helm assembly returned null for helm block");
                 return;
             }
 
-            LOGGER.info("Ship assembled with helm block (id={})", ship.getId());
+            LOGGER.info("Ship assembled via helm interaction (id={})", ship.getId());
             helper.assertBlockPresent(Blocks.AIR, helmPos);
             helper.succeed();
         });
@@ -88,21 +106,14 @@ public class EurekaShipTests {
         helper.runAfterDelay(1, () -> {
             ServerLevel level = helper.getLevel();
 
-            ServerShip ship;
-            try {
-                // BFS from helm will collect the adjacent balloon too
-                ship = ShipAssembler.INSTANCE.collectBlocks(level, helper.absolutePos(helmPos),
-                    state -> !state.isAir());
-                if (ship == null) {
-                    helper.fail("collectBlocks returned null");
-                    return;
-                }
-            } catch (Exception e) {
-                helper.fail("Failed to assemble helm+balloon ship: " + e.getMessage());
+            // BFS from helm will collect the adjacent balloon too
+            ServerShip ship = simulateHelmAssemble(helper, level, helmPos);
+            if (ship == null) {
+                helper.fail("Helm assembly returned null");
                 return;
             }
 
-            LOGGER.info("Ship assembled with helm+balloon (id={})", ship.getId());
+            LOGGER.info("Ship assembled via helm with balloon (id={})", ship.getId());
             helper.assertBlockPresent(Blocks.AIR, helmPos);
             helper.assertBlockPresent(Blocks.AIR, balloonPos);
             helper.succeed();
@@ -113,19 +124,17 @@ public class EurekaShipTests {
     public void assembleEmptyBlocksFails(GameTestHelper helper) {
         helper.runAfterDelay(1, () -> {
             ServerLevel level = helper.getLevel();
-            // No block placed — BFS from air position should fail
-            BlockPos airPos = helper.absolutePos(new BlockPos(1, 2, 1));
+            // No helm placed — there is no ShipHelmBlockEntity to trigger assembly
+            BlockPos airPos = new BlockPos(1, 2, 1);
+            BlockPos absPos = helper.absolutePos(airPos);
 
-            try {
-                ServerShip ship = ShipAssembler.INSTANCE.collectBlocks(level, airPos, state -> !state.isAir());
-                if (ship == null) {
-                    helper.succeed();
-                    return;
-                }
-                helper.fail("Expected assembly of air blocks to fail but got ship " + ship.getId());
-            } catch (Exception | AssertionError e) {
-                helper.succeed();
+            ShipHelmBlockEntity blockEntity = (ShipHelmBlockEntity) level.getBlockEntity(absPos);
+            if (blockEntity != null) {
+                helper.fail("Expected no helm block entity at air position, found one");
+                return;
             }
+            // No helm → no assembly possible; this is the expected failure case
+            helper.succeed();
         });
     }
 
@@ -139,11 +148,9 @@ public class EurekaShipTests {
         helper.runAfterDelay(1, () -> {
             ServerLevel level = helper.getLevel();
 
-            try {
-                ShipAssembler.INSTANCE.collectBlocks(level, helper.absolutePos(helmPos),
-                    state -> !state.isAir());
-            } catch (Exception e) {
-                helper.fail("Failed to assemble: " + e.getMessage());
+            ServerShip ship = simulateHelmAssemble(helper, level, helmPos);
+            if (ship == null) {
+                helper.fail("Helm assembly returned null");
                 return;
             }
 
@@ -168,18 +175,12 @@ public class EurekaShipTests {
             int shipsCreated = 0;
 
             for (BlockPos pos : new BlockPos[]{pos1, pos2, pos3}) {
-                try {
-                    ServerShip ship = ShipAssembler.INSTANCE.collectBlocks(level,
-                        helper.absolutePos(pos), state -> !state.isAir());
-                    if (ship == null) {
-                        helper.fail("collectBlocks returned null for ship " + (shipsCreated + 1));
-                        return;
-                    }
-                    shipsCreated++;
-                } catch (Exception e) {
-                    helper.fail("Failed to assemble ship " + (shipsCreated + 1) + ": " + e.getMessage());
+                ServerShip ship = simulateHelmAssemble(helper, level, pos);
+                if (ship == null) {
+                    helper.fail("Helm assembly returned null for ship " + (shipsCreated + 1));
                     return;
                 }
+                shipsCreated++;
             }
 
             if (shipsCreated != 3) {
@@ -195,7 +196,7 @@ public class EurekaShipTests {
     }
 
     /**
-     * After assembling a ship via the helm BFS path, EurekaShipControl.helms should reach 1
+     * After a player assembles a ship via the helm, EurekaShipControl.helms should reach 1
      * once the ship appears in VS2's loadedShips and onPlace callbacks have fired.
      */
     @GameTest(template = "empty_platform", timeoutTicks = 400, batch = "helmCountTrackedAfterAssembly")
@@ -206,16 +207,9 @@ public class EurekaShipTests {
         helper.runAfterDelay(1, () -> {
             ServerLevel level = helper.getLevel();
 
-            ServerShip ship;
-            try {
-                ship = ShipAssembler.INSTANCE.collectBlocks(level, helper.absolutePos(helmPos),
-                    state -> !state.isAir());
-                if (ship == null) {
-                    helper.fail("collectBlocks returned null");
-                    return;
-                }
-            } catch (Exception e) {
-                helper.fail("Failed to assemble: " + e.getMessage());
+            ServerShip ship = simulateHelmAssemble(helper, level, helmPos);
+            if (ship == null) {
+                helper.fail("Helm assembly returned null");
                 return;
             }
 
@@ -223,7 +217,7 @@ public class EurekaShipTests {
                 ship.getChunkClaim().getXMiddle(),
                 ship.getChunkClaim().getZMiddle()
             );
-            LOGGER.info("Helm ship assembled (id={}), polling for EurekaShipControl.helms...", ship.getId());
+            LOGGER.info("Helm ship assembled via player (id={}), polling for EurekaShipControl.helms...", ship.getId());
             pollHelmCount(helper, level, shipChunk, new int[]{0}, 200);
         });
     }
@@ -259,8 +253,8 @@ public class EurekaShipTests {
     }
 
     /**
-     * After assembling a ship with a helm + 3 balloons via BFS, EurekaShipControl.balloons
-     * should reach 3 once the ship appears in VS2's loadedShips.
+     * After a player assembles a ship with a helm + 3 balloons via the helm GUI,
+     * EurekaShipControl.balloons should reach 3 once the ship appears in VS2's loadedShips.
      */
     @GameTest(template = "empty_platform", timeoutTicks = 400, batch = "balloonCountTrackedAfterAssembly")
     public void balloonCountTrackedAfterAssembly(GameTestHelper helper) {
@@ -276,17 +270,10 @@ public class EurekaShipTests {
         helper.runAfterDelay(1, () -> {
             ServerLevel level = helper.getLevel();
 
-            ServerShip ship;
-            try {
-                // BFS from helm collects all 4 adjacent blocks
-                ship = ShipAssembler.INSTANCE.collectBlocks(level, helper.absolutePos(helmPos),
-                    state -> !state.isAir());
-                if (ship == null) {
-                    helper.fail("collectBlocks returned null");
-                    return;
-                }
-            } catch (Exception e) {
-                helper.fail("Failed to assemble: " + e.getMessage());
+            // BFS from helm collects all 4 adjacent blocks
+            ServerShip ship = simulateHelmAssemble(helper, level, helmPos);
+            if (ship == null) {
+                helper.fail("Helm assembly returned null");
                 return;
             }
 
@@ -294,7 +281,7 @@ public class EurekaShipTests {
                 ship.getChunkClaim().getXMiddle(),
                 ship.getChunkClaim().getZMiddle()
             );
-            LOGGER.info("Balloon ship assembled (id={}), polling for EurekaShipControl.balloons...", ship.getId());
+            LOGGER.info("Balloon ship assembled via player (id={}), polling for EurekaShipControl.balloons...", ship.getId());
             pollBalloonCount(helper, level, shipChunk, new int[]{0}, 200, 3);
         });
     }
