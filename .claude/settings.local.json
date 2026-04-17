@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs ls *)",
+      "mcp__ide__getDiagnostics"
+    ]
+  }
+}

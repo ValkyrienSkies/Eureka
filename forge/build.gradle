@@ -23,6 +23,28 @@ architectury {
     forge()
 }
 
+sourceSets {
+    main {
+        resources {
+            srcDir "$buildDir/generated/resources"
+        }
+    }
+    gametest {
+        java {
+            srcDir 'src/gametest/java'
+        }
+        resources {
+            srcDir 'src/gametest/resources'
+        }
+        compileClasspath += main.compileClasspath + main.output
+        runtimeClasspath += main.runtimeClasspath + main.output
+    }
+}
+
+tasks.named("processGametestResources", Copy) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
 
@@ -32,6 +54,39 @@ loom {
         mixinConfig "vs_eureka-common.mixins.json"
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
     }
+
+    mods {
+        "vs_eureka" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.gametest
+        }
+    }
+
+    runs {
+        gameTestServer {
+            server()
+            name "Forge GameTest Server"
+            source sourceSets.gametest
+            vmArg "-Dforge.enabledGameTestNamespaces=vs_eureka"
+            vmArg "-Dforge.gameTestServer=true"
+            vmArg "-Xmx4G"
+            vmArg "-XX:+UseG1GC"
+        }
+    }
+}
+
+tasks.register("cleanGameTestWorld", Delete) {
+    delete file("run/world")
+}
+
+tasks.named("runGameTestServer") {
+    dependsOn("cleanGameTestWorld")
+}
+
+tasks.register("runForgeGameTests") {
+    description = "Runs the Forge GameTest server for Eureka"
+    group = "verification"
+    dependsOn("runGameTestServer")
 }
 
 repositories {
