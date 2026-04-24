@@ -35,7 +35,7 @@ object ShipAssembler {
         blocks.add(center)
         val result = bfs(level, center, blocks, predicate)
         return if (result) {
-            assembleToShip(level, blocks)
+            assembleToShip(level, blocks.toSet())
         } else {
             null
         }
