@@ -202,6 +202,9 @@ object EurekaConfig {
 
         @ConfigEntry(description = "Time until disassembling skips aligning and forces disassembling")
         var disassemblingTimeUntilForced = 1000
+
+        @ConfigEntry(description = "Warn admins on join when a Valkyrien Skies version with known Eureka bugs is installed")
+        var warnAboutBrokenVsVersion = true
     }
     @ApiStatus.Internal
     fun update(config: ModConfig) {

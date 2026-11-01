@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.Minecraft;
@@ -21,6 +22,7 @@ import org.valkyrienskies.eureka.EurekaBlockEntities;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.EurekaItems;
 import org.valkyrienskies.eureka.EurekaMod;
+import org.valkyrienskies.eureka.VsVersionWarning;
 import org.valkyrienskies.eureka.block.IWoodType;
 import org.valkyrienskies.eureka.block.WoodType;
 import org.valkyrienskies.eureka.blockentity.renderer.ShipHelmBlockEntityRenderer;
@@ -42,6 +44,13 @@ public class EurekaModFabric implements ModInitializer {
         fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents.reloading(EurekaMod.MOD_ID).register(EurekaConfig.INSTANCE::update);
 
         EurekaMod.init();
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            String vsVersion = FabricLoader.getInstance().getModContainer("valkyrienskies")
+                    .map(mod -> mod.getMetadata().getVersion().getFriendlyString())
+                    .orElse(null);
+            VsVersionWarning.onPlayerJoin(handler.getPlayer(), vsVersion);
+        });
     }
 
     @Environment(EnvType.CLIENT)

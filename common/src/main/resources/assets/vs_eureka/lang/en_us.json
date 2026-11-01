@@ -38,5 +38,6 @@
   "hud.vs_eureka.start_cruising": "Cruise control enabled",
   "hud.vs_eureka.stop_cruising": "Cruise control disabled",
   "info.vs_eureka.too_big": "Ship is too big! Max size is %s blocks (changeable in the config)",
-  "info.vs_eureka.sneak_to_open_helm": "Sneak to open the ship helm!"
+  "info.vs_eureka.sneak_to_open_helm": "Sneak to open the ship helm!",
+  "info.vs_eureka.broken_vs_version": "[Eureka] Valkyrien Skies %s has known issues with Eureka, such as teleporting when leaving the helm. Consider using a different version. See: %s (disable this message with warnAboutBrokenVsVersion in the Eureka config)"
 }

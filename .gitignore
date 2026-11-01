@@ -18,3 +18,5 @@ classes/
 .settings
 *.launch
 .kotlin/sessions
+
+/.architectury-transformer/debug.log
