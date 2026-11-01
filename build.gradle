@@ -17,6 +17,9 @@ plugins {
 if (project.hasProperty("CustomReleaseVersion")) {
     // Remove release/ from the version if present
     version = project.property("CustomReleaseVersion").replaceFirst("^release/", "")
+} else if (System.getenv("CI") == null) {
+    // Local builds: stable jar name, so IDE run configs don't point at stale jars after each commit
+    version = eureka_version
 } else {
     try {
         String gitRevision = "git rev-parse HEAD".execute().text.trim()
