@@ -203,6 +203,9 @@ object EurekaConfig {
         @ConfigEntry(description = "Time until disassembling skips aligning and forces disassembling")
         var disassemblingTimeUntilForced = 1000
 
+        @ConfigEntry(description = "How much % of the blocks in ship need to touch water until non flying ships loose engine power.")
+        var waterContactRequiredForNonFlyingShipEngine = 0.1
+
         @ConfigEntry(description = "Warn admins on join when a Valkyrien Skies version with known Eureka bugs is installed")
         var warnAboutBrokenVsVersion = true
     }

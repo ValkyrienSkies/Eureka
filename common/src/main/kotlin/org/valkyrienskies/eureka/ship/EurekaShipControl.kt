@@ -199,13 +199,16 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
             }
         }
 
+        val balloonForce = getBalloonForce()
         controlData?.let { control ->
-            applyPlayerControl(control, physShip)
+            // 0-1, how much of the ship's weight the balloons carry
+            val liftFraction = min(1.0, balloonForce / (mass * -GRAVITY))
+            applyPlayerControl(control, physShip, liftFraction)
             idealUpwardVel = getPlayerUpwardVel(control, mass)
         }
 
         physShip.applyWorldForce(Vector3d(0.0,
-            min(getBalloonForce(), max(getIdealUpwardForce(idealUpwardVel.y(), vel.y(), mass), 0.0)) +
+            min(balloonForce, max(getIdealUpwardForce(idealUpwardVel.y(), vel.y(), mass), 0.0)) +
             // Add drag to the y-component
             vel.y() * -mass,
             0.0)
@@ -260,7 +263,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
     }
 
     @OptIn(PhysTickOnly::class, GameTickOnly::class)
-    private fun applyPlayerControl(control: ControlData, physShip: PhysShip) {
+    private fun applyPlayerControl(control: ControlData, physShip: PhysShip, liftFraction: Double) {
 
         val ship = ship ?: return
         val transform = physShip.transform
@@ -298,7 +301,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
 
         physShip.applyWorldTorque(moiTensor.transform(Vector3d(0.0, idealAlphaY, 0.0)).add(getPlayerControlledBanking(control, physShip, moiTensor, -idealAlphaY)))
 
-        physShip.applyWorldForce(getPlayerForwardVel(control, physShip))
+        physShip.applyWorldForce(getPlayerForwardVel(control, physShip, liftFraction))
     }
 
     @OptIn(PhysTickOnly::class)
@@ -319,7 +322,7 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
 
     // Player controlled forward and backward thrust
     @OptIn(PhysTickOnly::class)
-    private fun getPlayerForwardVel(control: ControlData, physShip: PhysShip): Vector3d {
+    private fun getPlayerForwardVel(control: ControlData, physShip: PhysShip, liftFraction: Double): Vector3d {
 
         val scaledMass = physShip.mass * EurekaConfig.SERVER.speedMassScale
         val vel: Vector3dc = physShip.velocity
@@ -338,10 +341,15 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
         var speed = oldSpeed * EurekaConfig.SERVER.linearBaseSpeed
 
         if (extraForceLinear != 0.0) {
-            // engine boost
+            // engine boost base
             var boost = max((extraForceLinear - EurekaConfig.SERVER.enginePowerLinear * EurekaConfig.SERVER.engineBoostOffset) * EurekaConfig.SERVER.engineBoost, 0.0)
+            // base engine power + boost
             boost = extraForceLinear + boost + boost * boost * EurekaConfig.SERVER.engineBoostExponentialPower
-            boost /= scaledMass
+            // a ship with 50% lift would allow for 50% of power for ship not touching ground.
+            val required = EurekaConfig.SERVER.waterContactRequiredForNonFlyingShipEngine
+            val waterFactor = if (required <= 0.0) 1.0 else min(1.0, physShip.liquidOverlap / required)
+            boost *= liftFraction + (1.0 - liftFraction) * waterFactor
+            boost = (boost) / scaledMass
 
             speed += if (speed < 0) {
                 smoothingATanMax(EurekaConfig.SERVER.maxReverseSpeedFromEngines, boost * oldSpeed)
@@ -364,20 +372,17 @@ class EurekaShipControl : ShipPhysicsListener, ServerTickListener {
     private fun getPlayerUpwardVel(control: ControlData, mass: Double): Vector3d {
         if (control.upImpulse != 0.0f) {
 
-            val balloonForceProvided = balloons * forcePerBalloon
-
-            return Vector3d(0.0, 1.0, 0.0)
-                .mul(control.upImpulse.toDouble())
-                .mul(
-                    if (control.upImpulse < 0.0f) {
-                        EurekaConfig.SERVER.baseImpulseDescendRate
-                    }
-                    else {
+            var v =
+                if (control.upImpulse < 0.0f)
+                    control.upImpulse * EurekaConfig.SERVER.baseImpulseDescendRate
+                else
+                    control.upImpulse * (
                         EurekaConfig.SERVER.baseImpulseElevationRate +
-                                // Smoothing for how the elevation scales as you approaches the balloonElevationMaxSpeed
-                                smoothing(2.0, EurekaConfig.SERVER.balloonElevationMaxSpeed, balloonForceProvided / mass)
-                    }
-                )
+                        // Smoothing for how the elevation scales as you approaches the balloonElevationMaxSpeed
+                        smoothing(2.0, EurekaConfig.SERVER.balloonElevationMaxSpeed, (balloons * forcePerBalloon) / mass)
+                    )
+
+            return Vector3d(0.0, v, 0.0)
         }
         return Vector3d(0.0, 0.0, 0.0)
     }
