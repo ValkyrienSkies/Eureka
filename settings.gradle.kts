@@ -16,6 +16,9 @@ pluginManagement {
             }
         }*/
         gradlePluginPortal()
+        maven("https://maven.valkyrienskies.org") {
+            name = "Valkyrien Skies"
+        }
         maven("https://maven.fabricmc.net/") {
             name = "Fabric"
         }
